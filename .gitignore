@@ -1,0 +1,13 @@
+# API keys, never commit
+fred_api_key.txt
+census_api_key.txt
+
+# local noise
+__pycache__/
+.DS_Store
+.venv/
+_snippets.json
+
+# scaffold preview, not part of the site
+docs/_layout_preview.html
+_figures_html/

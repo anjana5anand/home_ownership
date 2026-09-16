@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Data Prep & EDA &middot; Housing Out of Reach</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400&family=Public+Sans:wght@400;500;650&display=swap">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="shell">
+
+    <aside class="sidebar">
+      <p class="site-title">Housing Out of Reach</p>
+      <p class="site-sub">Homeownership, earnings and borrowing costs for Americans in their twenties, 2000&ndash;2025<br><br>Anjana Anand &middot; PLACEHOLDER course &middot; PLACEHOLDER term</p>
+      <p class="nav-label">Contents</p>
+      <nav>
+        <a href="index.html">Introduction</a>
+        <p class="group">Analysis</p>
+        <a href="dataprep-eda.html" class="active">Data Prep & EDA</a>
+        <p class="group">Models</p>
+        <a href="clustering.html">Clustering</a>
+        <a href="pca.html">PCA</a>
+        <a href="naive-bayes.html">Naive Bayes</a>
+        <a href="decision-trees.html">Decision Trees</a>
+        <a href="svm.html">SVMs</a>
+        <a href="regression.html">Regression</a>
+        <a href="neural-networks.html">Neural Networks</a>
+        <p class="group">Findings</p>
+        <a href="conclusions.html">Conclusions</a>
+        <a href="about.html">About Me</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <h1>Data Prep & EDA</h1>
+      <p class="subtitle">Three sources, what was wrong with them, and what they show</p>
+      <hr class="rule-under">
+
+    <h2>Data Collection</h2>
+    
+    <p>Data collection combined one programmatic source with two direct downloads, chosen so that each
+    covered a dimension the others lacked: time depth from the Census survey, economic context from FRED,
+    and geographic detail from Zillow. The FRED series were retrieved through the API described below, which
+    returned 2,771 individual observations across eight series and saved each raw response to disk so that
+    the collection step is auditable and repeatable. The two downloaded sources were taken from their
+    publishers' own distribution pages rather than from any secondary aggregator, so that the files used
+    here are the files those organisations publish.</p>
+
+
+    <h3>API source</h3>
+    <div class="callout">
+      <p><strong>Source:</strong> Federal Reserve Bank of St. Louis, FRED API<br>
+      <strong>Documentation:</strong> <a href="https://fred.stlouisfed.org/docs/api/fred/">fred.stlouisfed.org/docs/api/fred</a><br>
+      <strong>Base endpoint:</strong> <code>https://api.stlouisfed.org/fred/series/observations</code></p>
+      <p><strong>Example GET request</strong></p>
+      <pre><code>https://api.stlouisfed.org/fred/series/observations
+  ?series_id=MORTGAGE30US
+  &amp;observation_start=2000-01-01
+  &amp;file_type=json
+  &amp;api_key=YOUR_KEY</code></pre>
+      <p>Eight series were retrieved this way, returning 2,771 raw observations.
+      <a href="#">PLACEHOLDER: link to fred_api_fetch.py</a></p>
+    </div>
+
+    <h3>Downloaded sources</h3>
+    
+    <p>The Census Housing Vacancy Survey historical tables are published as Excel workbooks on the Census
+    Bureau's website. Table 12 was used, which reports total households and owner-occupied households by age
+    of householder annually from 1982. It was chosen over the Bureau's quarterly tables because those report
+    a single combined figure for householders under 35, while Table 12 separates the age brackets this project
+    depends on. The Zillow Home Value Index is published as a comma-separated file on Zillow's research
+    portal. The metropolitan file for the middle price tier was used, giving a smoothed, seasonally adjusted
+    typical home value for each of 894 metropolitan areas for every month since January 2000.</p>
+
+
+
+    <h2><span class="srcnum">01</span>Census Housing Vacancy Survey, Table 12</h2>
+
+    <h3>Raw sample</h3>
+    <figure class="sample">
+      <img src="images/raw-hvs.png" alt="Raw sample of Census Housing Vacancy Survey, Table 12">
+      <figcaption><b>Figure 3.</b> The first fourteen rows of the workbook as published. Column headers sit several rows down, shaded cells are structurally blank rather than missing, and the whole year-block repeats further down the sheet for earlier years.</figcaption>
+    </figure>
+
+    <h3>What needs to change</h3>
+    <ul class="tight">
+      <li>Locate each repeating <code>Age of Householder</code> block and read the paired total and owner columns beneath it.</li>
+      <li>Strip trailing dot leaders and footnote letters from row labels before they can be matched.</li>
+      <li>Resolve years that appear in more than one block, keeping the later revised estimate.</li>
+      <li>Convert counts stored as text into numbers.</li>
+      <li>Compute the ownership rate, which the file does not contain, as owner households divided by total households.</li>
+    </ul>
+
+    <h3>Cleaned output</h3>
+    <figure class="sample">
+      <img src="images/clean-hvs.png" alt="Cleaned output for Census Housing Vacancy Survey, Table 12">
+      <figcaption><b>Figure 4.</b> The result: one row per year and age bracket, with the rate computed. 220 rows covering 1982 to 2025 across five age brackets.</figcaption>
+    </figure>
+
+    <h3>Code used</h3>
+    <div class="codeblock">
+      <div class="codehead">build_datasets.py<span>parse_histtab12()</span></div>
+      <pre><code>def parse_histtab12(path=f&quot;{RAW}/histtab12.xlsx&quot;):
+    import openpyxl
+    ws = openpyxl.load_workbook(path, data_only=True)[&quot;Sheet1&quot;]
+    rows = list(ws.iter_rows(values_only=True))
+
+    targets = {&quot;less than 25 years&quot;: &quot;&lt;25&quot;, &quot;25 to 29 years&quot;: &quot;25-29&quot;,
+               &quot;30 to 34 years&quot;: &quot;30-34&quot;, &quot;35 to 39 years&quot;: &quot;35-39&quot;,
+               &quot;40 to 44 years&quot;: &quot;40-44&quot;}
+
+    records, i, n = [], 0, len(rows)
+    while i &lt; n:
+        if rows[i][0] and str(rows[i][0]).strip() == &quot;Age of Householder&quot;:
+            header = rows[i]
+            years = [(c, re.sub(r&quot;[a-zA-Z]&quot;, &quot;&quot;, str(header[c])))
+                     for c in range(1, len(header), 2) if header[c] is not None]
+            j = i + 3
+            while j &lt; n and not (rows[j][0] and str(rows[j][0]).strip() == &quot;Age of Householder&quot;):
+                label = clean_label(rows[j][0]) if rows[j][0] else None
+                if label:
+                    key = label.lower()
+                    for tlabel, code in targets.items():
+                        if tlabel in key:
+                            for col, y in years:
+                                total = rows[j][col] if col &lt; len(rows[j]) else None
+                                owner = rows[j][col + 1] if col + 1 &lt; len(rows[j]) else None
+                                if total is not None:
+                                    records.append((y, code, total, owner))
+                j += 1
+            i = j
+        else:
+            i += 1
+
+    df = pd.DataFrame(records, columns=[&quot;year_raw&quot;, &quot;age_bracket&quot;, &quot;total&quot;, &quot;owner&quot;])
+    df[&quot;year&quot;] = pd.to_numeric(df[&quot;year_raw&quot;].str.extract(r&quot;(\d{4})&quot;)[0], errors=&quot;coerce&quot;)
+    df = df.dropna(subset=[&quot;year&quot;])
+    df[&quot;year&quot;] = df[&quot;year&quot;].astype(int)
+    # revised vintages repeat a year; the later block supersedes the earlier one
+    df = df.drop_duplicates(subset=[&quot;year&quot;, &quot;age_bracket&quot;], keep=&quot;last&quot;)
+    df[&quot;total&quot;] = pd.to_numeric(df[&quot;total&quot;], errors=&quot;coerce&quot;)
+    df[&quot;owner&quot;] = pd.to_numeric(df[&quot;owner&quot;], errors=&quot;coerce&quot;)
+    df[&quot;ownership_rate_pct&quot;] = (df[&quot;owner&quot;] / df[&quot;total&quot;] * 100).round(2)
+    df = df[[&quot;year&quot;, &quot;age_bracket&quot;, &quot;total&quot;, &quot;owner&quot;, &quot;ownership_rate_pct&quot;]]
+    df.columns = [&quot;year&quot;, &quot;age_bracket&quot;, &quot;total_households_thousands&quot;,
+                  &quot;owner_households_thousands&quot;, &quot;ownership_rate_pct&quot;]
+    return df.sort_values([&quot;year&quot;, &quot;age_bracket&quot;]).reset_index(drop=True)</code></pre>
+    </div>
+
+    <h2><span class="srcnum">02</span>BLS and Census via the FRED API</h2>
+
+    <h3>Raw sample</h3>
+    <figure class="sample">
+      <img src="images/raw-fred.png" alt="Raw sample of BLS and Census via the FRED API">
+      <figcaption><b>Figure 5.</b> Six observations from the MORTGAGE30US response. The series is weekly, and two realtime columns record when the figure was published rather than anything about housing.</figcaption>
+    </figure>
+
+    <h3>What needs to change</h3>
+    <ul class="tight">
+      <li>Collapse eight series arriving weekly, monthly and quarterly onto a single annual grain.</li>
+      <li>Drop <code>realtime_start</code> and <code>realtime_end</code>, which carry no analytical information.</li>
+      <li>Treat the string <code>&quot;.&quot;</code> as missing, since reading it as a value turns the whole column into text.</li>
+      <li>Convert median weekly earnings to an annual figure.</li>
+      <li>Deflate nominal dollars to constant 2025 terms using the Consumer Price Index.</li>
+    </ul>
+
+    <h3>Cleaned output</h3>
+    <figure class="sample">
+      <img src="images/clean-fred.png" alt="Cleaned output for BLS and Census via the FRED API">
+      <figcaption><b>Figure 6.</b> The result: one row per year with every series on the same grain, four of thirteen columns shown. 2,771 raw observations reduce to 27 annual rows.</figcaption>
+    </figure>
+
+    <h3>Code used</h3>
+    <div class="codeblock">
+      <div class="codehead">fred_api_fetch.py<span>fetch_series()</span></div>
+      <pre><code>def fetch_series(series_id, key):
+    &quot;&quot;&quot;Return (metadata_dict, {year: [values]}).&quot;&quot;&quot;
+    meta_payload = api_get(&quot;series&quot;, {&quot;series_id&quot;: series_id, &quot;api_key&quot;: key, &quot;file_type&quot;: &quot;json&quot;})
+    meta = {}
+    if meta_payload and meta_payload.get(&quot;seriess&quot;):
+        s = meta_payload[&quot;seriess&quot;][0]
+        meta = {
+            &quot;series_id&quot;: series_id,
+            &quot;title&quot;: s.get(&quot;title&quot;),
+            &quot;units&quot;: s.get(&quot;units&quot;),
+            &quot;frequency&quot;: s.get(&quot;frequency&quot;),
+            &quot;seasonal_adjustment&quot;: s.get(&quot;seasonal_adjustment&quot;),
+            &quot;last_updated&quot;: s.get(&quot;last_updated&quot;),
+        }
+
+    obs = api_get(&quot;series/observations&quot;, {
+        &quot;series_id&quot;: series_id, &quot;api_key&quot;: key, &quot;file_type&quot;: &quot;json&quot;,
+        &quot;observation_start&quot;: START,
+    })
+    if not obs:
+        return meta, {}
+
+    os.makedirs(RAW_DIR, exist_ok=True)
+    with open(&quot;{}/{}.json&quot;.format(RAW_DIR, series_id), &quot;w&quot;) as f:
+        json.dump(obs, f)
+
+    by_year = defaultdict(list)
+    for o in obs.get(&quot;observations&quot;, []):
+        if o[&quot;value&quot;] in (&quot;.&quot;, &quot;&quot;, None):
+            continue                      # FRED marks missing readings with &quot;.&quot;
+        by_year[int(o[&quot;date&quot;][:4])].append(float(o[&quot;value&quot;]))
+    return meta, by_year</code></pre>
+    </div>
+
+    <h2><span class="srcnum">03</span>Zillow Home Value Index, metro</h2>
+
+    <h3>Raw sample</h3>
+    <figure class="sample">
+      <img src="images/raw-zhvi.png" alt="Raw sample of Zillow Home Value Index, metro">
+      <figcaption><b>Figure 7.</b> The file in its published shape, 895 rows by 324 columns. Eight columns are shown here; 313 further month columns continue to the right.</figcaption>
+    </figure>
+
+    <h3>What needs to change</h3>
+    <ul class="tight">
+      <li>Reshape 319 month columns into rows, so each observation occupies one row.</li>
+      <li>Reduce each metro-year to a single value, taking the latest month reported in that year.</li>
+      <li>Fill the empty <code>StateName</code> on the national row, which a default groupby silently discards.</li>
+      <li>Separate the country row from the 894 metropolitan rows, since they feed different tables.</li>
+    </ul>
+
+    <h3>Cleaned output</h3>
+    <figure class="sample">
+      <img src="images/clean-zhvi.png" alt="Cleaned output for Zillow Home Value Index, metro">
+      <figcaption><b>Figure 8.</b> The result: one row per metropolitan area per year. The wide file becomes 20,209 long rows covering 2000 to 2026.</figcaption>
+    </figure>
+
+    <h3>Code used</h3>
+    <div class="codeblock">
+      <div class="codehead">build_datasets.py<span>parse_zhvi()</span></div>
+      <pre><code>def parse_zhvi(path=f&quot;{RAW}/Metro_zhvi_uc_sfrcondo_tier_0.33_0.67_sm_sa_month.csv&quot;):
+    wide = pd.read_csv(path)
+    id_cols = [&quot;RegionID&quot;, &quot;SizeRank&quot;, &quot;RegionName&quot;, &quot;RegionType&quot;, &quot;StateName&quot;]
+    date_cols = [c for c in wide.columns if c not in id_cols]
+
+    long = wide.melt(id_vars=id_cols, value_vars=date_cols,
+                     var_name=&quot;month&quot;, value_name=&quot;zhvi&quot;).dropna(subset=[&quot;zhvi&quot;])
+    long[&quot;year&quot;] = long[&quot;month&quot;].str.slice(0, 4).astype(int)
+    long[&quot;month_num&quot;] = long[&quot;month&quot;].str.slice(5, 7).astype(int)
+
+    # one value per metro-year: the latest month reported that year
+    long = long.sort_values([&quot;RegionID&quot;, &quot;year&quot;, &quot;month_num&quot;])
+    # StateName is empty for the national row; without dropna=False groupby
+    # silently discards it and the whole national series disappears.
+    long[&quot;StateName&quot;] = long[&quot;StateName&quot;].fillna(&quot;&quot;)
+    annual = long.groupby([&quot;RegionID&quot;, &quot;RegionName&quot;, &quot;RegionType&quot;, &quot;StateName&quot;, &quot;year&quot;],
+                          as_index=False, dropna=False).last()
+    annual = annual[[&quot;RegionID&quot;, &quot;RegionName&quot;, &quot;RegionType&quot;, &quot;StateName&quot;,
+                     &quot;year&quot;, &quot;zhvi&quot;, &quot;month_num&quot;]]
+    annual.columns = [&quot;region_id&quot;, &quot;region_name&quot;, &quot;region_type&quot;, &quot;state_name&quot;,
+                      &quot;year&quot;, &quot;zhvi&quot;, &quot;as_of_month&quot;]
+    annual[&quot;zhvi&quot;] = annual[&quot;zhvi&quot;].round(0)
+    return annual.sort_values([&quot;region_name&quot;, &quot;year&quot;]).reset_index(drop=True)</code></pre>
+    </div>
+
+    <h2>Merging the Sources</h2>
+
+    <p>Each source answers a different part of the question and none answers it alone. The Census survey
+    records whether young households own but says nothing about what a home costs or what they earn. FRED
+    records earnings and borrowing costs but only nationally. Zillow records prices across 894 metropolitan
+    areas but nothing about who buys. Affordability is a relationship between all three, so the measures this
+    project depends on, price against income and payment against income, exist only after the join.</p>
+
+    <p>Both merges use <code>year</code> as the key, because that is the finest grain the three sources share:
+    the Census and FRED series are national, so nothing narrower is available to join on.</p>
+
+    <h3>Merge 1: national_annual</h3>
+    <p>An <b>inner join on year</b> across the ownership table, the FRED annual table, and the national row of
+    the Zillow data. Inner rather than outer, because a year missing any of the three cannot support the
+    derived measures. The result spans 2000 to 2025 and is 26 rows rather than 44, since ownership data begins
+    in 1982 but prices and earnings begin in 2000, and 2026 ownership is not yet published. Five derived
+    columns are added after the join: price-to-income, years to a down payment, monthly mortgage payment,
+    payment as a share of income, and earnings in real terms.</p>
+
+    <figure class="sample">
+      <img src="images/merge-national.png" alt="First rows of national_annual after the merge">
+      <figcaption><b>Figure 9.</b> The merged national table, six of twenty-three columns shown. Ownership,
+      earnings, price and mortgage rate now sit on one row, which is what makes the payment burden in the
+      final column computable at all.</figcaption>
+    </figure>
+
+    <h3>Merge 2: metro_year_panel</h3>
+    <p>A <b>left join on year</b>, attaching each national row to every metropolitan area in that year. This is
+    one-to-many by design, and it has a consequence worth stating plainly: earnings and the mortgage rate are
+    identical across all 894 metros within a year and vary only down the time axis. They are national controls
+    rather than local measurements, and no model should treat them as distinguishing one city from another.
+    The result is 19,288 rows, 894 metros across 2000 to 2025.</p>
+
+    <figure class="sample">
+      <img src="images/merge-panel.png" alt="First rows of metro_year_panel after the merge">
+      <figcaption><b>Figure 10.</b> The merged metro panel, seven of twenty-five columns shown. Price varies by
+      metro while earnings do not, which is precisely why the price-to-income column differs between rows of
+      the same year.</figcaption>
+    </figure>
+
+    <h3>Code used</h3>
+    <div class="codeblock">
+      <div class="codehead">build_datasets.py<span>the merge and derived columns</span></div>
+      <pre><code># ---- national annual table -------------------------------------------------
+
+if os.path.exists(f&quot;{RAW}/fred/fred_annual.csv&quot;):
+    fred = pd.read_csv(f&quot;{RAW}/fred/fred_annual.csv&quot;)
+    log(&quot;\nfred_annual.csv found - using API-sourced earnings and rates&quot;)
+else:
+    e1 = pd.read_csv(f&quot;{RAW}/LEU0252887100Q.csv&quot;)
+    e2 = pd.read_csv(f&quot;{RAW}/LEU0252888500Q.csv&quot;)
+    for d, col in ((e1, &quot;median_weekly_earnings_20_24&quot;), (e2, &quot;median_weekly_earnings_25_34&quot;)):
+        d.columns = [&quot;observation_date&quot;, col]
+        d[&quot;year&quot;] = d[&quot;observation_date&quot;].str.slice(0, 4).astype(int)
+    fred = (e1.groupby(&quot;year&quot;)[&quot;median_weekly_earnings_20_24&quot;].mean().round(2).reset_index()
+            .merge(e2.groupby(&quot;year&quot;)[&quot;median_weekly_earnings_25_34&quot;].mean().round(2).reset_index(),
+                   on=&quot;year&quot;))
+    fred[&quot;annual_earnings_20_24&quot;] = (fred[&quot;median_weekly_earnings_20_24&quot;] * 52).round(0)
+    fred[&quot;annual_earnings_25_34&quot;] = (fred[&quot;median_weekly_earnings_25_34&quot;] * 52).round(0)
+    log(&quot;\nfred_annual.csv NOT found - falling back to the downloaded CSVs.&quot;)
+    log(&quot;  Run fred_api_fetch.py to satisfy the API requirement and add mortgage rates.&quot;)
+
+own_wide = own_annual.pivot(index=&quot;year&quot;, columns=&quot;age_bracket&quot;,
+                            values=&quot;ownership_rate_pct&quot;).reset_index()
+own_wide.columns = [&quot;year&quot;] + [f&quot;ownership_rate_{c.replace(&#x27;&lt;&#x27;, &#x27;lt&#x27;).replace(&#x27;-&#x27;, &#x27;_&#x27;)}_pct&quot;
+                               for c in own_wide.columns[1:]]
+
+national_zhvi = (zhvi[zhvi.region_type == &quot;country&quot;][[&quot;year&quot;, &quot;zhvi&quot;]]
+                 .rename(columns={&quot;zhvi&quot;: &quot;national_zhvi&quot;}))
+
+national = own_wide.merge(fred, on=&quot;year&quot;).merge(national_zhvi, on=&quot;year&quot;)
+national[&quot;price_to_income_25_34&quot;] = (national[&quot;national_zhvi&quot;] /
+                                     national[&quot;annual_earnings_25_34&quot;]).round(2)
+national[&quot;years_to_down_payment_25_34&quot;] = (
+    (DOWN_PAYMENT * national[&quot;national_zhvi&quot;]) /
+    (national[&quot;annual_earnings_25_34&quot;] * SAVINGS_RATE)).round(1)
+if &quot;mortgage_rate_30yr_pct&quot; in national.columns:
+    national[&quot;monthly_payment_usd&quot;] = national.apply(
+        lambda r: monthly_payment(r[&quot;national_zhvi&quot;], r[&quot;mortgage_rate_30yr_pct&quot;]), axis=1).round(0)
+    national[&quot;payment_to_income_pct_25_34&quot;] = (
+        national[&quot;monthly_payment_usd&quot;] * 12 / national[&quot;annual_earnings_25_34&quot;] * 100).round(1)
+national.to_csv(f&quot;{OUT}/national_annual.csv&quot;, index=False)
+log(f&quot;national_annual.csv               {len(national):&gt;6,} rows  &quot;
+    f&quot;{national.year.min()}-{national.year.max()}  {national.shape[1]} columns&quot;)
+
+# ---- metro-year panel with engineered features -----------------------------
+
+panel = zhvi[zhvi.region_type == &quot;msa&quot;].copy()
+panel = panel[panel.year.between(2000, 2025)].sort_values([&quot;region_id&quot;, &quot;year&quot;])
+
+g = panel.groupby(&quot;region_id&quot;)[&quot;zhvi&quot;]
+panel[&quot;zhvi_yoy_pct&quot;]   = (g.pct_change(1) * 100).round(2)
+panel[&quot;zhvi_3yr_pct&quot;]   = (g.pct_change(3) * 100).round(2)
+panel[&quot;zhvi_5yr_pct&quot;]   = (g.pct_change(5) * 100).round(2)
+panel[&quot;zhvi_volatility_5yr&quot;] = (panel.groupby(&quot;region_id&quot;)[&quot;zhvi_yoy_pct&quot;]
+                                .transform(lambda s: s.rolling(5, min_periods=3).std()).round(2))
+
+carry = [&quot;year&quot;, &quot;national_zhvi&quot;, &quot;annual_earnings_25_34&quot;, &quot;annual_earnings_20_24&quot;,
+         &quot;ownership_rate_25_29_pct&quot;, &quot;ownership_rate_30_34_pct&quot;]
+for optional in [&quot;mortgage_rate_30yr_pct&quot;, &quot;annual_earnings_25_34_real2025&quot;]:
+    if optional in national.columns:
+        carry.append(optional)
+panel = panel.merge(national[carry], on=&quot;year&quot;, how=&quot;left&quot;)
+panel[&quot;zhvi_vs_national&quot;] = (panel[&quot;zhvi&quot;] / panel[&quot;national_zhvi&quot;]).round(3)
+panel[&quot;zhvi_pctile_in_year&quot;] = (panel.groupby(&quot;year&quot;)[&quot;zhvi&quot;]
+                                .rank(pct=True).mul(100).round(1))
+panel[&quot;price_to_income_25_34&quot;] = (panel[&quot;zhvi&quot;] / panel[&quot;annual_earnings_25_34&quot;]).round(2)
+panel[&quot;years_to_down_payment_25_34&quot;] = (
+    (DOWN_PAYMENT * panel[&quot;zhvi&quot;]) /
+    (panel[&quot;annual_earnings_25_34&quot;] * SAVINGS_RATE)).round(1)
+if &quot;mortgage_rate_30yr_pct&quot; in panel.columns:
+    panel[&quot;monthly_payment_usd&quot;] = (
+        panel[&quot;zhvi&quot;] * (1 - DOWN_PAYMENT)
+        * (panel[&quot;mortgage_rate_30yr_pct&quot;] / 1200)
+        * (1 + panel[&quot;mortgage_rate_30yr_pct&quot;] / 1200) ** 360
+        / ((1 + panel[&quot;mortgage_rate_30yr_pct&quot;] / 1200) ** 360 - 1)).round(0)
+    panel[&quot;payment_to_income_pct_25_34&quot;] = (
+        panel[&quot;monthly_payment_usd&quot;] * 12 / panel[&quot;annual_earnings_25_34&quot;] * 100).round(1)
+
+panel[&quot;affordability_quartile&quot;] = (panel.groupby(&quot;year&quot;)[&quot;price_to_income_25_34&quot;]
+                                   .transform(lambda s: pd.qcut(s, 4, duplicates=&quot;drop&quot;,
+                                                                labels=False) + 1
+                                              if s.notna().sum() &gt;= 4 else pd.Series(index=s.index, dtype=&quot;float&quot;)))
+panel[&quot;affordability_quartile&quot;] = panel[&quot;affordability_quartile&quot;].map(
+    {1: &quot;Q1_most_affordable&quot;, 2: &quot;Q2&quot;, 3: &quot;Q3&quot;, 4: &quot;Q4_least_affordable&quot;})
+panel.to_csv(f&quot;{OUT}/metro_year_panel.csv&quot;, index=False)
+log(f&quot;metro_year_panel.csv              {len(panel):&gt;6,} rows  &quot;
+    f&quot;{panel.region_id.nunique()} metros  {panel.shape[1]} columns&quot;)
+
+if os.path.exists(f&quot;{RAW}/acs/acs_metro_annual.csv&quot;):
+    log(&quot;\nacs_metro_annual.csv found - join it for metro-level ownership rates.&quot;)
+else:
+    log(&quot;\nacs_metro_annual.csv NOT found - metro-level ownership rate unavailable.&quot;)
+    log(&quot;  Run acs_api_fetch.py if the target for Part 2 should be a real ownership rate.&quot;)</code></pre>
+    </div>
+
+    <h2>Assumptions</h2>
+    <div class="todo">
+      <p>Every modelling choice below is a decision, not a measurement. Introduce them in your own words.</p>
+    </div>
+    <ul class="tight">
+      <li>Annual earnings are estimated as median weekly earnings &times; 52.</li>
+      <li>Years-to-down-payment assumes 15% of gross income saved each year.</li>
+      <li>Monthly payment figures assume a 30-year fixed loan at 80% loan-to-value.</li>
+      <li>Each year's home value is the latest month Zillow reported that year, so 2026 is partial.</li>
+      <li>Earnings are national, so metro affordability compares local prices against a national income.</li>
+    </ul>
+
+    <h2>Links to Raw Data &amp; Code</h2>
+    <ul class="linklist">
+      <li><a href="#">PLACEHOLDER</a> <span>: histtab12.xlsx, raw HVS workbook</span></li>
+      <li><a href="#">PLACEHOLDER</a> <span>: Metro ZHVI, raw Zillow CSV</span></li>
+      <li><a href="#">PLACEHOLDER</a> <span>: raw FRED API responses, 8 JSON files</span></li>
+      <li><a href="#">PLACEHOLDER</a> <span>: fred_api_fetch.py, API collection script</span></li>
+      <li><a href="#">PLACEHOLDER</a> <span>: build_datasets.py, cleaning pipeline</span></li>
+      <li><a href="#">PLACEHOLDER</a> <span>: make_eda_figures.py, figure generation</span></li>
+      <li><a href="#">PLACEHOLDER</a> <span>: cleaned tables, data_clean/</span></li>
+    </ul>
+
+    <h2>Summary Statistics</h2>
+
+    <p>Descriptive statistics for the national table, 26 annual observations covering 2000 to 2025.
+    Skewness is the column worth reading: the ownership and rate measures are close to symmetric, while
+    price and earnings are mildly right-skewed by their upward trend rather than by outliers.</p>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Column</th><th class="num">Mean</th><th class="num">Median</th>
+        <th class="num">Variance</th><th class="num">Std dev</th><th class="num">Skewness</th>
+        <th class="num">Count</th></tr></thead>
+        <tbody>
+          <tr><td><code>ownership_rate_lt25_pct</code></td><td class="num">23.34</td><td class="num">22.93</td><td class="num">1.66</td><td class="num">1.29</td><td class="num">0.54</td><td class="num">26</td></tr>
+          <tr><td><code>ownership_rate_25_29_pct</code></td><td class="num">36.03</td><td class="num">35.24</td><td class="num">10.79</td><td class="num">3.28</td><td class="num">0.25</td><td class="num">26</td></tr>
+          <tr><td><code>ownership_rate_30_34_pct</code></td><td class="num">50.70</td><td class="num">49.23</td><td class="num">15.24</td><td class="num">3.90</td><td class="num">0.37</td><td class="num">26</td></tr>
+          <tr><td><code>annual_earnings_25_34</code></td><td class="num">39,340</td><td class="num">36,784</td><td class="num">75,881,392</td><td class="num">8,711.0</td><td class="num">0.98</td><td class="num">26</td></tr>
+          <tr><td><code>annual_earnings_25_34_real2025</code></td><td class="num">53,963</td><td class="num">53,162</td><td class="num">6,560,728</td><td class="num">2,561.4</td><td class="num">0.83</td><td class="num">26</td></tr>
+          <tr><td><code>national_zhvi</code></td><td class="num">223,512</td><td class="num">202,524</td><td class="num">5,343,570,842</td><td class="num">73,100</td><td class="num">1.01</td><td class="num">26</td></tr>
+          <tr><td><code>mortgage_rate_30yr_pct</code></td><td class="num">5.21</td><td class="num">5.19</td><td class="num">1.90</td><td class="num">1.38</td><td class="num">0.12</td><td class="num">26</td></tr>
+          <tr><td><code>price_to_income_25_34</code></td><td class="num">5.59</td><td class="num">5.55</td><td class="num">0.53</td><td class="num">0.73</td><td class="num">0.15</td><td class="num">26</td></tr>
+          <tr><td><code>payment_to_income_pct_25_34</code></td><td class="num">29.71</td><td class="num">29.00</td><td class="num">41.01</td><td class="num">6.40</td><td class="num">0.41</td><td class="num">26</td></tr>
+          <tr><td><code>housing_starts_thousands</code></td><td class="num">1,307.7</td><td class="num">1,348.8</td><td class="num">174,704</td><td class="num">418.0</td><td class="num">-0.17</td><td class="num">26</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>The full table for all 22 numeric columns is written to
+    <code>data_clean/summary_statistics.csv</code> by the pipeline.</p>
+
+    <h2>Exploratory Data Analysis</h2>
+    
+    <p>Exploration of the cleaned tables shows a pattern more complicated than steady decline. Homeownership
+    among young householders rises to a peak in the mid-2000s, collapses through the following decade, and
+    recovers only partially, leaving both the 25-to-29 and 30-to-34 brackets well below where they stood
+    before 2008. Affordability, measured as the share of income required to service a mortgage on a typical
+    home, does not decline steadily either: it is worst in 2023 at 41.5 percent, better than at any point in
+    the series in 2012 at 20.0 percent, and roughly equal in 2000 and 2019. The figures below examine each
+    component in turn, ownership by age, earnings in nominal and real terms, prices, interest rates,
+    and the geographic distribution across metropolitan areas, before the modelling sections take up
+    the questions that require more than description.</p>
+
+    <p>One result in the exploration runs against expectation and is worth stating plainly. Homeownership
+    among householders under 25 rose over the period, from 21.7 percent in 2000 to 24.2 percent in 2025,
+    while every older young-adult bracket fell. The most likely explanation is compositional rather than
+    economic: if fewer people under 25 form independent households at all, those who do are drawn
+    disproportionately from those able to buy. The data assembled here can establish that the divergence
+    exists but cannot confirm the mechanism, and the finding is treated accordingly.</p>
+
+
+    <div class="callout">
+      <p>Ten figures. Each carries a title, axis labels and two sentences beneath: what it shows,
+      then what it means. Thumbnails link through to the full-size image.</p>
+    </div>
+
+    <div class="figgrid">
+      <figure>
+        <a href="images/eda-01-large.png"><img src="images/eda-01.png" alt="Homeownership rate by age of householder, 1982 to 2025"></a>
+        <figcaption><b>Figure 11.</b> Homeownership rate by age of householder, 1982 to 2025. All three brackets peak in the mid 2000s and fall sharply through 2016. The 25 to 29 and 30 to 34 brackets remain well below their pre-2008 levels more than fifteen years later, while the under 25 bracket sits slightly above where it began.</figcaption>
+      </figure>
+      <figure>
+        <a href="images/eda-02-large.png"><img src="images/eda-02.png" alt="The twelve least affordable metropolitan areas, 2025"></a>
+        <figcaption><b>Figure 12.</b> The twelve least affordable metropolitan areas, 2025. San Jose tops the list at 27.1 times annual earnings, with Vineyard Haven and Jackson above 23. In these markets a typical home costs more than two decades of a young worker's entire gross pay.</figcaption>
+      </figure>
+      <figure>
+        <a href="images/eda-03-large.png"><img src="images/eda-03.png" alt="Correlation between national measures, 2000 to 2025"></a>
+        <figcaption><b>Figure 13.</b> Correlation between national measures, 2000 to 2025. The mortgage rate correlates with the payment burden at 0.78, more strongly than price-to-income does at 0.71. This is the numeric form of the argument that price alone does not determine affordability.</figcaption>
+      </figure>
+      <figure>
+        <a href="images/eda-04-large.png"><img src="images/eda-04.png" alt="Where the 894 metropolitan areas are, by state"></a>
+        <figcaption><b>Figure 14.</b> Where the 894 metropolitan areas are, by state. Texas contributes 67 metropolitan areas and Ohio 44, with the eight largest states accounting for 36 percent of the total. Coverage is uneven, so any unweighted national average leans toward these states.</figcaption>
+      </figure>
+      <figure>
+        <a href="images/eda-05-large.png"><img src="images/eda-05.png" alt="Affordability quartile membership by year"></a>
+        <figcaption><b>Figure 15.</b> Affordability quartile membership by year. Quartiles are recomputed within each year, so the four bands are equal by construction and the visible change is coverage. Zillow reported 444 metropolitan areas in 2000 and 894 in 2025, which matters when comparing distributions across years.</figcaption>
+      </figure>
+      <figure>
+        <a href="images/eda-06-large.png"><img src="images/eda-06.png" alt="Did expensive markets in 2000 grow faster since?"></a>
+        <figcaption><b>Figure 16.</b> Did expensive markets in 2000 grow faster since?. Across the 444 metros reported in both years the relationship is weakly positive, Pearson r = 0.30, with growth ranging from 38 to 505 percent. Starting price explains only a small part of what happened next, so expensive markets did not simply run away from cheap ones.</figcaption>
+      </figure>
+      <figure>
+        <a href="images/eda-07-large.png"><img src="images/eda-07.png" alt="Spread of metropolitan affordability, selected years"></a>
+        <figcaption><b>Figure 17.</b> Spread of metropolitan affordability, selected years. The median metro moved from 3.67 times earnings in 2000 to 4.25 in 2025, while the interquartile range widened from 2.98-4.75 to 3.21-5.93. The typical market worsened modestly; the spread between markets worsened considerably more.</figcaption>
+      </figure>
+      <figure>
+        <a href="images/eda-08-large.png"><img src="images/eda-08.png" alt="Metropolitan areas per state, shaded by median home value, 2025"></a>
+        <figcaption><b>Figure 18.</b> Metropolitan areas per state, shaded by median home value, 2025. Area shows how many metropolitan areas each state contains and shade shows the median home value among them. Hawaii and Massachusetts are small in count but darkest in value, while Texas and Ohio are large in count and light.</figcaption>
+      </figure>
+      <figure>
+        <a href="images/eda-09-large.png"><img src="images/eda-09.png" alt="Affordability within the twelve states with the most metros, 2025"></a>
+        <figcaption><b>Figure 19.</b> Affordability within the twelve states with the most metros, 2025. Median price-to-income runs from 2.70 in Mississippi to 15.68 in Hawaii, and the width of each shape shows that states differ internally as much as they differ from one another. A state-level average would hide most of this.</figcaption>
+      </figure>
+      <figure>
+        <a href="images/eda-10-large.png"><img src="images/eda-10.png" alt="Is metropolitan affordability normally distributed?"></a>
+        <figcaption><b>Figure 20.</b> Is metropolitan affordability normally distributed?. The points bend away from the fitted line in the upper tail and the distribution carries a skewness of 2.76. Affordability is strongly right-skewed, which argues for a log transform or rank-based methods in the modelling sections rather than assuming normality.</figcaption>
+      </figure>
+    </div>
+
+
+
+    <h3>Code used</h3>
+    <p>Every figure above is produced by a single script that reads the cleaned tables and writes
+    both a full-size image and a thumbnail. Re-running it regenerates all ten, so the figures cannot
+    drift from the data behind them.</p>
+    <div class="codeblock">
+      <div class="codehead">make_eda_figures.py<span>all ten figures, 326 lines</span></div>
+      <pre><code># EDA figures for the Gen Z Homeownership project
+# Regenerates every figure in docs/images/ from the cleaned tables in data_clean/
+# Run: python3 make_eda_figures.py
+
+import os
+import math
+
+import pandas as pd
+import numpy as np
+import plotly.express as px
+import plotly.graph_objects as go
+
+out_dir = &quot;docs/images&quot;
+os.makedirs(out_dir, exist_ok=True)
+
+# Categorical colours, validated for colour-vision deficiency
+palette = [&quot;#2a78d6&quot;, &quot;#eb6834&quot;, &quot;#1baf7a&quot;, &quot;#eda100&quot;]
+blues = [&quot;#cde2fb&quot;, &quot;#9ec5f4&quot;, &quot;#5598e7&quot;, &quot;#2a78d6&quot;, &quot;#256abf&quot;, &quot;#184f95&quot;, &quot;#0d366b&quot;]
+surface = &quot;#fcfcfb&quot;
+
+# Load cleaned datasets locally
+national = pd.read_csv(&quot;data_clean/national_annual.csv&quot;)
+ownership = pd.read_csv(&quot;data_clean/ownership_by_age_annual.csv&quot;)
+panel = pd.read_csv(&quot;data_clean/metro_year_panel.csv&quot;)
+
+# Latest year of the metro panel, used by several figures
+latest = panel[panel[&quot;year&quot;] == 2025].dropna(subset=[&quot;price_to_income_25_34&quot;]).copy()
+
+
+def save(fig, n, title):
+    fig.update_layout(
+        template=&quot;plotly_white&quot;,
+        title=dict(text=title, font=dict(size=17)),
+        paper_bgcolor=surface,
+        plot_bgcolor=surface,
+        font=dict(family=&quot;Helvetica, Arial, sans-serif&quot;, size=13, color=&quot;#0b0b0b&quot;),
+        margin=dict(l=70, r=40, t=70, b=60),
+        width=1100,
+        height=560,
+    )
+    # Static export needs a local Chrome for kaleido. Where that is unavailable the
+    # figure is written as HTML instead and exported to PNG separately.
+    try:
+        fig.write_image(f&quot;{out_dir}/eda-{n:02d}-large.png&quot;, scale=2)
+        fig.write_image(f&quot;{out_dir}/eda-{n:02d}.png&quot;, scale=0.62)
+    except Exception:
+        os.makedirs(&quot;_figures_html&quot;, exist_ok=True)
+        fig.write_html(f&quot;_figures_html/eda-{n:02d}.html&quot;, include_plotlyjs=&quot;directory&quot;)
+    print(f&quot;  eda-{n:02d}  {title}&quot;)
+
+
+# Figure 1. Homeownership rate by age of householder
+age_trend = ownership[ownership[&quot;age_bracket&quot;].isin([&quot;&lt;25&quot;, &quot;25-29&quot;, &quot;30-34&quot;])]
+
+fig1 = px.line(
+    age_trend,
+    x=&quot;year&quot;,
+    y=&quot;ownership_rate_pct&quot;,
+    color=&quot;age_bracket&quot;,
+    category_orders={&quot;age_bracket&quot;: [&quot;30-34&quot;, &quot;25-29&quot;, &quot;&lt;25&quot;]},
+    color_discrete_sequence=palette,
+    labels={&quot;year&quot;: &quot;&quot;, &quot;ownership_rate_pct&quot;: &quot;Homeownership rate (%)&quot;, &quot;age_bracket&quot;: &quot;Age&quot;},
+    title=&quot;Homeownership rate by age of householder, 1982 to 2025&quot;,
+)
+fig1.update_traces(line=dict(width=2.5))
+save(fig1, 1, &quot;Homeownership rate by age of householder, 1982 to 2025&quot;)
+
+
+# Figure 2. Least affordable metropolitan areas
+top_n = 12
+
+least_affordable = (
+    latest.nlargest(top_n, &quot;price_to_income_25_34&quot;)
+    .sort_values(&quot;price_to_income_25_34&quot;)
+    .reset_index(drop=True)
+)
+
+fig2 = px.bar(
+    least_affordable,
+    x=&quot;price_to_income_25_34&quot;,
+    y=&quot;region_name&quot;,
+    orientation=&quot;h&quot;,
+    text=&quot;price_to_income_25_34&quot;,
+    color_discrete_sequence=[palette[0]],
+    labels={&quot;price_to_income_25_34&quot;: &quot;Home price as a multiple of annual earnings&quot;, &quot;region_name&quot;: &quot;&quot;},
+    title=f&quot;The {top_n} least affordable metropolitan areas, 2025&quot;,
+)
+fig2.update_traces(texttemplate=&quot;%{text:.1f}&quot;, textposition=&quot;outside&quot;, cliponaxis=False)
+save(fig2, 2, f&quot;The {top_n} least affordable metropolitan areas, 2025&quot;)
+
+
+# Figure 3. Correlation between national measures
+measures = [
+    &quot;ownership_rate_25_29_pct&quot;, &quot;ownership_rate_30_34_pct&quot;,
+    &quot;annual_earnings_25_34&quot;, &quot;annual_earnings_25_34_real2025&quot;,
+    &quot;national_zhvi&quot;, &quot;mortgage_rate_30yr_pct&quot;,
+    &quot;price_to_income_25_34&quot;, &quot;payment_to_income_pct_25_34&quot;,
+    &quot;housing_starts_thousands&quot;,
+]
+measures = [c for c in measures if c in national.columns]
+
+corr = national[measures].corr().round(2)
+short = [c.replace(&quot;_pct&quot;, &quot;&quot;).replace(&quot;_25_34&quot;, &quot;&quot;).replace(&quot;_&quot;, &quot; &quot;).strip() for c in measures]
+corr.index, corr.columns = short, short
+
+fig3 = px.imshow(
+    corr,
+    text_auto=True,
+    zmin=-1,
+    zmax=1,
+    color_continuous_scale=&quot;RdBu_r&quot;,
+    title=&quot;Correlation between national measures, 2000 to 2025&quot;,
+)
+fig3.update_xaxes(tickangle=40)
+save(fig3, 3, &quot;Correlation between national measures, 2000 to 2025&quot;)
+
+
+# Figure 4. Where the metropolitan areas are
+state_counts = latest[&quot;state_name&quot;].value_counts()
+top_states = state_counts.head(8)
+
+share = pd.DataFrame({
+    &quot;state&quot;: list(top_states.index) + [&quot;Other states&quot;],
+    &quot;metros&quot;: list(top_states.values) + [int(state_counts[8:].sum())],
+})
+
+fig4 = px.pie(
+    share,
+    names=&quot;state&quot;,
+    values=&quot;metros&quot;,
+    hole=0.42,
+    color_discrete_sequence=blues[::-1],
+    title=f&quot;Where the {len(latest)} metropolitan areas are, by state&quot;,
+)
+fig4.update_traces(textinfo=&quot;label+value&quot;, textposition=&quot;outside&quot;,
+                   marker=dict(line=dict(color=surface, width=2)))
+save(fig4, 4, &quot;Where the metropolitan areas are, by state&quot;)
+
+
+# Figure 5. Affordability quartile membership by year
+quartiles = (
+    panel.dropna(subset=[&quot;affordability_quartile&quot;])
+    .groupby([&quot;year&quot;, &quot;affordability_quartile&quot;])
+    .size()
+    .reset_index(name=&quot;metros&quot;)
+)
+
+fig5 = px.bar(
+    quartiles,
+    x=&quot;year&quot;,
+    y=&quot;metros&quot;,
+    color=&quot;affordability_quartile&quot;,
+    category_orders={&quot;affordability_quartile&quot;:
+                     [&quot;Q1_most_affordable&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;Q4_least_affordable&quot;]},
+    color_discrete_sequence=palette,
+    labels={&quot;year&quot;: &quot;&quot;, &quot;metros&quot;: &quot;Number of metropolitan areas&quot;, &quot;affordability_quartile&quot;: &quot;Quartile&quot;},
+    title=&quot;Affordability quartile membership by year&quot;,
+)
+fig5.update_traces(marker_line=dict(color=surface, width=1.5))
+save(fig5, 5, &quot;Affordability quartile membership by year&quot;)
+
+
+# Figure 6. Starting price against subsequent growth
+wide = (
+    panel[panel[&quot;year&quot;].isin([2000, 2025])]
+    .pivot_table(index=&quot;region_name&quot;, columns=&quot;year&quot;, values=&quot;zhvi&quot;)
+    .dropna()
+    .reset_index()
+)
+wide[&quot;growth_pct&quot;] = (wide[2025] / wide[2000] - 1) * 100
+
+slope, intercept = np.polyfit(wide[2000], wide[&quot;growth_pct&quot;], 1)
+line_x = np.linspace(wide[2000].min(), wide[2000].max(), 100)
+pearson = wide[2000].corr(wide[&quot;growth_pct&quot;])
+# Spearman is Pearson on the ranks, computed directly so scipy is not needed
+spearman = wide[2000].rank().corr(wide[&quot;growth_pct&quot;].rank())
+
+fig6 = px.scatter(
+    wide,
+    x=2000,
+    y=&quot;growth_pct&quot;,
+    hover_name=&quot;region_name&quot;,
+    opacity=0.5,
+    color_discrete_sequence=[palette[0]],
+    labels={&quot;2000&quot;: &quot;Typical home value in 2000 (USD)&quot;, &quot;growth_pct&quot;: &quot;Growth to 2025 (%)&quot;},
+    title=&quot;Did expensive markets in 2000 grow faster since?&quot;,
+)
+fig6.add_trace(go.Scatter(
+    x=line_x,
+    y=slope * line_x + intercept,
+    mode=&quot;lines&quot;,
+    line=dict(color=palette[1], width=2.5, dash=&quot;dash&quot;),
+    name=&quot;OLS trend&quot;,
+))
+fig6.add_annotation(
+    x=0.98, y=0.96, xref=&quot;paper&quot;, yref=&quot;paper&quot;, showarrow=False, align=&quot;right&quot;,
+    text=f&quot;Pearson r = {pearson:.3f}&lt;br&gt;Spearman r = {spearman:.3f}&lt;br&gt;n = {len(wide)} metros&quot;,
+    bgcolor=surface, bordercolor=&quot;#e1e0d9&quot;, borderwidth=1, font=dict(size=12),
+)
+save(fig6, 6, &quot;Did expensive markets in 2000 grow faster since?&quot;)
+
+
+# Figure 7. Spread of metropolitan affordability
+selected_years = [2000, 2005, 2010, 2015, 2020, 2025]
+spread = panel[panel[&quot;year&quot;].isin(selected_years)].dropna(subset=[&quot;price_to_income_25_34&quot;])
+
+fig7 = px.box(
+    spread,
+    x=&quot;year&quot;,
+    y=&quot;price_to_income_25_34&quot;,
+    points=False,
+    color_discrete_sequence=[palette[0]],
+    labels={&quot;year&quot;: &quot;&quot;, &quot;price_to_income_25_34&quot;: &quot;Price as a multiple of annual earnings&quot;},
+    title=&quot;Spread of metropolitan affordability, selected years&quot;,
+)
+fig7.update_xaxes(type=&quot;category&quot;)
+save(fig7, 7, &quot;Spread of metropolitan affordability, selected years&quot;)
+
+
+# Figure 8. Metropolitan areas per state
+state_summary = (
+    latest.groupby(&quot;state_name&quot;)
+    .agg(metros=(&quot;region_name&quot;, &quot;count&quot;), median_value=(&quot;zhvi&quot;, &quot;median&quot;))
+    .reset_index()
+)
+state_summary = state_summary[state_summary[&quot;metros&quot;] &gt;= 4]
+
+fig8 = px.treemap(
+    state_summary,
+    path=[&quot;state_name&quot;],
+    values=&quot;metros&quot;,
+    color=&quot;median_value&quot;,
+    color_continuous_scale=blues,
+    labels={&quot;median_value&quot;: &quot;Median home value (USD)&quot;},
+    title=&quot;Metropolitan areas per state, shaded by median home value, 2025&quot;,
+)
+fig8.update_traces(marker=dict(line=dict(color=surface, width=2)),
+                   root_color=surface,
+                   texttemplate=&quot;%{label}&lt;br&gt;%{value}&quot;)
+save(fig8, 8, &quot;Metropolitan areas per state, shaded by median home value, 2025&quot;)
+
+
+# Figure 9. Affordability within the states with the most metros
+busiest = latest[&quot;state_name&quot;].value_counts().head(12).index
+by_state = latest[latest[&quot;state_name&quot;].isin(busiest)]
+order = by_state.groupby(&quot;state_name&quot;)[&quot;price_to_income_25_34&quot;].median().sort_values().index.tolist()
+
+fig9 = px.violin(
+    by_state,
+    x=&quot;state_name&quot;,
+    y=&quot;price_to_income_25_34&quot;,
+    box=True,
+    category_orders={&quot;state_name&quot;: order},
+    color_discrete_sequence=[palette[0]],
+    labels={&quot;state_name&quot;: &quot;&quot;, &quot;price_to_income_25_34&quot;: &quot;Price as a multiple of annual earnings&quot;},
+    title=&quot;Affordability within the 12 states with the most metros, 2025&quot;,
+)
+save(fig9, 9, &quot;Affordability within the 12 states with the most metros, 2025&quot;)
+
+
+# Figure 10. Normal Q-Q plot
+# scipy is not a dependency here, so the inverse normal CDF is Acklam&#x27;s approximation
+def norm_ppf(p):
+    a = [-3.969683028665376e+01, 2.209460984245205e+02, -2.759285104469687e+02,
+         1.383577518672690e+02, -3.066479806614716e+01, 2.506628277459239e+00]
+    b = [-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02,
+         6.680131188771972e+01, -1.328068155288572e+01]
+    c = [-7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00,
+         -2.549732539343734e+00, 4.374664141464968e+00, 2.938163982698783e+00]
+    d = [7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00, 3.754408661907416e+00]
+    if p &lt; 0.02425:
+        q = math.sqrt(-2 * math.log(p))
+        return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)
+    if p &gt; 1 - 0.02425:
+        q = math.sqrt(-2 * math.log(1 - p))
+        return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)
+    q = p - 0.5
+    r = q * q
+    return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q / (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1)
+
+observed = np.sort(latest[&quot;price_to_income_25_34&quot;].values)
+n_obs = len(observed)
+theoretical = np.array([norm_ppf((i + 0.5) / n_obs) for i in range(n_obs)])
+
+q1, q3 = np.percentile(observed, [25, 75])
+qq_slope = (q3 - q1) / (norm_ppf(0.75) - norm_ppf(0.25))
+qq_intercept = q1 - qq_slope * norm_ppf(0.25)
+skewness = ((observed - observed.mean()) ** 3).mean() / observed.std() ** 3
+
+fig10 = px.scatter(
+    x=theoretical,
+    y=observed,
+    opacity=0.5,
+    color_discrete_sequence=[palette[0]],
+    labels={&quot;x&quot;: &quot;Theoretical normal quantiles&quot;, &quot;y&quot;: &quot;Observed price-to-income&quot;},
+    title=&quot;Is metropolitan affordability normally distributed?&quot;,
+)
+fig10.add_trace(go.Scatter(
+    x=theoretical,
+    y=qq_slope * theoretical + qq_intercept,
+    mode=&quot;lines&quot;,
+    line=dict(color=palette[1], width=2.5, dash=&quot;dash&quot;),
+    name=&quot;Normal reference&quot;,
+))
+fig10.add_annotation(
+    x=0.03, y=0.96, xref=&quot;paper&quot;, yref=&quot;paper&quot;, showarrow=False, align=&quot;left&quot;,
+    text=f&quot;skewness = {skewness:.2f}&lt;br&gt;n = {n_obs} metros&quot;,
+    bgcolor=surface, bordercolor=&quot;#e1e0d9&quot;, borderwidth=1, font=dict(size=12),
+)
+save(fig10, 10, &quot;Is metropolitan affordability normally distributed?&quot;)
+
+
+# Summary statistics for the Data Prep tab
+numeric = national.select_dtypes(include=[np.number]).drop(columns=[&quot;year&quot;], errors=&quot;ignore&quot;)
+
+summary = pd.DataFrame({
+    &quot;mean&quot;: numeric.mean(),
+    &quot;median&quot;: numeric.median(),
+    &quot;variance&quot;: numeric.var(),
+    &quot;std_dev&quot;: numeric.std(),
+    &quot;skewness&quot;: numeric.skew(),
+    &quot;count&quot;: numeric.count(),
+}).round(3)
+summary.index.name = &quot;column&quot;
+summary.to_csv(&quot;data_clean/summary_statistics.csv&quot;)
+print(f&quot;  summary_statistics.csv  {len(summary)} columns&quot;)</code></pre>
+    </div>
+
+    <h2>Inspection &amp; Reflection</h2>
+    <div class="todo">
+      <p>Missingness, duplicates, coverage gaps, and any bias the cleaning introduced. Be explicit about
+      what a reader should not over-interpret.</p>
+    </div>
+
+    </main>
+
+  </div>
+
+  <script src="assets/ui.js" defer></script>
+</body>
+</html>

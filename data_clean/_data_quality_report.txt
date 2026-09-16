@@ -1,0 +1,33 @@
+====================================================================
+DATA PREPARATION REPORT
+====================================================================
+
+ownership_by_age_annual.csv          220 rows  1982-2025  5 age brackets
+zhvi_metro_annual.csv             20,209 rows  895 regions  2000-2026
+
+fred_annual.csv found - using API-sourced earnings and rates
+national_annual.csv                   26 rows  2000-2025  23 columns
+metro_year_panel.csv              19,288 rows  894 metros  25 columns
+
+acs_metro_annual.csv NOT found - metro-level ownership rate unavailable.
+  Run acs_api_fetch.py if the target for Part 2 should be a real ownership rate.
+
+====================================================================
+DATA QUALITY
+====================================================================
+
+ownership_by_age_annual  (220 rows x 5 cols)
+  no missing values
+
+national_annual  (26 rows x 23 cols)
+  no missing values
+
+metro_year_panel  (19,288 rows x 25 cols)
+  zhvi_yoy_pct                          894 missing (4.6%)
+  zhvi_3yr_pct                        2,682 missing (13.9%)
+  zhvi_5yr_pct                        4,470 missing (23.2%)
+  zhvi_volatility_5yr                 2,682 missing (13.9%)
+
+Expected missingness, not errors:
+  zhvi_yoy_pct / 3yr / 5yr    first years of each metro have no prior year
+  zhvi_volatility_5yr         needs at least 3 yearly changes

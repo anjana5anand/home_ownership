@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Introduction &middot; Housing Out of Reach</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400&family=Public+Sans:wght@400;500;650&display=swap">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="shell">
+
+    <aside class="sidebar">
+      <p class="site-title">Housing Out of Reach</p>
+      <p class="site-sub">Homeownership, earnings and borrowing costs for Americans in their twenties, 2000&ndash;2025<br><br>Anjana Anand &middot; PLACEHOLDER course &middot; PLACEHOLDER term</p>
+      <p class="nav-label">Contents</p>
+      <nav>
+        <a href="index.html" class="active">Introduction</a>
+        <p class="group">Analysis</p>
+        <a href="dataprep-eda.html">Data Prep & EDA</a>
+        <p class="group">Models</p>
+        <a href="clustering.html">Clustering</a>
+        <a href="pca.html">PCA</a>
+        <a href="naive-bayes.html">Naive Bayes</a>
+        <a href="decision-trees.html">Decision Trees</a>
+        <a href="svm.html">SVMs</a>
+        <a href="regression.html">Regression</a>
+        <a href="neural-networks.html">Neural Networks</a>
+        <p class="group">Findings</p>
+        <a href="conclusions.html">Conclusions</a>
+        <a href="about.html">About Me</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <h1>Introduction</h1>
+      <p class="subtitle">Why homeownership slipped out of reach for a generation</p>
+      <hr class="rule-under">
+
+    <figure class="hero">
+      <img src="images/intro-hero.jpg" alt="A large Mediterranean-style house behind a paved forecourt">
+      <figcaption><b>Figure 1.</b> PLACEHOLDER: two sentences on what this image represents and why it
+      opens the project. Credit the image source here.</figcaption>
+    </figure>
+
+    <h2>Research Topic &amp; Significance</h2>
+    
+    <p>Homeownership remains the largest single component of wealth for most American households, and the
+    age at which a household buys its first home shapes how much wealth it eventually accumulates. Over the
+    past two decades that first purchase has moved steadily further out of reach for people in their twenties
+    and early thirties. Census Housing Vacancy Survey figures show that among householders aged 25 to 29, the
+    homeownership rate fell from 41.8 percent in 2006 to 30.9 percent in 2016, recovering only to 33.3 percent
+    by 2025. Householders aged 30 to 34 followed the same path, from 57.4 percent down to 45.4 percent and
+    back to 46.6 percent. Neither group has returned to where it stood before the 2008 financial crisis, more
+    than fifteen years later. Across the same period the typical American home rose in value from roughly
+    $132,000 to $370,000.</p>
+
+    <p>The familiar explanation is that wages failed to keep pace with prices, and the nominal figures appear
+    to confirm it. Median earnings for full-time workers aged 25 to 34 rose from $28,561 to $59,176 between
+    2000 and 2025, which looks like a doubling of purchasing power. Adjusted for inflation, the same earnings
+    move from $53,403 to $55,435 between 2000 and 2019, a gain of under four percent across nineteen
+    years, before rising to $59,176 by 2025. The purchasing power of a young worker's paycheck was
+    therefore close to flat for almost two decades while the price of the asset that worker was trying to buy
+    nearly tripled. Ratios tell the same story from another angle: the price of a typical home rose from 4.6
+    times a young worker's annual earnings in 2000 to 6.3 times in 2025. What that ratio conceals is the cost
+    of borrowing, which moved in the opposite direction for most of the period and then reversed sharply, and
+    which turns out to matter more than price alone.</p>
+
+
+    <h2>Stakeholders</h2>
+    
+    <p>The most directly affected group is the roughly one in three Americans aged 25 to 34 who rent and would
+    prefer to own. For them the question is not abstract: the gap between renting and owning determines whether
+    monthly housing costs build equity or disappear, and delay compounds, since a purchase postponed by ten
+    years is ten years of equity never accumulated. Their parents are affected in turn, as families increasingly
+    supply down-payment assistance that turns a market outcome into an inherited one, widening the distance
+    between households that can offer such help and those that cannot.</p>
+
+    <p>Lenders and homebuilders have a commercial stake in the same figures, since first-time buyers are the
+    entry point to the housing market and a shrinking cohort of them constrains transaction volume throughout
+    the chain. Municipal and state governments have a fiscal and practical stake: property taxes fund local
+    services, and metropolitan areas where young workers cannot afford to buy face difficulty retaining
+    teachers, nurses and other essential workers. Housing policy makers need to know whether the constraint is
+    price, income, credit cost, or supply, because each points to a different intervention: zoning reform,
+    down-payment assistance, interest-rate policy, or construction subsidy. Answering that question requires
+    separating the components rather than treating affordability as a single number.</p>
+
+
+    <h2>Existing Solutions &amp; Gaps</h2>
+    
+    <p>Tools for assessing housing affordability are widely available and mostly answer a narrow question.
+    Mortgage calculators published by Zillow, NerdWallet and most retail banks tell an individual household
+    what it can afford today, at today's rates, given today's income. They are useful for a decision and
+    useless for a trend: they describe one household at one moment and say nothing about how the situation
+    has changed or how it differs between places. Industry reporting fills part of that gap. The National
+    Association of Realtors publishes an annual profile of home buyers and sellers, and Harvard's Joint Center
+    for Housing Studies produces the <em>State of the Nation's Housing</em> series, both tracking first-time
+    buyer age and homeownership rates over time.</p>
+
+    <p>Research on why young-adult homeownership fell has concentrated on demographic explanation. A Joint
+    Center analysis attributed part of the decline to later marriage, changing household composition and
+    migration toward central cities, but concluded that demographic factors account for only about a quarter
+    of the variation in whether a household owns or rents, leaving macroeconomic conditions and price as the
+    larger share of the explanation. That leaves two gaps this project addresses. The first is that most
+    public treatments measure affordability as a price-to-income ratio and ignore the cost of borrowing
+    entirely, which is a serious omission: in 2021 the price-to-income ratio stood near a record 6.6 while the
+    share of income required to service a mortgage was a moderate 26.5 percent, because money cost 2.96
+    percent; by 2023 that share reached 41.5 percent, worse than the 2006 housing-bubble peak of 39.7 percent,
+    on a price-to-income ratio that had barely moved. The second is that national aggregates conceal the
+    geography almost entirely. In 2025 the price of a typical home ranged from 0.81 times a young worker's
+    annual earnings in Helena, Arkansas to 27.1 times in San Jose, California, a spread across 894
+    metropolitan areas that no national average can represent.</p>
+
+
+    <h2>Blueprint for This Project</h2>
+    
+    <figure class="flow">
+      <svg viewBox="0 0 960 300" role="img"
+           aria-label="Project pipeline: three sources are collected, cleaned by three different transformations, engineered into two analysis tables, passed through two unsupervised and five supervised model families, and used to answer the ten research questions.">
+        <defs>
+          <marker id="fa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+            <polygon points="0,1 9,5 0,9" fill="var(--accent)"/>
+          </marker>
+        </defs>
+
+        <!-- stage headers -->
+        <g font-family="var(--mono)" font-size="10" font-weight="700" letter-spacing="1.2" fill="var(--accent)">
+          <text x="10"  y="22">01 &#183; COLLECT</text>
+          <text x="210" y="22">02 &#183; CLEAN</text>
+          <text x="410" y="22">03 &#183; ENGINEER</text>
+          <text x="610" y="22">04 &#183; MODEL</text>
+          <text x="810" y="22">05 &#183; ANSWER</text>
+        </g>
+        <g stroke="var(--rule)" stroke-width="1">
+          <line x1="10"  y1="30" x2="175" y2="30"/>
+          <line x1="210" y1="30" x2="375" y2="30"/>
+          <line x1="410" y1="30" x2="575" y2="30"/>
+          <line x1="610" y1="30" x2="775" y2="30"/>
+          <line x1="810" y1="30" x2="950" y2="30"/>
+        </g>
+
+        <g font-size="11.5" fill="var(--ink)">
+          <!-- 01 collect -->
+          <rect x="10" y="100" width="165" height="26" rx="5" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="20" y="117">Census HVS &#183; .xlsx</text>
+          <rect x="10" y="132" width="165" height="26" rx="5" fill="var(--accent-wash)" stroke="var(--accent)"/>
+          <text x="20" y="149" font-weight="650" fill="var(--accent)">FRED &#183; API</text>
+          <rect x="10" y="164" width="165" height="26" rx="5" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="20" y="181">Zillow ZHVI &#183; .csv</text>
+
+          <!-- 02 clean -->
+          <rect x="210" y="100" width="165" height="26" rx="5" fill="var(--panel)" stroke="var(--rule)"/>
+          <text x="220" y="117">parse year-blocks</text>
+          <rect x="210" y="132" width="165" height="26" rx="5" fill="var(--panel)" stroke="var(--rule)"/>
+          <text x="220" y="149">collapse to annual</text>
+          <rect x="210" y="164" width="165" height="26" rx="5" fill="var(--panel)" stroke="var(--rule)"/>
+          <text x="220" y="181">reshape wide &#8594; long</text>
+
+          <!-- 03 engineer -->
+          <rect x="410" y="94" width="165" height="38" rx="5" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="420" y="110">national_annual</text>
+          <text x="420" y="125" font-size="10" fill="var(--muted)">26 rows &#215; 23 cols</text>
+          <rect x="410" y="138" width="165" height="38" rx="5" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="420" y="154">metro_year_panel</text>
+          <text x="420" y="169" font-size="10" fill="var(--muted)">19,288 rows &#215; 25 cols</text>
+          <text x="410" y="196" font-size="10" fill="var(--muted)">+ price-to-income, payment</text>
+          <text x="410" y="209" font-size="10" fill="var(--muted)">burden, growth, volatility</text>
+
+          <!-- 04 model -->
+          <text x="610" y="52" font-size="9.5" font-weight="700" letter-spacing=".9" fill="var(--muted)">UNSUPERVISED</text>
+          <rect x="610" y="58" width="165" height="24" rx="5" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="620" y="74">Clustering</text>
+          <rect x="610" y="86" width="165" height="24" rx="5" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="620" y="102">PCA</text>
+
+          <text x="610" y="130" font-size="9.5" font-weight="700" letter-spacing=".9" fill="var(--muted)">SUPERVISED</text>
+          <rect x="610" y="136" width="165" height="24" rx="5" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="620" y="152">Naive Bayes</text>
+          <rect x="610" y="164" width="165" height="24" rx="5" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="620" y="180">Decision Trees</text>
+          <rect x="610" y="192" width="165" height="24" rx="5" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="620" y="208">SVMs</text>
+          <rect x="610" y="220" width="165" height="24" rx="5" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="620" y="236">Regression</text>
+          <rect x="610" y="248" width="165" height="24" rx="5" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="620" y="264">Neural Networks</text>
+
+          <!-- 05 answer -->
+          <rect x="810" y="110" width="140" height="70" rx="6" fill="var(--accent-wash)" stroke="var(--accent)" stroke-width="1.6"/>
+          <text x="880" y="140" text-anchor="middle" font-size="24" font-weight="650" fill="var(--accent)" font-family="var(--serif)">10</text>
+          <text x="880" y="160" text-anchor="middle" font-size="11" fill="var(--accent)">research</text>
+          <text x="880" y="173" text-anchor="middle" font-size="11" fill="var(--accent)">questions</text>
+        </g>
+
+        <!-- stage arrows -->
+        <g stroke="var(--accent)" stroke-width="1.4" fill="none" marker-end="url(#fa)">
+          <line x1="180" y1="145" x2="205" y2="145"/>
+          <line x1="380" y1="145" x2="405" y2="145"/>
+          <line x1="580" y1="145" x2="605" y2="145"/>
+          <line x1="780" y1="145" x2="805" y2="145"/>
+        </g>
+      </svg>
+      <figcaption><b>Figure 2.</b> The project pipeline from raw file to answered question. Only the FRED
+      series arrive through an API; the other two sources are published as files, and all three need a
+      different transformation before they can be joined on year.</figcaption>
+    </figure>
+
+    <p>The project proceeds in four stages. Collection draws on three sources: the Census Housing Vacancy
+    Survey for homeownership by age of householder, the Federal Reserve Bank of St. Louis FRED API for
+    earnings, mortgage rates, prices and inflation, and the Zillow Home Value Index for home values at
+    metropolitan level. Cleaning reshapes each into tidy tables, which is non-trivial because none of the
+    three arrives in an analysable form. The Census workbook repeats an entire year-block down the
+    sheet, the FRED series arrive at three different frequencies, and the Zillow file is 319 columns wide.</p>
+
+    <p>Feature engineering follows, producing the measures the analysis depends on: price-to-income,
+    years required to save a down payment, monthly mortgage payment, and payment as a share of income,
+    together with growth, volatility and rank measures computed for each metropolitan area. Modelling then
+    addresses the research questions above in two groups. Unsupervised methods, clustering and
+    principal component analysis, ask whether housing markets fall into recognisable types and which
+    characteristics separate them. Supervised methods, naive Bayes, decision trees, support vector
+    machines, regression and neural networks, ask whether a market's affordability can be predicted
+    from its price behaviour, and which features carry that prediction. Each model is reported with its
+    assumptions, the parameters explored, and an honest account of what its results do and do not establish.</p>
+
+
+    <h2>Dataset Considerations</h2>
+    
+    <p>Three sources were selected, each covering something the others cannot. The Census Housing Vacancy
+    Survey provides the dependent variable of interest, homeownership by age of householder, and does so from
+    1982 onward with age brackets narrow enough to separate 25-to-29-year-olds from 30-to-34-year-olds. That
+    distinction matters, because the two groups sit on opposite sides of the typical first purchase and
+    coarser sources that report a single &ldquo;under 35&rdquo; figure blur them together. The FRED API supplies
+    the economic context: median weekly earnings by age bracket, the 30-year fixed mortgage rate, the national
+    homeownership rate, median sales price, the Case&ndash;Shiller index, the Consumer Price Index and housing
+    starts. Retrieving these programmatically rather than by download makes the collection reproducible and
+    made it practical to add the mortgage-rate and inflation series that the affordability analysis turns on.
+    The Zillow Home Value Index contributes the geographic dimension, reporting a typical home value for 894
+    metropolitan areas every month since 2000.</p>
+
+    <p>Several limitations follow from these choices and are carried through the analysis. None of the three
+    sources is individual-level, so the project describes aggregate rates rather than the circumstances of
+    particular households. Earnings are reported nationally rather than by metropolitan area, which means
+    metro-level affordability measures compare local prices against a national income and cannot capture the
+    fact that salaries in San Jose differ from salaries in Cleveland. The Zillow index covers the middle
+    tier of the market, between the 33rd and 67th percentiles of value, and therefore excludes both the
+    cheapest and most expensive segments. Homeownership figures are reported for the age of the householder
+    rather than of every occupant, so a 27-year-old living in a parent's home is counted under that parent's
+    age. Each of these is a genuine constraint on what the results can support, and each is noted again where
+    it bears on a specific finding.</p>
+
+
+    <h2>Research Questions</h2>
+    <p>Ten questions this project sets out to answer, and the section of this site where each is addressed.</p>
+    <ol class="questions">
+      <li>How much has the likelihood of owning a home changed for Americans in their twenties and early thirties over the past two decades?</li>
+      <li>Have the earnings of young workers kept pace with the price of the homes they would need to buy?</li>
+      <li>How many years of saving does a typical young worker now need to reach a twenty percent down payment, and how does that compare with someone the same age in 2000?</li>
+      <li>How has homeownership among householders under 25 differed from those aged 25 to 34, and what might explain the divergence?</li>
+      <li>How much does a young person's chance of owning depend on which metropolitan area they live in?</li>
+      <li>Has the distance between the most and least affordable housing markets widened since 2000?</li>
+      <li>Do American housing markets fall into distinct types that present different obstacles to young buyers?</li>
+      <li>Which characteristics most separate an affordable metropolitan area from an unaffordable one?</li>
+      <li>Can a metropolitan area's affordability be anticipated from its recent price behaviour alone?</li>
+      <li>Did the 2008 financial crisis and the 2020 pandemic leave lasting marks on young-adult homeownership, or did the market return to its earlier path?</li>
+    </ol>
+
+    <h2>Data Sources</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Source</th><th>Access</th><th>What it provides</th><th>Coverage</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><a href="https://www.census.gov/housing/hvs/data/histtabs.html">Census Housing Vacancy Survey</a><br><span style="color:var(--muted)">Table 12</span></td>
+            <td>Download</td>
+            <td>Households and owner households by age of householder</td>
+            <td>1982&ndash;2025, national, annual</td>
+          </tr>
+          <tr>
+            <td><a href="https://fred.stlouisfed.org/docs/api/fred/">BLS and Census via FRED</a><br><span style="color:var(--muted)">8 series</span></td>
+            <td><strong>API</strong></td>
+            <td>Median weekly earnings by age, 30-year mortgage rate, homeownership rate, median sales price, Case&ndash;Shiller index, CPI, housing starts</td>
+            <td>2000&ndash;2026, national, weekly to quarterly</td>
+          </tr>
+          <tr>
+            <td><a href="https://www.zillow.com/research/data/">Zillow ZHVI</a><br><span style="color:var(--muted)">metro, tier 0.33&ndash;0.67</span></td>
+            <td>Download</td>
+            <td>Typical home value per metropolitan area</td>
+            <td>2000&ndash;2026, 894 metros, monthly</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    </main>
+
+  </div>
+
+  <script src="assets/ui.js" defer></script>
+</body>
+</html>
