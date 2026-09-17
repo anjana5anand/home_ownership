@@ -58,11 +58,9 @@ def questions_html():
 
 
 INTRO_BODY = """
-    <figure class="hero">
+    <div class="hero-banner">
       <img src="images/intro-hero.jpg" alt="A large Mediterranean-style house behind a paved forecourt">
-      <figcaption><b>Figure 1.</b> PLACEHOLDER: two sentences on what this image represents and why it
-      opens the project. Credit the image source here.</figcaption>
-    </figure>
+    </div>
 
     <h2>Research Topic &amp; Significance</h2>
     {t_topic}
