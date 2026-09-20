@@ -357,13 +357,16 @@ CONCL_BODY = """
 
 ABOUT_BODY = """
     <div class="member">
-      <img src="images/PLACEHOLDER-portrait.jpg" alt="">
+      <img src="images/about-portrait.jpg" alt="Anjana Anand">
       <div>
         <h4>Anjana Anand</h4>
-        <p class="role">PLACEHOLDER role</p>
-        <p>PLACEHOLDER: this is the one page where first person is allowed. Write about yourself here:
-        background, what drew you to this topic, what you took from the project.</p>
-        <p><a href="#">LinkedIn</a> &middot; <a href="#">GitHub</a></p>
+        <p class="role">MS Data Science Student, CU Boulder</p>
+        <p>Anjana Anand is a graduate student in the Data Science program at CU Boulder,
+        graduating in May 2027. She completed her BTech in AI and Data Science before moving
+        to Boulder for her master's. She has worked on projects in NLP, computer vision, and
+        time-series financial modeling. Outside the classroom, Anjana enjoys staying active
+        and watching movies.</p>
+        <p><a href="https://www.linkedin.com/in/anjana-anand-b63076398" target="_blank" rel="noopener">LinkedIn</a> &middot; <a href="https://github.com/anjana5anand" target="_blank" rel="noopener">GitHub</a></p>
       </div>
     </div>
 """
