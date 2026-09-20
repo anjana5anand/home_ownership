@@ -7,7 +7,8 @@ REPO_URL   = "https://github.com/anjana5anand/home_ownership"
 
 PAGES = [
     ("index.html",           "Introduction",    "Why homeownership slipped out of reach for a generation", None),
-    ("dataprep-eda.html",    "Data Prep & EDA", "Three sources, what was wrong with them, and what they show", "Analysis"),
+    ("dataprep.html",        "Data Prep",       "Three sources, and what was wrong with each one", "Analysis"),
+    ("eda.html",             "EDA",              "Summary statistics and ten figures exploring the cleaned data", None),
     ("clustering.html",      "Clustering",      "PLACEHOLDER subtitle", "Models"),
     ("pca.html",             "PCA",             "PLACEHOLDER subtitle", None),
     ("naive-bayes.html",     "Naive Bayes",     "PLACEHOLDER subtitle", None),
@@ -79,9 +80,6 @@ INTRO_BODY = """
     <h2>Blueprint for This Project</h2>
     {t_blueprint}
 
-    <h2>Dataset Considerations</h2>
-    {t_dataset}
-
     <h2>Research Questions</h2>
     <p>Ten questions this project sets out to answer, and the section of this site where each is addressed.</p>
     {questions}
@@ -114,9 +112,12 @@ INTRO_BODY = """
     </div>
 """
 
-PREP_BODY = """
+DATAPREP_BODY = """
     <h2>Data Collection</h2>
     {t_collect}
+
+    <h2>Dataset Considerations</h2>
+    {t_dataset}
 
     <h3>API source</h3>
     <div class="callout">
@@ -156,7 +157,9 @@ PREP_BODY = """
       <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/make_eda_figures.py">make_eda_figures.py</a> <span>: figure generation</span></li>
       <li><a href="https://github.com/anjana5anand/home_ownership/tree/main/data_clean">data_clean/</a> <span>: cleaned tables</span></li>
     </ul>
+"""
 
+EDA_BODY = """
     <h2>Summary Statistics</h2>
 
     <p>Descriptive statistics for the national table, 26 annual observations covering 2000 to 2025.
@@ -375,6 +378,18 @@ ABOUT_BODY = """
 def nav(current):
     out = []
     for href, label, _sub, group in PAGES:
+        if href == "eda.html":
+            continue  # emitted together with dataprep.html, below
+        if href == "dataprep.html":
+            out.append('        <p class="group">{}</p>'.format(group))
+            is_open = current in ("dataprep.html", "eda.html")
+            out.append('        <details class="nav-group"{}>'.format(' open' if is_open else ''))
+            out.append('          <summary>Data Prep &amp; EDA</summary>')
+            for sub_href, sub_label in (("dataprep.html", "Data Prep"), ("eda.html", "EDA")):
+                sub_cls = ' class="active"' if sub_href == current else ''
+                out.append('          <a href="{}"{}>{}</a>'.format(sub_href, sub_cls, sub_label))
+            out.append('        </details>')
+            continue
         if group:
             out.append('        <p class="group">{}</p>'.format(group))
         cls = ' class="active"' if href == current else ''
@@ -438,15 +453,18 @@ def build_all():
                 t_stake=COPY['INTRO_STAKE'],
                 t_gaps=COPY['INTRO_GAPS'],
                 t_blueprint=COPY['INTRO_BLUEPRINT'],
-                t_dataset=COPY['INTRO_DATASET'],
             )
-        elif href == "dataprep-eda.html":
-            body = PREP_BODY.format(
-                figslots=figslots,
-            sources=COPY['PREP_SOURCES'],
+        elif href == "dataprep.html":
+            body = DATAPREP_BODY.format(
+                sources=COPY['PREP_SOURCES'],
                 t_collect=COPY['PREP_COLLECT'],
                 t_downloads=COPY['PREP_DOWNLOADS'],
-                                    t_eda=COPY['PREP_EDA'],
+                t_dataset=COPY['INTRO_DATASET'],
+            )
+        elif href == "eda.html":
+            body = EDA_BODY.format(
+                figslots=figslots,
+                t_eda=COPY['PREP_EDA'],
             )
         elif href == "conclusions.html":
             body = CONCL_BODY.format(

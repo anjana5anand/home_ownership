@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Data Prep & EDA &middot; Housing Out of Reach</title>
+  <title>Data Prep &middot; Housing Out of Reach</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap">
@@ -22,7 +22,11 @@
       <nav>
         <a href="index.html">Introduction</a>
         <p class="group">Analysis</p>
-        <a href="dataprep-eda.html" class="active">Data Prep & EDA</a>
+        <details class="nav-group" open>
+          <summary>Data Prep &amp; EDA</summary>
+          <a href="dataprep.html" class="active">Data Prep</a>
+          <a href="eda.html">EDA</a>
+        </details>
         <p class="group">Models</p>
         <a href="clustering.html">Clustering</a>
         <a href="pca.html">PCA</a>
@@ -38,8 +42,8 @@
     </aside>
 
     <main class="content">
-      <h1>Data Prep & EDA</h1>
-      <p class="subtitle">Three sources, what was wrong with them, and what they show</p>
+      <h1>Data Prep</h1>
+      <p class="subtitle">Three sources, and what was wrong with each one</p>
       <hr class="rule-under">
 
     <h2>Data Collection</h2>
@@ -50,6 +54,50 @@
     below which returned 2771 individual observations across 8 series and saved each raw response to disk
     so that the collection step is auditable and repeatable. The two downloaded sources were taken from
     their publishers' own distribution pages.</p>
+
+
+    <h2>Dataset Considerations</h2>
+    
+    <p>Three sources were selected, each covering something the others cannot. The project is centered on
+    three sources: the Census Housing Vacancy Survey for homeownership by age of householder, the Federal
+    Reserve Bank of St. Louis FRED API for earnings, mortgage rates, prices and inflation, and the Zillow Home
+    Value Index for home values at metropolitan level. Cleaning reshapes each into tidy tables, which is
+    non-trivial because none of the three arrives in an analysable form. The Census workbook repeats an entire
+    year-block down the sheet, the FRED series arrive at three different frequencies, and the Zillow file is
+    319 columns wide. Dependent variable, the homeownership by age of householder is provided by the Census
+    Housing Vacancy Survey starting in 1982 and using age categories fine enough to distinguish between those
+    aged 25 to 29 and those aged 30 to 34. This is important since the two age categories are on either side
+    of the normal first purchase and data sources using a broader &ldquo;under 35&rdquo; category lump them
+    together. Economic variables include the median weekly earnings by age category, the 30-year fixed
+    mortgage rate, national homeownership rate, median sales price, the Case&ndash;Shiller index, the Consumer
+    Price Index and housing starts and are obtained through the FRED API. Getting the data programmatically
+    from an API rather than downloaded ensures reproducibility and enabled inclusion of the mortgage rate and
+    inflation data that are key to the affordability analysis. The geographical component of the data comes
+    from the Zillow Home Value Index that reports a median home value in 894 metro areas monthly since
+    2000.</p>
+
+    <p>Several limitations follow from these choices and are carried through the analysis. None of the three
+    sources is individual-level, so the project describes aggregate rates rather than the circumstances of
+    particular households. Earnings are reported nationally rather than by metropolitan area, which means
+    metro-level affordability measures compare local prices against a national income and cannot capture the
+    fact that salaries in San Jose differ from salaries in Cleveland. The Zillow index covers the middle tier
+    of the market, between the 33rd and 67th percentiles of value, and therefore excludes both the cheapest
+    and most expensive segments. Homeownership figures are reported for the age of the householder rather
+    than of every occupant, so a 27-year-old living in a parent's home is counted under that parent's age.
+    Each of these is a genuine constraint on what the results can support, and each is noted again where it
+    bears on a specific finding.</p>
+
+    <p>Next comes feature engineering, which generates the variables used in the analysis: price-to-income
+    ratio, number of years needed to accumulate savings for a down-payment, mortgage payment per month, and
+    the payment ratio relative to income, alongside measures of growth, volatility, and ranking for each metro
+    area.</p>
+
+    <p>The modelling stage answers the research questions posed above in two classes. Clustering and
+    principal component analysis, unsupervised models, seek whether there are types of housing market, and
+    how they differ. Naive Bayes, decision trees, support vector machines, regression and neural networks,
+    supervised models, seek whether the affordability of a market can be predicted by its pricing
+    characteristics, and which variables contain that information. Each model is described in turn, outlining
+    its underlying assumptions, parameter space, and limitations on what its findings mean.</p>
 
 
     <h3>API source</h3>
@@ -305,145 +353,6 @@ panel.to_csv(f&quot;{OUT}/metro_year_panel.csv&quot;, index=False)</code></pre>
       <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/make_eda_figures.py">make_eda_figures.py</a> <span>: figure generation</span></li>
       <li><a href="https://github.com/anjana5anand/home_ownership/tree/main/data_clean">data_clean/</a> <span>: cleaned tables</span></li>
     </ul>
-
-    <h2>Summary Statistics</h2>
-
-    <p>Descriptive statistics for the national table, 26 annual observations covering 2000 to 2025.
-    Skewness is the column worth reading: the ownership and rate measures are close to symmetric, while
-    price and earnings are mildly right-skewed by their upward trend rather than by outliers.</p>
-
-    <div class="scroll">
-      <table>
-        <thead><tr><th>Column</th><th class="num">Mean</th><th class="num">Median</th>
-        <th class="num">Variance</th><th class="num">Std dev</th><th class="num">Skewness</th>
-        <th class="num">Count</th></tr></thead>
-        <tbody>
-          <tr><td><code>ownership_rate_lt25_pct</code></td><td class="num">23.34</td><td class="num">22.93</td><td class="num">1.66</td><td class="num">1.29</td><td class="num">0.54</td><td class="num">26</td></tr>
-          <tr><td><code>ownership_rate_25_29_pct</code></td><td class="num">36.03</td><td class="num">35.24</td><td class="num">10.79</td><td class="num">3.28</td><td class="num">0.25</td><td class="num">26</td></tr>
-          <tr><td><code>ownership_rate_30_34_pct</code></td><td class="num">50.70</td><td class="num">49.23</td><td class="num">15.24</td><td class="num">3.90</td><td class="num">0.37</td><td class="num">26</td></tr>
-          <tr><td><code>annual_earnings_25_34</code></td><td class="num">39,340</td><td class="num">36,784</td><td class="num">75,881,392</td><td class="num">8,711.0</td><td class="num">0.98</td><td class="num">26</td></tr>
-          <tr><td><code>annual_earnings_25_34_real2025</code></td><td class="num">53,963</td><td class="num">53,162</td><td class="num">6,560,728</td><td class="num">2,561.4</td><td class="num">0.83</td><td class="num">26</td></tr>
-          <tr><td><code>national_zhvi</code></td><td class="num">223,512</td><td class="num">202,524</td><td class="num">5,343,570,842</td><td class="num">73,100</td><td class="num">1.01</td><td class="num">26</td></tr>
-          <tr><td><code>mortgage_rate_30yr_pct</code></td><td class="num">5.21</td><td class="num">5.19</td><td class="num">1.90</td><td class="num">1.38</td><td class="num">0.12</td><td class="num">26</td></tr>
-          <tr><td><code>price_to_income_25_34</code></td><td class="num">5.59</td><td class="num">5.55</td><td class="num">0.53</td><td class="num">0.73</td><td class="num">0.15</td><td class="num">26</td></tr>
-          <tr><td><code>payment_to_income_pct_25_34</code></td><td class="num">29.71</td><td class="num">29.00</td><td class="num">41.01</td><td class="num">6.40</td><td class="num">0.41</td><td class="num">26</td></tr>
-          <tr><td><code>housing_starts_thousands</code></td><td class="num">1,307.7</td><td class="num">1,348.8</td><td class="num">174,704</td><td class="num">418.0</td><td class="num">-0.17</td><td class="num">26</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <p>The full table for all 22 numeric columns is written to
-    <code>data_clean/summary_statistics.csv</code> by the pipeline.</p>
-
-    <figure class="wide">
-      <a href="images/eda-11-large.png"><img src="images/eda-11.png" alt="Distribution shape of the national annual measures, 2000 to 2025"></a>
-      <figcaption><b>Figure 11.</b> Each panel is a histogram of the column at left, with a normal curve fitted to that column's own mean and standard deviation laid over it. The ownership and mortgage-rate panels track their curve closely, while earnings and home value pull away to the right of it, the shape a positive skewness number is describing.</figcaption>
-    </figure>
-
-    <h2>Exploratory Data Analysis</h2>
-    
-    <p>Exploration of the cleaned tables shows a pattern more complicated than steady decline. Homeownership
-    among young householders rises to a peak in the mid-2000s, collapses through the following decade, and
-    recovers only partially, leaving both the 25-to-29 and 30-to-34 brackets well below where they stood
-    before 2008. Affordability, measured as the share of income required to service a mortgage on a typical
-    home, does not decline steadily either: it is worst in 2023 at 41.5 percent, better than at any point in
-    the series in 2012 at 20.0 percent, and roughly equal in 2000 and 2019. The figures below examine each
-    component in turn, ownership by age, earnings in nominal and real terms, prices, interest rates,
-    and the geographic distribution across metropolitan areas, before the modelling sections take up
-    the questions that require more than description.</p>
-
-    <p>One result in the exploration runs against expectation and is worth stating plainly. Homeownership
-    among householders under 25 rose over the period, from 21.7 percent in 2000 to 24.2 percent in 2025,
-    while every older young-adult bracket fell. The most likely explanation is compositional rather than
-    economic: if fewer people under 25 form independent households at all, those who do are drawn
-    disproportionately from those able to buy. The data assembled here can establish that the divergence
-    exists but cannot confirm the mechanism, and the finding is treated accordingly.</p>
-
-
-    <div class="callout">
-      <p>Ten figures. Each carries a title, axis labels and two sentences beneath: what it shows,
-      then what it means. Thumbnails link through to the full-size image.</p>
-    </div>
-
-    <div class="figgrid">
-      <figure>
-        <a href="images/eda-01-large.png"><img src="images/eda-01.png" alt="Homeownership rate by age of householder, 1982 to 2025"></a>
-        <figcaption><b>Figure 12.</b> Homeownership rate by age of householder, 1982 to 2025. All three brackets peak in the mid 2000s and fall sharply through 2016. The 25 to 29 and 30 to 34 brackets remain well below their pre-2008 levels more than fifteen years later, while the under 25 bracket sits slightly above where it began.</figcaption>
-      </figure>
-      <figure>
-        <a href="images/eda-02-large.png"><img src="images/eda-02.png" alt="The twelve least affordable metropolitan areas, 2025"></a>
-        <figcaption><b>Figure 13.</b> The twelve least affordable metropolitan areas, 2025. San Jose tops the list at 27.1 times annual earnings, with Vineyard Haven and Jackson above 23. In these markets a typical home costs more than two decades of a young worker's entire gross pay.</figcaption>
-      </figure>
-      <figure>
-        <a href="images/eda-03-large.png"><img src="images/eda-03.png" alt="Correlation between national measures, 2000 to 2025"></a>
-        <figcaption><b>Figure 14.</b> Correlation between national measures, 2000 to 2025. The mortgage rate correlates with the payment burden at 0.78, more strongly than price-to-income does at 0.71. This is the numeric form of the argument that price alone does not determine affordability.</figcaption>
-      </figure>
-      <figure>
-        <a href="images/eda-04-large.png"><img src="images/eda-04.png" alt="Where the 894 metropolitan areas are, by state"></a>
-        <figcaption><b>Figure 15.</b> Where the 894 metropolitan areas are, by state. Texas contributes 67 metropolitan areas and Ohio 44, with the eight largest states accounting for 36 percent of the total. Coverage is uneven, so any unweighted national average leans toward these states.</figcaption>
-      </figure>
-      <figure>
-        <a href="images/eda-05-large.png"><img src="images/eda-05.png" alt="Affordability quartile membership by year"></a>
-        <figcaption><b>Figure 16.</b> Affordability quartile membership by year. Quartiles are recomputed within each year, so the four bands are equal by construction and the visible change is coverage. Zillow reported 444 metropolitan areas in 2000 and 894 in 2025, which matters when comparing distributions across years.</figcaption>
-      </figure>
-      <figure>
-        <a href="images/eda-06-large.png"><img src="images/eda-06.png" alt="Did expensive markets in 2000 grow faster since?"></a>
-        <figcaption><b>Figure 17.</b> Did expensive markets in 2000 grow faster since?. Across the 444 metros reported in both years the relationship is weakly positive, Pearson r = 0.30, with growth ranging from 38 to 505 percent. Starting price explains only a small part of what happened next, so expensive markets did not simply run away from cheap ones.</figcaption>
-      </figure>
-      <figure>
-        <a href="images/eda-07-large.png"><img src="images/eda-07.png" alt="Spread of metropolitan affordability, selected years"></a>
-        <figcaption><b>Figure 18.</b> Spread of metropolitan affordability, selected years. The median metro moved from 3.67 times earnings in 2000 to 4.25 in 2025, while the interquartile range widened from 2.98-4.75 to 3.21-5.93. The typical market worsened modestly; the spread between markets worsened considerably more.</figcaption>
-      </figure>
-      <figure>
-        <a href="images/eda-08-large.png"><img src="images/eda-08.png" alt="Metropolitan areas per state, shaded by median home value, 2025"></a>
-        <figcaption><b>Figure 19.</b> Metropolitan areas per state, shaded by median home value, 2025. Area shows how many metropolitan areas each state contains and shade shows the median home value among them. Hawaii and Massachusetts are small in count but darkest in value, while Texas and Ohio are large in count and light.</figcaption>
-      </figure>
-      <figure>
-        <a href="images/eda-09-large.png"><img src="images/eda-09.png" alt="Affordability within the twelve states with the most metros, 2025"></a>
-        <figcaption><b>Figure 20.</b> Affordability within the twelve states with the most metros, 2025. Median price-to-income runs from 2.72 in Illinois to 8.12 in California, and the width of each shape shows that states differ internally as much as they differ from one another. A state-level average would hide most of this.</figcaption>
-      </figure>
-      <figure>
-        <a href="images/eda-10-large.png"><img src="images/eda-10.png" alt="Is metropolitan affordability normally distributed?"></a>
-        <figcaption><b>Figure 21.</b> Is metropolitan affordability normally distributed?. The points bend away from the fitted line in the upper tail and the distribution carries a skewness of 2.76. Affordability is strongly right-skewed, which argues for a log transform or rank-based methods in the modelling sections rather than assuming normality.</figcaption>
-      </figure>
-    </div>
-
-
-
-    <h3>Code used</h3>
-    <p>Every figure above is produced by a single script that reads the cleaned tables and writes
-    both a full-size image and a thumbnail. Re-running it regenerates all ten, so the figures cannot
-    drift from the data behind them.</p>
-    <div class="codeblock">
-      <div class="codehead">make_eda_figures.py<span>all ten figures, 326 lines</span>
-        <a class="code-link" href="https://github.com/anjana5anand/home_ownership/blob/main/make_eda_figures.py" target="_blank" rel="noopener">View full file on GitHub &#8599;</a>
-        <button class="code-toggle" type="button" aria-expanded="false">Show excerpt</button>
-      </div>
-      <div class="code-body">
-        <pre><code># EDA figures for the Gen Z Homeownership project
-# Regenerates every figure in docs/images/ from the cleaned tables in data_clean/
-# Run: python3 make_eda_figures.py
-
-import plotly.express as px
-import plotly.graph_objects as go
-
-out_dir = &quot;docs/images&quot;
-os.makedirs(out_dir, exist_ok=True)
-&#8942;
-
-# Figure 1. Homeownership rate by age of householder
-fig1 = px.line(wide, x=&quot;year&quot;,
-               y=[&quot;ownership_rate_lt25_pct&quot;, &quot;ownership_rate_25_29_pct&quot;,
-                  &quot;ownership_rate_30_34_pct&quot;],
-               labels={&quot;value&quot;: &quot;ownership rate (%)&quot;, &quot;year&quot;: &quot;&quot;})
-fig1.update_traces(line=dict(width=2.4))
-save(fig1, &quot;eda-01&quot;)
-&#8942;  # nine more figures follow the same pattern: build with Plotly Express,
-        # annotate with the real statistic, save to html and screenshot to png</code></pre>
-        <button class="code-close" type="button" aria-label="Collapse code excerpt">&times;</button>
-      </div>
-    </div>
-
 
     </main>
 

@@ -22,7 +22,11 @@
       <nav>
         <a href="index.html" class="active">Introduction</a>
         <p class="group">Analysis</p>
-        <a href="dataprep-eda.html">Data Prep & EDA</a>
+        <details class="nav-group">
+          <summary>Data Prep &amp; EDA</summary>
+          <a href="dataprep.html">Data Prep</a>
+          <a href="eda.html">EDA</a>
+        </details>
         <p class="group">Models</p>
         <a href="clustering.html">Clustering</a>
         <a href="pca.html">PCA</a>
@@ -215,50 +219,6 @@
     metropolitan level. Cleaning reshapes each into tidy tables, which is non-trivial because none of the
     three arrives in an analysable form. The Census workbook repeats an entire year-block down the
     sheet, the FRED series arrive at three different frequencies, and the Zillow file is 319 columns wide.</p>
-
-
-    <h2>Dataset Considerations</h2>
-    
-    <p>Three sources were selected, each covering something the others cannot. The project is centered on
-    three sources: the Census Housing Vacancy Survey for homeownership by age of householder, the Federal
-    Reserve Bank of St. Louis FRED API for earnings, mortgage rates, prices and inflation, and the Zillow Home
-    Value Index for home values at metropolitan level. Cleaning reshapes each into tidy tables, which is
-    non-trivial because none of the three arrives in an analysable form. The Census workbook repeats an entire
-    year-block down the sheet, the FRED series arrive at three different frequencies, and the Zillow file is
-    319 columns wide. Dependent variable, the homeownership by age of householder is provided by the Census
-    Housing Vacancy Survey starting in 1982 and using age categories fine enough to distinguish between those
-    aged 25 to 29 and those aged 30 to 34. This is important since the two age categories are on either side
-    of the normal first purchase and data sources using a broader &ldquo;under 35&rdquo; category lump them
-    together. Economic variables include the median weekly earnings by age category, the 30-year fixed
-    mortgage rate, national homeownership rate, median sales price, the Case&ndash;Shiller index, the Consumer
-    Price Index and housing starts and are obtained through the FRED API. Getting the data programmatically
-    from an API rather than downloaded ensures reproducibility and enabled inclusion of the mortgage rate and
-    inflation data that are key to the affordability analysis. The geographical component of the data comes
-    from the Zillow Home Value Index that reports a median home value in 894 metro areas monthly since
-    2000.</p>
-
-    <p>Several limitations follow from these choices and are carried through the analysis. None of the three
-    sources is individual-level, so the project describes aggregate rates rather than the circumstances of
-    particular households. Earnings are reported nationally rather than by metropolitan area, which means
-    metro-level affordability measures compare local prices against a national income and cannot capture the
-    fact that salaries in San Jose differ from salaries in Cleveland. The Zillow index covers the middle tier
-    of the market, between the 33rd and 67th percentiles of value, and therefore excludes both the cheapest
-    and most expensive segments. Homeownership figures are reported for the age of the householder rather
-    than of every occupant, so a 27-year-old living in a parent's home is counted under that parent's age.
-    Each of these is a genuine constraint on what the results can support, and each is noted again where it
-    bears on a specific finding.</p>
-
-    <p>Next comes feature engineering, which generates the variables used in the analysis: price-to-income
-    ratio, number of years needed to accumulate savings for a down-payment, mortgage payment per month, and
-    the payment ratio relative to income, alongside measures of growth, volatility, and ranking for each metro
-    area.</p>
-
-    <p>The modelling stage answers the research questions posed above in two classes. Clustering and
-    principal component analysis, unsupervised models, seek whether there are types of housing market, and
-    how they differ. Naive Bayes, decision trees, support vector machines, regression and neural networks,
-    supervised models, seek whether the affordability of a market can be predicted by its pricing
-    characteristics, and which variables contain that information. Each model is described in turn, outlining
-    its underlying assumptions, parameter space, and limitations on what its findings mean.</p>
 
 
     <h2>Research Questions</h2>

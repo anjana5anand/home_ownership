@@ -150,6 +150,58 @@ body.is-visible { opacity: 1; }
   opacity: .72;
 }
 
+/* ---------- collapsible nav group (Data Prep & EDA dropdown) ---------- */
+
+.sidebar nav details { margin: 0 0 1px; }
+
+.sidebar nav details summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 11px;
+  margin: 0 -11px 1px;
+  border-radius: 5px;
+  font-size: 14.5px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  transition: background .12s ease, color .12s ease;
+}
+.sidebar nav details summary::-webkit-details-marker { display: none; }
+.sidebar nav details summary::marker { content: ""; }
+.sidebar nav details summary::after {
+  content: "";
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  margin-left: 10px;
+  border-right: 1.4px solid var(--muted);
+  border-bottom: 1.4px solid var(--muted);
+  transform: rotate(-45deg);
+  transition: transform .15s ease;
+}
+.sidebar nav details[open] summary::after { transform: rotate(45deg); }
+.sidebar nav details summary:hover { background: #e8eae6; color: var(--ink); }
+
+.sidebar nav details a {
+  display: block;
+  padding: 6px 11px 6px 26px;
+  margin: 0 -11px 1px;
+  border-radius: 5px;
+  font-size: 14px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: background .12s ease, color .12s ease;
+}
+.sidebar nav details a:hover { background: #e8eae6; color: var(--ink); }
+.sidebar nav details a.active {
+  background: var(--accent-wash);
+  color: var(--accent);
+  font-weight: 600;
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
 .content {
   flex: 1 1 auto;
   min-width: 0;
@@ -499,6 +551,9 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: now
   .sidebar nav { display: flex; flex-wrap: wrap; gap: 5px; }
   .sidebar nav a { margin: 0; padding: 6px 11px; font-size: 13.5px; }
   .sidebar nav .group { display: none; }
+  .sidebar nav details { display: inline; }
+  .sidebar nav details summary { display: inline-flex; margin: 0; padding: 6px 11px; font-size: 13.5px; }
+  .sidebar nav details a { display: inline-block; padding: 6px 11px; margin: 0; }
   .content { padding: 34px 18px 72px; }
   .hero-banner { margin: -34px -18px 30px; width: calc(100% + 36px); }
   ol.questions li { padding-left: 42px; font-size: 15.5px; }
