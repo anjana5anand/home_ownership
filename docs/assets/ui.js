@@ -35,3 +35,63 @@
     try { window.localStorage.setItem(KEY, next ? '1' : '0'); } catch (e) {}
   });
 })();
+
+/* Collapsible code excerpts. Each codeblock starts closed; the toggle button
+   opens it, the round close button (or Escape) shuts it again. */
+(function () {
+  document.querySelectorAll('.codeblock').forEach(function (block) {
+    var openBtn = block.querySelector('.code-toggle');
+    var closeBtn = block.querySelector('.code-close');
+    if (!openBtn || !closeBtn) return;
+
+    function open() {
+      block.classList.add('is-open');
+      openBtn.setAttribute('aria-expanded', 'true');
+      closeBtn.focus();
+    }
+    function close() {
+      block.classList.remove('is-open');
+      openBtn.setAttribute('aria-expanded', 'false');
+      openBtn.focus();
+    }
+
+    openBtn.addEventListener('click', open);
+    closeBtn.addEventListener('click', close);
+    block.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && block.classList.contains('is-open')) close();
+    });
+  });
+})();
+
+/* Fade between pages. Each page starts hidden (see body{opacity:0} in
+   style.css) and fades in on load; a click on an internal nav link fades
+   the page out first, then navigates, so moving between sections doesn't
+   hard-cut. Skipped entirely under prefers-reduced-motion. */
+(function () {
+  var reduceMotion = false;
+  try { reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+
+  function reveal() { document.body.classList.add('is-visible'); }
+
+  if (reduceMotion) {
+    reveal();
+  } else {
+    requestAnimationFrame(function () { requestAnimationFrame(reveal); });
+    // bfcache back/forward restores can skip re-running scripts' effects
+    window.addEventListener('pageshow', reveal);
+  }
+
+  if (!reduceMotion) {
+    document.querySelectorAll('.sidebar nav a').forEach(function (link) {
+      link.addEventListener('click', function (e) {
+        if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey ||
+            e.shiftKey || e.altKey || link.target === '_blank') return;
+        var href = link.getAttribute('href');
+        if (!href || href.charAt(0) === '#') return;
+        e.preventDefault();
+        document.body.classList.remove('is-visible');
+        setTimeout(function () { window.location.href = href; }, 190);
+      });
+    });
+  }
+})();

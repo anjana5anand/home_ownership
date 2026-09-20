@@ -2,7 +2,7 @@
 # Re-run only to change the nav or shared chrome across every page at once.
 
 SITE_TITLE = "Housing Out of Reach"
-SITE_SUB   = "Homeownership, earnings and borrowing costs for Americans in their twenties, 2000&ndash;2025<br><br>Anjana Anand &middot; PLACEHOLDER course &middot; PLACEHOLDER term"
+SITE_SUB   = "Homeownership, earnings and borrowing costs for Americans in their twenties, 2000&ndash;2025<br><br>Anjana Anand &middot; CSCI 5612-872: Machine Learning for DTSC &middot; Fall 2026"
 
 PAGES = [
     ("index.html",           "Introduction",    "Why homeownership slipped out of reach for a generation", None),
@@ -125,7 +125,7 @@ PREP_BODY = """
   &amp;file_type=json
   &amp;api_key=YOUR_KEY</code></pre>
       <p>Eight series were retrieved this way, returning 2,771 raw observations.
-      <a href="#">PLACEHOLDER: link to fred_api_fetch.py</a></p>
+      <a href="https://github.com/anjana5anand/home_ownership/blob/main/fred_api_fetch.py">fred_api_fetch.py</a></p>
     </div>
 
     <h3>Downloaded sources</h3>
@@ -146,13 +146,13 @@ PREP_BODY = """
 
     <h2>Links to Raw Data &amp; Code</h2>
     <ul class="linklist">
-      <li><a href="#">PLACEHOLDER</a> <span>: histtab12.xlsx, raw HVS workbook</span></li>
-      <li><a href="#">PLACEHOLDER</a> <span>: Metro ZHVI, raw Zillow CSV</span></li>
-      <li><a href="#">PLACEHOLDER</a> <span>: raw FRED API responses, 8 JSON files</span></li>
-      <li><a href="#">PLACEHOLDER</a> <span>: fred_api_fetch.py, API collection script</span></li>
-      <li><a href="#">PLACEHOLDER</a> <span>: build_datasets.py, cleaning pipeline</span></li>
-      <li><a href="#">PLACEHOLDER</a> <span>: make_eda_figures.py, figure generation</span></li>
-      <li><a href="#">PLACEHOLDER</a> <span>: cleaned tables, data_clean/</span></li>
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/data_raw/histtab12.xlsx">histtab12.xlsx</a> <span>: raw HVS workbook</span></li>
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/data_raw/Metro_zhvi_uc_sfrcondo_tier_0.33_0.67_sm_sa_month.csv">Metro_zhvi_uc_sfrcondo_tier_0.33_0.67_sm_sa_month.csv</a> <span>: raw Zillow CSV</span></li>
+      <li><a href="https://github.com/anjana5anand/home_ownership/tree/main/data_raw/fred">data_raw/fred/</a> <span>: raw FRED API responses, 8 JSON files</span></li>
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/fred_api_fetch.py">fred_api_fetch.py</a> <span>: API collection script</span></li>
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/build_datasets.py">build_datasets.py</a> <span>: cleaning pipeline</span></li>
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/make_eda_figures.py">make_eda_figures.py</a> <span>: figure generation</span></li>
+      <li><a href="https://github.com/anjana5anand/home_ownership/tree/main/data_clean">data_clean/</a> <span>: cleaned tables</span></li>
     </ul>
 
     <h2>Summary Statistics</h2>
@@ -203,340 +203,35 @@ PREP_BODY = """
     both a full-size image and a thumbnail. Re-running it regenerates all ten, so the figures cannot
     drift from the data behind them.</p>
     <div class="codeblock">
-      <div class="codehead">make_eda_figures.py<span>all ten figures, 326 lines</span></div>
-      <pre><code># EDA figures for the Gen Z Homeownership project
+      <div class="codehead">make_eda_figures.py<span>all ten figures, 326 lines</span>
+        <a class="code-link" href="https://github.com/anjana5anand/home_ownership/blob/main/make_eda_figures.py" target="_blank" rel="noopener">View full file on GitHub &#8599;</a>
+        <button class="code-toggle" type="button" aria-expanded="false">Show excerpt</button>
+      </div>
+      <div class="code-body">
+        <pre><code># EDA figures for the Gen Z Homeownership project
 # Regenerates every figure in docs/images/ from the cleaned tables in data_clean/
 # Run: python3 make_eda_figures.py
 
-import os
-import math
-
-import pandas as pd
-import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 
 out_dir = &quot;docs/images&quot;
 os.makedirs(out_dir, exist_ok=True)
-
-# Categorical colours, validated for colour-vision deficiency
-palette = [&quot;#2a78d6&quot;, &quot;#eb6834&quot;, &quot;#1baf7a&quot;, &quot;#eda100&quot;]
-blues = [&quot;#cde2fb&quot;, &quot;#9ec5f4&quot;, &quot;#5598e7&quot;, &quot;#2a78d6&quot;, &quot;#256abf&quot;, &quot;#184f95&quot;, &quot;#0d366b&quot;]
-surface = &quot;#fcfcfb&quot;
-
-# Load cleaned datasets locally
-national = pd.read_csv(&quot;data_clean/national_annual.csv&quot;)
-ownership = pd.read_csv(&quot;data_clean/ownership_by_age_annual.csv&quot;)
-panel = pd.read_csv(&quot;data_clean/metro_year_panel.csv&quot;)
-
-# Latest year of the metro panel, used by several figures
-latest = panel[panel[&quot;year&quot;] == 2025].dropna(subset=[&quot;price_to_income_25_34&quot;]).copy()
-
-
-def save(fig, n, title):
-    fig.update_layout(
-        template=&quot;plotly_white&quot;,
-        title=dict(text=title, font=dict(size=17)),
-        paper_bgcolor=surface,
-        plot_bgcolor=surface,
-        font=dict(family=&quot;Helvetica, Arial, sans-serif&quot;, size=13, color=&quot;#0b0b0b&quot;),
-        margin=dict(l=70, r=40, t=70, b=60),
-        width=1100,
-        height=560,
-    )
-    # Static export needs a local Chrome for kaleido. Where that is unavailable the
-    # figure is written as HTML instead and exported to PNG separately.
-    try:
-        fig.write_image(f&quot;{{out_dir}}/eda-{{n:02d}}-large.png&quot;, scale=2)
-        fig.write_image(f&quot;{{out_dir}}/eda-{{n:02d}}.png&quot;, scale=0.62)
-    except Exception:
-        os.makedirs(&quot;_figures_html&quot;, exist_ok=True)
-        fig.write_html(f&quot;_figures_html/eda-{{n:02d}}.html&quot;, include_plotlyjs=&quot;directory&quot;)
-    print(f&quot;  eda-{{n:02d}}  {{title}}&quot;)
-
+&#8942;
 
 # Figure 1. Homeownership rate by age of householder
-age_trend = ownership[ownership[&quot;age_bracket&quot;].isin([&quot;&lt;25&quot;, &quot;25-29&quot;, &quot;30-34&quot;])]
-
-fig1 = px.line(
-    age_trend,
-    x=&quot;year&quot;,
-    y=&quot;ownership_rate_pct&quot;,
-    color=&quot;age_bracket&quot;,
-    category_orders={{&quot;age_bracket&quot;: [&quot;30-34&quot;, &quot;25-29&quot;, &quot;&lt;25&quot;]}},
-    color_discrete_sequence=palette,
-    labels={{&quot;year&quot;: &quot;&quot;, &quot;ownership_rate_pct&quot;: &quot;Homeownership rate (%)&quot;, &quot;age_bracket&quot;: &quot;Age&quot;}},
-    title=&quot;Homeownership rate by age of householder, 1982 to 2025&quot;,
-)
-fig1.update_traces(line=dict(width=2.5))
-save(fig1, 1, &quot;Homeownership rate by age of householder, 1982 to 2025&quot;)
-
-
-# Figure 2. Least affordable metropolitan areas
-top_n = 12
-
-least_affordable = (
-    latest.nlargest(top_n, &quot;price_to_income_25_34&quot;)
-    .sort_values(&quot;price_to_income_25_34&quot;)
-    .reset_index(drop=True)
-)
-
-fig2 = px.bar(
-    least_affordable,
-    x=&quot;price_to_income_25_34&quot;,
-    y=&quot;region_name&quot;,
-    orientation=&quot;h&quot;,
-    text=&quot;price_to_income_25_34&quot;,
-    color_discrete_sequence=[palette[0]],
-    labels={{&quot;price_to_income_25_34&quot;: &quot;Home price as a multiple of annual earnings&quot;, &quot;region_name&quot;: &quot;&quot;}},
-    title=f&quot;The {{top_n}} least affordable metropolitan areas, 2025&quot;,
-)
-fig2.update_traces(texttemplate=&quot;%{{text:.1f}}&quot;, textposition=&quot;outside&quot;, cliponaxis=False)
-save(fig2, 2, f&quot;The {{top_n}} least affordable metropolitan areas, 2025&quot;)
-
-
-# Figure 3. Correlation between national measures
-measures = [
-    &quot;ownership_rate_25_29_pct&quot;, &quot;ownership_rate_30_34_pct&quot;,
-    &quot;annual_earnings_25_34&quot;, &quot;annual_earnings_25_34_real2025&quot;,
-    &quot;national_zhvi&quot;, &quot;mortgage_rate_30yr_pct&quot;,
-    &quot;price_to_income_25_34&quot;, &quot;payment_to_income_pct_25_34&quot;,
-    &quot;housing_starts_thousands&quot;,
-]
-measures = [c for c in measures if c in national.columns]
-
-corr = national[measures].corr().round(2)
-short = [c.replace(&quot;_pct&quot;, &quot;&quot;).replace(&quot;_25_34&quot;, &quot;&quot;).replace(&quot;_&quot;, &quot; &quot;).strip() for c in measures]
-corr.index, corr.columns = short, short
-
-fig3 = px.imshow(
-    corr,
-    text_auto=True,
-    zmin=-1,
-    zmax=1,
-    color_continuous_scale=&quot;RdBu_r&quot;,
-    title=&quot;Correlation between national measures, 2000 to 2025&quot;,
-)
-fig3.update_xaxes(tickangle=40)
-save(fig3, 3, &quot;Correlation between national measures, 2000 to 2025&quot;)
-
-
-# Figure 4. Where the metropolitan areas are
-state_counts = latest[&quot;state_name&quot;].value_counts()
-top_states = state_counts.head(8)
-
-share = pd.DataFrame({{
-    &quot;state&quot;: list(top_states.index) + [&quot;Other states&quot;],
-    &quot;metros&quot;: list(top_states.values) + [int(state_counts[8:].sum())],
-}})
-
-fig4 = px.pie(
-    share,
-    names=&quot;state&quot;,
-    values=&quot;metros&quot;,
-    hole=0.42,
-    color_discrete_sequence=blues[::-1],
-    title=f&quot;Where the {{len(latest)}} metropolitan areas are, by state&quot;,
-)
-fig4.update_traces(textinfo=&quot;label+value&quot;, textposition=&quot;outside&quot;,
-                   marker=dict(line=dict(color=surface, width=2)))
-save(fig4, 4, &quot;Where the metropolitan areas are, by state&quot;)
-
-
-# Figure 5. Affordability quartile membership by year
-quartiles = (
-    panel.dropna(subset=[&quot;affordability_quartile&quot;])
-    .groupby([&quot;year&quot;, &quot;affordability_quartile&quot;])
-    .size()
-    .reset_index(name=&quot;metros&quot;)
-)
-
-fig5 = px.bar(
-    quartiles,
-    x=&quot;year&quot;,
-    y=&quot;metros&quot;,
-    color=&quot;affordability_quartile&quot;,
-    category_orders={{&quot;affordability_quartile&quot;:
-                     [&quot;Q1_most_affordable&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;Q4_least_affordable&quot;]}},
-    color_discrete_sequence=palette,
-    labels={{&quot;year&quot;: &quot;&quot;, &quot;metros&quot;: &quot;Number of metropolitan areas&quot;, &quot;affordability_quartile&quot;: &quot;Quartile&quot;}},
-    title=&quot;Affordability quartile membership by year&quot;,
-)
-fig5.update_traces(marker_line=dict(color=surface, width=1.5))
-save(fig5, 5, &quot;Affordability quartile membership by year&quot;)
-
-
-# Figure 6. Starting price against subsequent growth
-wide = (
-    panel[panel[&quot;year&quot;].isin([2000, 2025])]
-    .pivot_table(index=&quot;region_name&quot;, columns=&quot;year&quot;, values=&quot;zhvi&quot;)
-    .dropna()
-    .reset_index()
-)
-wide[&quot;growth_pct&quot;] = (wide[2025] / wide[2000] - 1) * 100
-
-slope, intercept = np.polyfit(wide[2000], wide[&quot;growth_pct&quot;], 1)
-line_x = np.linspace(wide[2000].min(), wide[2000].max(), 100)
-pearson = wide[2000].corr(wide[&quot;growth_pct&quot;])
-# Spearman is Pearson on the ranks, computed directly so scipy is not needed
-spearman = wide[2000].rank().corr(wide[&quot;growth_pct&quot;].rank())
-
-fig6 = px.scatter(
-    wide,
-    x=2000,
-    y=&quot;growth_pct&quot;,
-    hover_name=&quot;region_name&quot;,
-    opacity=0.5,
-    color_discrete_sequence=[palette[0]],
-    labels={{&quot;2000&quot;: &quot;Typical home value in 2000 (USD)&quot;, &quot;growth_pct&quot;: &quot;Growth to 2025 (%)&quot;}},
-    title=&quot;Did expensive markets in 2000 grow faster since?&quot;,
-)
-fig6.add_trace(go.Scatter(
-    x=line_x,
-    y=slope * line_x + intercept,
-    mode=&quot;lines&quot;,
-    line=dict(color=palette[1], width=2.5, dash=&quot;dash&quot;),
-    name=&quot;OLS trend&quot;,
-))
-fig6.add_annotation(
-    x=0.98, y=0.96, xref=&quot;paper&quot;, yref=&quot;paper&quot;, showarrow=False, align=&quot;right&quot;,
-    text=f&quot;Pearson r = {{pearson:.3f}}&lt;br&gt;Spearman r = {{spearman:.3f}}&lt;br&gt;n = {{len(wide)}} metros&quot;,
-    bgcolor=surface, bordercolor=&quot;#e1e0d9&quot;, borderwidth=1, font=dict(size=12),
-)
-save(fig6, 6, &quot;Did expensive markets in 2000 grow faster since?&quot;)
-
-
-# Figure 7. Spread of metropolitan affordability
-selected_years = [2000, 2005, 2010, 2015, 2020, 2025]
-spread = panel[panel[&quot;year&quot;].isin(selected_years)].dropna(subset=[&quot;price_to_income_25_34&quot;])
-
-fig7 = px.box(
-    spread,
-    x=&quot;year&quot;,
-    y=&quot;price_to_income_25_34&quot;,
-    points=False,
-    color_discrete_sequence=[palette[0]],
-    labels={{&quot;year&quot;: &quot;&quot;, &quot;price_to_income_25_34&quot;: &quot;Price as a multiple of annual earnings&quot;}},
-    title=&quot;Spread of metropolitan affordability, selected years&quot;,
-)
-fig7.update_xaxes(type=&quot;category&quot;)
-save(fig7, 7, &quot;Spread of metropolitan affordability, selected years&quot;)
-
-
-# Figure 8. Metropolitan areas per state
-state_summary = (
-    latest.groupby(&quot;state_name&quot;)
-    .agg(metros=(&quot;region_name&quot;, &quot;count&quot;), median_value=(&quot;zhvi&quot;, &quot;median&quot;))
-    .reset_index()
-)
-state_summary = state_summary[state_summary[&quot;metros&quot;] &gt;= 4]
-
-fig8 = px.treemap(
-    state_summary,
-    path=[&quot;state_name&quot;],
-    values=&quot;metros&quot;,
-    color=&quot;median_value&quot;,
-    color_continuous_scale=blues,
-    labels={{&quot;median_value&quot;: &quot;Median home value (USD)&quot;}},
-    title=&quot;Metropolitan areas per state, shaded by median home value, 2025&quot;,
-)
-fig8.update_traces(marker=dict(line=dict(color=surface, width=2)),
-                   root_color=surface,
-                   texttemplate=&quot;%{{label}}&lt;br&gt;%{{value}}&quot;)
-save(fig8, 8, &quot;Metropolitan areas per state, shaded by median home value, 2025&quot;)
-
-
-# Figure 9. Affordability within the states with the most metros
-busiest = latest[&quot;state_name&quot;].value_counts().head(12).index
-by_state = latest[latest[&quot;state_name&quot;].isin(busiest)]
-order = by_state.groupby(&quot;state_name&quot;)[&quot;price_to_income_25_34&quot;].median().sort_values().index.tolist()
-
-fig9 = px.violin(
-    by_state,
-    x=&quot;state_name&quot;,
-    y=&quot;price_to_income_25_34&quot;,
-    box=True,
-    category_orders={{&quot;state_name&quot;: order}},
-    color_discrete_sequence=[palette[0]],
-    labels={{&quot;state_name&quot;: &quot;&quot;, &quot;price_to_income_25_34&quot;: &quot;Price as a multiple of annual earnings&quot;}},
-    title=&quot;Affordability within the 12 states with the most metros, 2025&quot;,
-)
-save(fig9, 9, &quot;Affordability within the 12 states with the most metros, 2025&quot;)
-
-
-# Figure 10. Normal Q-Q plot
-# scipy is not a dependency here, so the inverse normal CDF is Acklam&#x27;s approximation
-def norm_ppf(p):
-    a = [-3.969683028665376e+01, 2.209460984245205e+02, -2.759285104469687e+02,
-         1.383577518672690e+02, -3.066479806614716e+01, 2.506628277459239e+00]
-    b = [-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02,
-         6.680131188771972e+01, -1.328068155288572e+01]
-    c = [-7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00,
-         -2.549732539343734e+00, 4.374664141464968e+00, 2.938163982698783e+00]
-    d = [7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00, 3.754408661907416e+00]
-    if p &lt; 0.02425:
-        q = math.sqrt(-2 * math.log(p))
-        return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)
-    if p &gt; 1 - 0.02425:
-        q = math.sqrt(-2 * math.log(1 - p))
-        return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)
-    q = p - 0.5
-    r = q * q
-    return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q / (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1)
-
-observed = np.sort(latest[&quot;price_to_income_25_34&quot;].values)
-n_obs = len(observed)
-theoretical = np.array([norm_ppf((i + 0.5) / n_obs) for i in range(n_obs)])
-
-q1, q3 = np.percentile(observed, [25, 75])
-qq_slope = (q3 - q1) / (norm_ppf(0.75) - norm_ppf(0.25))
-qq_intercept = q1 - qq_slope * norm_ppf(0.25)
-skewness = ((observed - observed.mean()) ** 3).mean() / observed.std() ** 3
-
-fig10 = px.scatter(
-    x=theoretical,
-    y=observed,
-    opacity=0.5,
-    color_discrete_sequence=[palette[0]],
-    labels={{&quot;x&quot;: &quot;Theoretical normal quantiles&quot;, &quot;y&quot;: &quot;Observed price-to-income&quot;}},
-    title=&quot;Is metropolitan affordability normally distributed?&quot;,
-)
-fig10.add_trace(go.Scatter(
-    x=theoretical,
-    y=qq_slope * theoretical + qq_intercept,
-    mode=&quot;lines&quot;,
-    line=dict(color=palette[1], width=2.5, dash=&quot;dash&quot;),
-    name=&quot;Normal reference&quot;,
-))
-fig10.add_annotation(
-    x=0.03, y=0.96, xref=&quot;paper&quot;, yref=&quot;paper&quot;, showarrow=False, align=&quot;left&quot;,
-    text=f&quot;skewness = {{skewness:.2f}}&lt;br&gt;n = {{n_obs}} metros&quot;,
-    bgcolor=surface, bordercolor=&quot;#e1e0d9&quot;, borderwidth=1, font=dict(size=12),
-)
-save(fig10, 10, &quot;Is metropolitan affordability normally distributed?&quot;)
-
-
-# Summary statistics for the Data Prep tab
-numeric = national.select_dtypes(include=[np.number]).drop(columns=[&quot;year&quot;], errors=&quot;ignore&quot;)
-
-summary = pd.DataFrame({{
-    &quot;mean&quot;: numeric.mean(),
-    &quot;median&quot;: numeric.median(),
-    &quot;variance&quot;: numeric.var(),
-    &quot;std_dev&quot;: numeric.std(),
-    &quot;skewness&quot;: numeric.skew(),
-    &quot;count&quot;: numeric.count(),
-}}).round(3)
-summary.index.name = &quot;column&quot;
-summary.to_csv(&quot;data_clean/summary_statistics.csv&quot;)
-print(f&quot;  summary_statistics.csv  {{len(summary)}} columns&quot;)</code></pre>
+fig1 = px.line(wide, x=&quot;year&quot;,
+               y=[&quot;ownership_rate_lt25_pct&quot;, &quot;ownership_rate_25_29_pct&quot;,
+                  &quot;ownership_rate_30_34_pct&quot;],
+               labels={{&quot;value&quot;: &quot;ownership rate (%)&quot;, &quot;year&quot;: &quot;&quot;}})
+fig1.update_traces(line=dict(width=2.4))
+save(fig1, &quot;eda-01&quot;)
+&#8942;  # nine more figures follow the same pattern: build with Plotly Express,
+        # annotate with the real statistic, save to html and screenshot to png</code></pre>
+        <button class="code-close" type="button" aria-label="Collapse code excerpt">&times;</button>
+      </div>
     </div>
 
-    <h2>Inspection &amp; Reflection</h2>
-    <div class="todo">
-      <p>Missingness, duplicates, coverage gaps, and any bias the cleaning introduced. Be explicit about
-      what a reader should not over-interpret.</p>
-    </div>
 """
 
 MODEL_BODY = """
@@ -686,7 +381,7 @@ def page(href, label, subtitle, body):
   <title>{label} &middot; {site}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400&family=Public+Sans:wght@400;500;650&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap">
   <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -717,7 +412,7 @@ def page(href, label, subtitle, body):
            subtitle=subtitle, body=body)
 
 
-figslots = '      <figure>\n        <a href="images/eda-01-large.png"><img src="images/eda-01.png" alt="Homeownership rate by age of householder, 1982 to 2025"></a>\n        <figcaption><b>Figure 11.</b> Homeownership rate by age of householder, 1982 to 2025. All three brackets peak in the mid 2000s and fall sharply through 2016. The 25 to 29 and 30 to 34 brackets remain well below their pre-2008 levels more than fifteen years later, while the under 25 bracket sits slightly above where it began.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-02-large.png"><img src="images/eda-02.png" alt="The twelve least affordable metropolitan areas, 2025"></a>\n        <figcaption><b>Figure 12.</b> The twelve least affordable metropolitan areas, 2025. San Jose tops the list at 27.1 times annual earnings, with Vineyard Haven and Jackson above 23. In these markets a typical home costs more than two decades of a young worker\'s entire gross pay.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-03-large.png"><img src="images/eda-03.png" alt="Correlation between national measures, 2000 to 2025"></a>\n        <figcaption><b>Figure 13.</b> Correlation between national measures, 2000 to 2025. The mortgage rate correlates with the payment burden at 0.78, more strongly than price-to-income does at 0.71. This is the numeric form of the argument that price alone does not determine affordability.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-04-large.png"><img src="images/eda-04.png" alt="Where the 894 metropolitan areas are, by state"></a>\n        <figcaption><b>Figure 14.</b> Where the 894 metropolitan areas are, by state. Texas contributes 67 metropolitan areas and Ohio 44, with the eight largest states accounting for 36 percent of the total. Coverage is uneven, so any unweighted national average leans toward these states.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-05-large.png"><img src="images/eda-05.png" alt="Affordability quartile membership by year"></a>\n        <figcaption><b>Figure 15.</b> Affordability quartile membership by year. Quartiles are recomputed within each year, so the four bands are equal by construction and the visible change is coverage. Zillow reported 444 metropolitan areas in 2000 and 894 in 2025, which matters when comparing distributions across years.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-06-large.png"><img src="images/eda-06.png" alt="Did expensive markets in 2000 grow faster since?"></a>\n        <figcaption><b>Figure 16.</b> Did expensive markets in 2000 grow faster since?. Across the 444 metros reported in both years the relationship is weakly positive, Pearson r = 0.30, with growth ranging from 38 to 505 percent. Starting price explains only a small part of what happened next, so expensive markets did not simply run away from cheap ones.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-07-large.png"><img src="images/eda-07.png" alt="Spread of metropolitan affordability, selected years"></a>\n        <figcaption><b>Figure 17.</b> Spread of metropolitan affordability, selected years. The median metro moved from 3.67 times earnings in 2000 to 4.25 in 2025, while the interquartile range widened from 2.98-4.75 to 3.21-5.93. The typical market worsened modestly; the spread between markets worsened considerably more.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-08-large.png"><img src="images/eda-08.png" alt="Metropolitan areas per state, shaded by median home value, 2025"></a>\n        <figcaption><b>Figure 18.</b> Metropolitan areas per state, shaded by median home value, 2025. Area shows how many metropolitan areas each state contains and shade shows the median home value among them. Hawaii and Massachusetts are small in count but darkest in value, while Texas and Ohio are large in count and light.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-09-large.png"><img src="images/eda-09.png" alt="Affordability within the twelve states with the most metros, 2025"></a>\n        <figcaption><b>Figure 19.</b> Affordability within the twelve states with the most metros, 2025. Median price-to-income runs from 2.70 in Mississippi to 15.68 in Hawaii, and the width of each shape shows that states differ internally as much as they differ from one another. A state-level average would hide most of this.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-10-large.png"><img src="images/eda-10.png" alt="Is metropolitan affordability normally distributed?"></a>\n        <figcaption><b>Figure 20.</b> Is metropolitan affordability normally distributed?. The points bend away from the fitted line in the upper tail and the distribution carries a skewness of 2.76. Affordability is strongly right-skewed, which argues for a log transform or rank-based methods in the modelling sections rather than assuming normality.</figcaption>\n      </figure>'
+figslots = '      <figure>\n        <a href="images/eda-01-large.png"><img src="images/eda-01.png" alt="Homeownership rate by age of householder, 1982 to 2025"></a>\n        <figcaption><b>Figure 11.</b> Homeownership rate by age of householder, 1982 to 2025. All three brackets peak in the mid 2000s and fall sharply through 2016. The 25 to 29 and 30 to 34 brackets remain well below their pre-2008 levels more than fifteen years later, while the under 25 bracket sits slightly above where it began.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-02-large.png"><img src="images/eda-02.png" alt="The twelve least affordable metropolitan areas, 2025"></a>\n        <figcaption><b>Figure 12.</b> The twelve least affordable metropolitan areas, 2025. San Jose tops the list at 27.1 times annual earnings, with Vineyard Haven and Jackson above 23. In these markets a typical home costs more than two decades of a young worker\'s entire gross pay.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-03-large.png"><img src="images/eda-03.png" alt="Correlation between national measures, 2000 to 2025"></a>\n        <figcaption><b>Figure 13.</b> Correlation between national measures, 2000 to 2025. The mortgage rate correlates with the payment burden at 0.78, more strongly than price-to-income does at 0.71. This is the numeric form of the argument that price alone does not determine affordability.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-04-large.png"><img src="images/eda-04.png" alt="Where the 894 metropolitan areas are, by state"></a>\n        <figcaption><b>Figure 14.</b> Where the 894 metropolitan areas are, by state. Texas contributes 67 metropolitan areas and Ohio 44, with the eight largest states accounting for 36 percent of the total. Coverage is uneven, so any unweighted national average leans toward these states.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-05-large.png"><img src="images/eda-05.png" alt="Affordability quartile membership by year"></a>\n        <figcaption><b>Figure 15.</b> Affordability quartile membership by year. Quartiles are recomputed within each year, so the four bands are equal by construction and the visible change is coverage. Zillow reported 444 metropolitan areas in 2000 and 894 in 2025, which matters when comparing distributions across years.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-06-large.png"><img src="images/eda-06.png" alt="Did expensive markets in 2000 grow faster since?"></a>\n        <figcaption><b>Figure 16.</b> Did expensive markets in 2000 grow faster since?. Across the 444 metros reported in both years the relationship is weakly positive, Pearson r = 0.30, with growth ranging from 38 to 505 percent. Starting price explains only a small part of what happened next, so expensive markets did not simply run away from cheap ones.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-07-large.png"><img src="images/eda-07.png" alt="Spread of metropolitan affordability, selected years"></a>\n        <figcaption><b>Figure 17.</b> Spread of metropolitan affordability, selected years. The median metro moved from 3.67 times earnings in 2000 to 4.25 in 2025, while the interquartile range widened from 2.98-4.75 to 3.21-5.93. The typical market worsened modestly; the spread between markets worsened considerably more.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-08-large.png"><img src="images/eda-08.png" alt="Metropolitan areas per state, shaded by median home value, 2025"></a>\n        <figcaption><b>Figure 18.</b> Metropolitan areas per state, shaded by median home value, 2025. Area shows how many metropolitan areas each state contains and shade shows the median home value among them. Hawaii and Massachusetts are small in count but darkest in value, while Texas and Ohio are large in count and light.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-09-large.png"><img src="images/eda-09.png" alt="Affordability within the twelve states with the most metros, 2025"></a>\n        <figcaption><b>Figure 19.</b> Affordability within the twelve states with the most metros, 2025. Median price-to-income runs from 2.72 in Illinois to 8.12 in California, and the width of each shape shows that states differ internally as much as they differ from one another. A state-level average would hide most of this.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-10-large.png"><img src="images/eda-10.png" alt="Is metropolitan affordability normally distributed?"></a>\n        <figcaption><b>Figure 20.</b> Is metropolitan affordability normally distributed?. The points bend away from the fitted line in the upper tail and the distribution carries a skewness of 2.76. Affordability is strongly right-skewed, which argues for a log transform or rank-based methods in the modelling sections rather than assuming normality.</figcaption>\n      </figure>'
 
 def build_all():
     for href, label, subtitle, _group in PAGES:

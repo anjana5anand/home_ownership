@@ -1,29 +1,29 @@
 /* ===================================================================
    Gen Z Homeownership — site styles
    Layout: fixed left sidebar nav + reading column (after wage_analysis).
-   Type:   Newsreader (display) + Public Sans (body).
+   Type:   Cormorant Garamond (display) + Inter (body).
    =================================================================== */
 
 :root {
-  --paper:      #fdfdfc;
-  --surface:    #ffffff;
-  --panel:      #f4f5f3;
-  --ink:        #15181d;
-  --ink-soft:   #333940;
-  --muted:      #5e6672;
-  --rule:       #e2e4e1;
-  --rule-soft:  #eeefec;
+  --paper:      #faf8f5;   /* warm cream */
+  --surface:    #fdfbf8;
+  --panel:      #f3ece2;   /* soft cream panel */
+  --ink:        #2a2622;   /* charcoal */
+  --ink-soft:   #423c36;
+  --muted:      #7c736a;
+  --rule:       #e5e0dc;
+  --rule-soft:  #eee9e4;
 
-  --accent:     #1f4e5f;   /* deep teal-slate: links, active nav, rules */
-  --accent-2:   #a8442f;   /* brick: sparing emphasis only */
-  --accent-wash:#ecf2f3;
+  --accent:     #a65e3f;   /* muted terracotta: links, active nav, rules */
+  --accent-2:   #7a4530;   /* deep terracotta: hover, sparing emphasis */
+  --accent-wash:#f3ece2;
 
   --todo-bg:    #fdf7e7;
   --todo-ink:   #7d5a06;
   --todo-rule:  #e8d49a;
 
-  --serif: "Newsreader", Georgia, "Times New Roman", serif;
-  --sans:  "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --sans:  "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   --mono:  ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   --read: 720px;
@@ -42,6 +42,13 @@ body {
   font-size: 16px;
   line-height: 1.68;
   -webkit-font-smoothing: antialiased;
+  opacity: 0;
+  transition: opacity .22s ease;
+}
+body.is-visible { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  body { opacity: 1; transition: none; }
 }
 
 /* ---------- shell ---------- */
@@ -157,8 +164,11 @@ h2 {
   font-weight: 600;
   line-height: 1.25;
   letter-spacing: -.01em;
-  margin: 52px 0 16px;
+  margin: 64px 0 18px;
+  padding-top: 26px;
+  border-top: 1px solid var(--rule-soft);
 }
+h2:first-of-type { margin-top: 44px; padding-top: 0; border-top: 0; }
 
 h3 {
   font-size: 13px;
@@ -188,7 +198,7 @@ code {
 pre {
   background: var(--panel);
   border: 1px solid var(--rule);
-  border-radius: 8px;
+  border-radius: 5px;
   padding: 16px 18px;
   overflow-x: auto;
   font-size: 13px;
@@ -262,9 +272,10 @@ figure img {
   height: auto;
   max-width: 100%;
   border: 1px solid var(--rule);
-  border-radius: 8px;
+  border-radius: 5px;
   display: block;
   background: var(--surface);
+  box-shadow: 0 1px 2px rgba(21,24,29,.04), 0 10px 24px -16px rgba(21,24,29,.2);
 }
 
 figcaption {
@@ -277,15 +288,22 @@ figcaption b { color: var(--ink-soft); font-weight: 650; }
 
 .figgrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 26px 24px;
-  margin: 0 0 34px;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 56px 44px;
+  margin: 12px 0 44px;
 }
 .figgrid figure { margin: 0; }
 /* every figure is exported at the same 1100x560, so let them size naturally
    rather than cropping to a square-ish thumbnail */
-.figgrid figure img { width: 100%; height: auto; background: var(--surface); }
-.figgrid figcaption { font-size: 12.5px; }
+.figgrid figure img {
+  width: 100%;
+  height: auto;
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(21,24,29,.04), 0 8px 20px -12px rgba(21,24,29,.18);
+  transition: box-shadow .15s ease;
+}
+.figgrid figure a:hover img { box-shadow: 0 2px 4px rgba(21,24,29,.06), 0 14px 28px -14px rgba(21,24,29,.26); }
+.figgrid figcaption { font-size: 13px; line-height: 1.6; margin-top: 13px; }
 
 /* ---------- tables ---------- */
 
@@ -310,7 +328,7 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: now
   background: var(--surface);
   border: 1px solid var(--rule);
   border-left: 3px solid var(--accent);
-  border-radius: 0 8px 8px 0;
+  border-radius: 0 5px 5px 0;
   padding: 15px 18px;
   margin: 0 0 28px;
   font-size: 14.5px;
@@ -323,10 +341,11 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: now
 .callout {
   background: var(--accent-wash);
   border-left: 3px solid var(--accent);
-  border-radius: 0 8px 8px 0;
-  padding: 15px 18px;
-  margin: 0 0 26px;
+  border-radius: 0 5px 5px 0;
+  padding: 18px 22px;
+  margin: 0 0 30px;
   font-size: 14.5px;
+  line-height: 1.65;
   max-width: var(--wide);
 }
 .callout p:last-child { margin-bottom: 0; }
@@ -341,7 +360,7 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: now
 .todo {
   background: var(--todo-bg);
   border: 1px dashed var(--todo-rule);
-  border-radius: 8px;
+  border-radius: 5px;
   padding: 15px 17px;
   margin: 0 0 24px;
   font-size: 14px;
@@ -364,7 +383,7 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: now
 /* ---------- team / about ---------- */
 
 .member { display: flex; gap: 22px; padding: 22px 0; border-bottom: 1px solid var(--rule); align-items: flex-start; }
-.member img { width: 104px; height: 104px; flex: 0 0 104px; border-radius: 8px; object-fit: cover; border: 1px solid var(--rule); }
+.member img { width: 104px; height: 104px; flex: 0 0 104px; border-radius: 5px; object-fit: cover; border: 1px solid var(--rule); }
 .member h4 { margin: 0 0 2px; font-family: var(--serif); font-size: 19px; font-weight: 600; }
 .member .role { color: var(--accent); font-size: 13px; font-weight: 650; letter-spacing: .04em; text-transform: uppercase; margin: 0 0 9px; }
 .member p { margin: 0 0 6px; font-size: 14.5px; }
@@ -420,7 +439,7 @@ figure.flow svg { width: 100%; height: auto; display: block; }
   margin: 0 0 22px -4px;
   padding: 0;
   border: 1px solid var(--rule);
-  border-radius: 7px;
+  border-radius: 5px;
   background: var(--surface);
   color: var(--muted);
   cursor: pointer;
@@ -464,20 +483,78 @@ figure.flow svg { width: 100%; height: auto; display: block; }
 }
 
 figure.sample { margin: 0 0 22px; }
-figure.sample img { border: 1px solid var(--rule); border-radius: 7px; }
+figure.sample img { border: 1px solid var(--rule); border-radius: 5px; }
 
 .codeblock { margin: 0 0 28px; max-width: var(--wide); }
 .codeblock .codehead {
-  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
   background: var(--panel);
   border: 1px solid var(--rule);
-  border-bottom: 0;
-  border-radius: 8px 8px 0 0;
-  padding: 8px 14px;
+  border-radius: 5px;
+  padding: 12px 16px;
   font-family: var(--mono);
   font-size: 12px;
   font-weight: 650;
   color: var(--accent);
 }
-.codeblock .codehead span { font-family: var(--sans); font-weight: 400; color: var(--muted); font-size: 11.5px; }
-.codeblock pre { margin: 0; border-radius: 0 0 8px 8px; max-height: 420px; overflow: auto; }
+.codeblock .codehead span { font-family: var(--sans); font-weight: 400; color: var(--muted); font-size: 11.5px; margin-right: auto; }
+.codeblock .code-link {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 12.5px;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.codeblock .code-toggle {
+  font-family: var(--sans);
+  font-weight: 650;
+  font-size: 12.5px;
+  color: var(--surface);
+  background: var(--accent);
+  border: 0;
+  border-radius: 6px;
+  padding: 7px 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .12s ease;
+}
+.codeblock .code-toggle:hover { background: var(--accent-2); }
+.codeblock.is-open .codehead { border-radius: 5px 5px 0 0; border-bottom: 0; }
+.codeblock.is-open .code-toggle { display: none; }
+
+.codeblock .code-body {
+  display: none;
+  position: relative;
+  border: 1px solid var(--rule);
+  border-top: 0;
+  border-radius: 0 0 5px 5px;
+  background: var(--panel);
+}
+.codeblock.is-open .code-body { display: block; }
+.codeblock .code-body pre {
+  margin: 0;
+  border: 0;
+  border-radius: 0 0 5px 5px;
+  max-height: 420px;
+  overflow: auto;
+  padding-right: 46px;
+}
+.codeblock .code-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--rule);
+  background: var(--surface);
+  color: var(--muted);
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+  transition: color .12s ease, border-color .12s ease;
+}
+.codeblock .code-close:hover { color: var(--accent-2); border-color: var(--accent-2); }

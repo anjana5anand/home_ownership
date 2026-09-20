@@ -117,15 +117,26 @@ out = """<title>Housing Out of Reach</title>
   });
 })();
 
+document.body.classList.add('is-visible');  // preview: skip the on-load fade, only fade between tabs
+
 document.getElementById('nav').addEventListener('click', function (e) {
   var a = e.target.closest('a.tab');
   if (!a) return;
   e.preventDefault();
-  document.querySelectorAll('#nav a.tab').forEach(function (n) { n.classList.remove('active'); });
-  a.classList.add('active');
-  document.querySelectorAll('.pane').forEach(function (p) { p.hidden = true; });
-  document.getElementById(a.dataset.target).hidden = false;
-  window.scrollTo(0, 0);
+  if (a.classList.contains('active')) return;
+  var reduceMotion = false;
+  try { reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (err) {}
+  function swap() {
+    document.querySelectorAll('#nav a.tab').forEach(function (n) { n.classList.remove('active'); });
+    a.classList.add('active');
+    document.querySelectorAll('.pane').forEach(function (p) { p.hidden = true; });
+    document.getElementById(a.dataset.target).hidden = false;
+    window.scrollTo(0, 0);
+    document.body.classList.add('is-visible');
+  }
+  if (reduceMotion) { swap(); return; }
+  document.body.classList.remove('is-visible');
+  setTimeout(swap, 190);
 });
 </script>
 """ % (css, bp.SITE_TITLE, bp.SITE_SUB, "\n      ".join(navlinks), "\n".join(sections))
