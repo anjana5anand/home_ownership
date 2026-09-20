@@ -95,3 +95,31 @@
     });
   }
 })();
+
+/* Section headings fade and rise into view as they scroll into the reading
+   column, an understated version of the scroll-reveal treatment often used
+   for editorial pages, scaled down for content people are here to read
+   rather than watch move. Skipped under prefers-reduced-motion and when
+   IntersectionObserver isn't available; either way headings just render
+   normally. */
+(function () {
+  var reduceMotion = false;
+  try { reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+  if (reduceMotion || !('IntersectionObserver' in window)) return;
+
+  var headings = document.querySelectorAll('.content h2');
+  if (!headings.length) return;
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('is-revealed');
+      observer.unobserve(entry.target);
+    });
+  }, { rootMargin: '0px 0px -10% 0px', threshold: 0.1 });
+
+  headings.forEach(function (h) {
+    h.classList.add('reveal-init');
+    observer.observe(h);
+  });
+})();

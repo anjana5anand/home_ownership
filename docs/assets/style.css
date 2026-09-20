@@ -51,6 +51,32 @@ body.is-visible { opacity: 1; }
   body { opacity: 1; transition: none; }
 }
 
+/* ---------- github link ---------- */
+
+.github-link {
+  position: fixed;
+  top: 18px;
+  right: 22px;
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  color: var(--ink-soft);
+  transition: background .12s ease, color .12s ease, border-color .12s ease;
+}
+.github-link:hover { background: var(--accent-wash); color: var(--accent); border-color: var(--accent); }
+.github-link svg { width: 17px; height: 17px; display: block; }
+
+@media (max-width: 720px) {
+  .github-link { top: 12px; right: 12px; width: 30px; height: 30px; }
+  .github-link svg { width: 15px; height: 15px; }
+}
+
 /* ---------- shell ---------- */
 
 .shell { display: flex; align-items: flex-start; min-height: 100vh; }
@@ -169,6 +195,22 @@ h2 {
   border-top: 1px solid var(--rule-soft);
 }
 h2:first-of-type { margin-top: 44px; padding-top: 0; border-top: 0; }
+
+/* Section headings fade and rise into place on scroll (JS adds/removes the
+   classes below; with JS off or motion reduced, headings just render normally
+   since the base h2 rule above has no opacity/transform of its own). */
+.content h2.reveal-init {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity .5s ease, transform .5s ease;
+}
+.content h2.reveal-init.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .content h2.reveal-init { opacity: 1; transform: none; transition: none; }
+}
 
 h3 {
   font-size: 13px;
