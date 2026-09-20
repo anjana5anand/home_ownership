@@ -62,7 +62,8 @@ INTRO_BODY = """
     <div class="hero-banner">
       <img src="images/intro-hero.jpg" alt="A large Mediterranean-style house behind a paved forecourt">
       <div class="hero-overlay">
-        <h1>Why homeownership has slipped out of reach for a generation</h1>
+        <h1>Housing Out of Reach</h1>
+        <p class="hero-sub">Why homeownership has slipped out of reach for a generation</p>
       </div>
     </div>
 
@@ -137,9 +138,6 @@ PREP_BODY = """
 
 {sources}
     <h2>Assumptions</h2>
-    <div class="todo">
-      <p>Every modelling choice below is a decision, not a measurement. Introduce them in your own words.</p>
-    </div>
     <ul class="tight">
       <li>Annual earnings are estimated as median weekly earnings &times; 52.</li>
       <li>Years-to-down-payment assumes 15% of gross income saved each year.</li>
