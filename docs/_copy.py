@@ -211,23 +211,23 @@ INTRO_DATASET = """
 """
 
 PREP_COLLECT = """
-    <p>Data collection combined one programmatic source with two direct downloads, chosen so that each
-    covered a dimension the others lacked: time depth from the Census survey, economic context from FRED,
-    and geographic detail from Zillow. The FRED series were retrieved through the API described below, which
-    returned 2,771 individual observations across eight series and saved each raw response to disk so that
-    the collection step is auditable and repeatable. The two downloaded sources were taken from their
-    publishers' own distribution pages rather than from any secondary aggregator, so that the files used
-    here are the files those organisations publish.</p>
+    <p>One programmatic course combined with 2 direct downloads. This was chosen so that each one covered
+    a dimension the others lacked. Time depth is covered from the census survey, economic context from
+    FRED and geographic details from Zillow. The FRED dataset was retrieved through the API described
+    below which returned 2771 individual observations across 8 series and saved each raw response to disk
+    so that the collection step is auditable and repeatable. The two downloaded sources were taken from
+    their publishers' own distribution pages.</p>
 """
 
 PREP_DOWNLOADS = """
-    <p>The Census Housing Vacancy Survey historical tables are published as Excel workbooks on the Census
-    Bureau's website. Table 12 was used, which reports total households and owner-occupied households by age
-    of householder annually from 1982. It was chosen over the Bureau's quarterly tables because those report
-    a single combined figure for householders under 35, while Table 12 separates the age brackets this project
-    depends on. The Zillow Home Value Index is published as a comma-separated file on Zillow's research
-    portal. The metropolitan file for the middle price tier was used, giving a smoothed, seasonally adjusted
-    typical home value for each of 894 metropolitan areas for every month since January 2000.</p>
+    <p>Historical Census Housing Vacancy Survey tables were provided as Excel files available on the
+    website of the Census Bureau. Table 12 was used, showing the number of total households and
+    owner-occupied households by age of the householder each year since 1982. This table was selected
+    over the quarterly tables provided by the Bureau due to the fact that the latter provide one total
+    figure for all householders under 35 years old, whereas Table 12 breaks down this age category into
+    age ranges that are needed for this project. Zillow Home Value Index was available as a comma-delimited
+    file on the research section of Zillow. The metropolitan file in the middle price range was used to
+    provide a typical home value in 894 metropolitan areas since January 2000.</p>
 """
 
 PREP_RAW = """

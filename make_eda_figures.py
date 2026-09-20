@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 out_dir = "docs/images"
 os.makedirs(out_dir, exist_ok=True)
@@ -308,6 +309,90 @@ fig10.add_annotation(
     bgcolor=surface, bordercolor="#e1e0d9", borderwidth=1, font=dict(size=12),
 )
 save(fig10, 10, "Is metropolitan affordability normally distributed?")
+
+
+# Figure 11. Distribution shape of the national annual measures, with a normal
+# curve fit to each histogram, so the skewness column in the summary table
+# above has something to look at rather than just a number.
+#
+# Built with matplotlib + scipy.stats rather than plotly, since this is a
+# statistical fit rather than a data visualisation in the usual sense of
+# this file: scipy.stats.norm.fit() is a genuine maximum-likelihood fit
+# (not a hand-computed mean/std pretending to be one), scipy.stats.skew()
+# is the same adjusted Fisher-Pearson statistic pandas reports elsewhere on
+# the page, and numpy.histogram_bin_edges(..., bins="doane") picks bin
+# width using Doane's rule, a refinement of Sturges' rule that accounts for
+# the sample's own skewness, which matters a great deal at n=26.
+from scipy import stats as _stats
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
+
+_comma_fmt = FuncFormatter(lambda v, _pos: f"{v:,.0f}")
+_BLUE, _ORANGE = palette[0], palette[1]
+_INK, _MUTED, _GRID = "#0b0b0b", "#5a544c", "#e7e3dc"
+
+dist_cols = [
+    ("ownership_rate_lt25_pct", "Ownership rate, under 25 (%)"),
+    ("ownership_rate_25_29_pct", "Ownership rate, 25-29 (%)"),
+    ("mortgage_rate_30yr_pct", "30-year mortgage rate (%)"),
+    ("payment_to_income_pct_25_34", "Payment as % of income, 25-34"),
+    ("annual_earnings_25_34", "Annual earnings, 25-34 (USD)"),
+    ("national_zhvi", "National home value (USD)"),
+]
+_dollar_cols = {"annual_earnings_25_34", "national_zhvi"}
+
+plt.rcParams["font.family"] = "sans-serif"
+plt.rcParams["font.sans-serif"] = ["Helvetica", "Arial", "DejaVu Sans"]
+
+
+def _render_fig11(scale, path):
+    fig, axes = plt.subplots(2, 3, figsize=(11, 5.6), dpi=100 * scale)
+    fig.patch.set_facecolor(surface)
+    fig.suptitle(
+        "Distribution shape of the national annual measures, 2000 to 2025",
+        x=0.045, y=0.985, ha="left", fontsize=15, color=_INK, fontweight="medium",
+    )
+
+    for ax, (col, label) in zip(axes.flat, dist_cols):
+        ax.set_facecolor(surface)
+        values = national[col].dropna().to_numpy()
+
+        mu, sigma = _stats.norm.fit(values)               # MLE normal fit
+        skew = _stats.skew(values, bias=False)             # adjusted Fisher-Pearson
+
+        bin_edges = np.histogram_bin_edges(values, bins="doane")
+        ax.hist(values, bins=bin_edges, density=True, color=_BLUE, alpha=0.62,
+                 edgecolor=surface, linewidth=1.2, zorder=2)
+
+        x = np.linspace(min(values.min(), mu - 3.4 * sigma),
+                         max(values.max(), mu + 3.4 * sigma), 300)
+        ax.plot(x, _stats.norm.pdf(x, mu, sigma), color=_ORANGE, linewidth=2.3, zorder=3)
+
+        if col in _dollar_cols:
+            ax.xaxis.set_major_formatter(_comma_fmt)
+
+        ax.set_title(label, fontsize=12, color=_INK, pad=8)
+        ax.text(0.97, 0.93, f"skew = {skew:.2f}", transform=ax.transAxes,
+                ha="right", va="top", fontsize=10.5, color=_MUTED)
+        ax.set_yticks([])
+        ax.tick_params(axis="x", labelsize=10, colors=_MUTED, length=0)
+        for spine in ("top", "right", "left"):
+            ax.spines[spine].set_visible(False)
+        ax.spines["bottom"].set_color(_GRID)
+        ax.grid(axis="y", color=_GRID, linewidth=0.8, zorder=0)
+        ax.margins(x=0.02)
+
+    fig.tight_layout(rect=(0.01, 0.01, 0.99, 0.93))
+    fig.savefig(path, facecolor=surface)
+    plt.close(fig)
+
+
+_render_fig11(scale=2, path=f"{out_dir}/eda-11-large.png")
+_render_fig11(scale=0.62, path=f"{out_dir}/eda-11.png")
+print("  eda-11  Distribution shape of the national annual measures, 2000 to 2025")
+
 
 
 # Summary statistics for the Data Prep tab

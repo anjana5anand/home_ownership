@@ -61,6 +61,9 @@ def questions_html():
 INTRO_BODY = """
     <div class="hero-banner">
       <img src="images/intro-hero.jpg" alt="A large Mediterranean-style house behind a paved forecourt">
+      <div class="hero-overlay">
+        <h1>Why homeownership has slipped out of reach for a generation</h1>
+      </div>
     </div>
 
     <h2>Research Topic &amp; Significance</h2>
@@ -184,6 +187,11 @@ PREP_BODY = """
 
     <p>The full table for all 22 numeric columns is written to
     <code>data_clean/summary_statistics.csv</code> by the pipeline.</p>
+
+    <figure class="wide">
+      <a href="images/eda-11-large.png"><img src="images/eda-11.png" alt="Distribution shape of the national annual measures, 2000 to 2025"></a>
+      <figcaption><b>Figure 11.</b> Each panel is a histogram of the column at left, with a normal curve fitted to that column's own mean and standard deviation laid over it. The ownership and mortgage-rate panels track their curve closely, while earnings and home value pull away to the right of it, the shape a positive skewness number is describing.</figcaption>
+    </figure>
 
     <h2>Exploratory Data Analysis</h2>
     {t_eda}
@@ -373,7 +381,11 @@ def nav(current):
     return "\n".join(out)
 
 
-def page(href, label, subtitle, body):
+def page(href, label, subtitle, body, show_title=True):
+    title_block = (
+        "      <h1>{label}</h1>\n      <p class=\"subtitle\">{subtitle}</p>\n      <hr class=\"rule-under\">\n"
+        if show_title else ""
+    ).format(label=label, subtitle=subtitle)
     return """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -401,10 +413,7 @@ def page(href, label, subtitle, body):
     </aside>
 
     <main class="content">
-      <h1>{label}</h1>
-      <p class="subtitle">{subtitle}</p>
-      <hr class="rule-under">
-{body}
+{title_block}{body}
     </main>
 
   </div>
@@ -413,10 +422,10 @@ def page(href, label, subtitle, body):
 </body>
 </html>
 """.format(label=label, site=SITE_TITLE, sub=SITE_SUB, navlinks=nav(href),
-           subtitle=subtitle, body=body, repo=REPO_URL)
+           subtitle=subtitle, body=body, repo=REPO_URL, title_block=title_block)
 
 
-figslots = '      <figure>\n        <a href="images/eda-01-large.png"><img src="images/eda-01.png" alt="Homeownership rate by age of householder, 1982 to 2025"></a>\n        <figcaption><b>Figure 11.</b> Homeownership rate by age of householder, 1982 to 2025. All three brackets peak in the mid 2000s and fall sharply through 2016. The 25 to 29 and 30 to 34 brackets remain well below their pre-2008 levels more than fifteen years later, while the under 25 bracket sits slightly above where it began.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-02-large.png"><img src="images/eda-02.png" alt="The twelve least affordable metropolitan areas, 2025"></a>\n        <figcaption><b>Figure 12.</b> The twelve least affordable metropolitan areas, 2025. San Jose tops the list at 27.1 times annual earnings, with Vineyard Haven and Jackson above 23. In these markets a typical home costs more than two decades of a young worker\'s entire gross pay.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-03-large.png"><img src="images/eda-03.png" alt="Correlation between national measures, 2000 to 2025"></a>\n        <figcaption><b>Figure 13.</b> Correlation between national measures, 2000 to 2025. The mortgage rate correlates with the payment burden at 0.78, more strongly than price-to-income does at 0.71. This is the numeric form of the argument that price alone does not determine affordability.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-04-large.png"><img src="images/eda-04.png" alt="Where the 894 metropolitan areas are, by state"></a>\n        <figcaption><b>Figure 14.</b> Where the 894 metropolitan areas are, by state. Texas contributes 67 metropolitan areas and Ohio 44, with the eight largest states accounting for 36 percent of the total. Coverage is uneven, so any unweighted national average leans toward these states.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-05-large.png"><img src="images/eda-05.png" alt="Affordability quartile membership by year"></a>\n        <figcaption><b>Figure 15.</b> Affordability quartile membership by year. Quartiles are recomputed within each year, so the four bands are equal by construction and the visible change is coverage. Zillow reported 444 metropolitan areas in 2000 and 894 in 2025, which matters when comparing distributions across years.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-06-large.png"><img src="images/eda-06.png" alt="Did expensive markets in 2000 grow faster since?"></a>\n        <figcaption><b>Figure 16.</b> Did expensive markets in 2000 grow faster since?. Across the 444 metros reported in both years the relationship is weakly positive, Pearson r = 0.30, with growth ranging from 38 to 505 percent. Starting price explains only a small part of what happened next, so expensive markets did not simply run away from cheap ones.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-07-large.png"><img src="images/eda-07.png" alt="Spread of metropolitan affordability, selected years"></a>\n        <figcaption><b>Figure 17.</b> Spread of metropolitan affordability, selected years. The median metro moved from 3.67 times earnings in 2000 to 4.25 in 2025, while the interquartile range widened from 2.98-4.75 to 3.21-5.93. The typical market worsened modestly; the spread between markets worsened considerably more.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-08-large.png"><img src="images/eda-08.png" alt="Metropolitan areas per state, shaded by median home value, 2025"></a>\n        <figcaption><b>Figure 18.</b> Metropolitan areas per state, shaded by median home value, 2025. Area shows how many metropolitan areas each state contains and shade shows the median home value among them. Hawaii and Massachusetts are small in count but darkest in value, while Texas and Ohio are large in count and light.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-09-large.png"><img src="images/eda-09.png" alt="Affordability within the twelve states with the most metros, 2025"></a>\n        <figcaption><b>Figure 19.</b> Affordability within the twelve states with the most metros, 2025. Median price-to-income runs from 2.72 in Illinois to 8.12 in California, and the width of each shape shows that states differ internally as much as they differ from one another. A state-level average would hide most of this.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-10-large.png"><img src="images/eda-10.png" alt="Is metropolitan affordability normally distributed?"></a>\n        <figcaption><b>Figure 20.</b> Is metropolitan affordability normally distributed?. The points bend away from the fitted line in the upper tail and the distribution carries a skewness of 2.76. Affordability is strongly right-skewed, which argues for a log transform or rank-based methods in the modelling sections rather than assuming normality.</figcaption>\n      </figure>'
+figslots = '      <figure>\n        <a href="images/eda-01-large.png"><img src="images/eda-01.png" alt="Homeownership rate by age of householder, 1982 to 2025"></a>\n        <figcaption><b>Figure 12.</b> Homeownership rate by age of householder, 1982 to 2025. All three brackets peak in the mid 2000s and fall sharply through 2016. The 25 to 29 and 30 to 34 brackets remain well below their pre-2008 levels more than fifteen years later, while the under 25 bracket sits slightly above where it began.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-02-large.png"><img src="images/eda-02.png" alt="The twelve least affordable metropolitan areas, 2025"></a>\n        <figcaption><b>Figure 13.</b> The twelve least affordable metropolitan areas, 2025. San Jose tops the list at 27.1 times annual earnings, with Vineyard Haven and Jackson above 23. In these markets a typical home costs more than two decades of a young worker\'s entire gross pay.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-03-large.png"><img src="images/eda-03.png" alt="Correlation between national measures, 2000 to 2025"></a>\n        <figcaption><b>Figure 14.</b> Correlation between national measures, 2000 to 2025. The mortgage rate correlates with the payment burden at 0.78, more strongly than price-to-income does at 0.71. This is the numeric form of the argument that price alone does not determine affordability.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-04-large.png"><img src="images/eda-04.png" alt="Where the 894 metropolitan areas are, by state"></a>\n        <figcaption><b>Figure 15.</b> Where the 894 metropolitan areas are, by state. Texas contributes 67 metropolitan areas and Ohio 44, with the eight largest states accounting for 36 percent of the total. Coverage is uneven, so any unweighted national average leans toward these states.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-05-large.png"><img src="images/eda-05.png" alt="Affordability quartile membership by year"></a>\n        <figcaption><b>Figure 16.</b> Affordability quartile membership by year. Quartiles are recomputed within each year, so the four bands are equal by construction and the visible change is coverage. Zillow reported 444 metropolitan areas in 2000 and 894 in 2025, which matters when comparing distributions across years.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-06-large.png"><img src="images/eda-06.png" alt="Did expensive markets in 2000 grow faster since?"></a>\n        <figcaption><b>Figure 17.</b> Did expensive markets in 2000 grow faster since?. Across the 444 metros reported in both years the relationship is weakly positive, Pearson r = 0.30, with growth ranging from 38 to 505 percent. Starting price explains only a small part of what happened next, so expensive markets did not simply run away from cheap ones.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-07-large.png"><img src="images/eda-07.png" alt="Spread of metropolitan affordability, selected years"></a>\n        <figcaption><b>Figure 18.</b> Spread of metropolitan affordability, selected years. The median metro moved from 3.67 times earnings in 2000 to 4.25 in 2025, while the interquartile range widened from 2.98-4.75 to 3.21-5.93. The typical market worsened modestly; the spread between markets worsened considerably more.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-08-large.png"><img src="images/eda-08.png" alt="Metropolitan areas per state, shaded by median home value, 2025"></a>\n        <figcaption><b>Figure 19.</b> Metropolitan areas per state, shaded by median home value, 2025. Area shows how many metropolitan areas each state contains and shade shows the median home value among them. Hawaii and Massachusetts are small in count but darkest in value, while Texas and Ohio are large in count and light.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-09-large.png"><img src="images/eda-09.png" alt="Affordability within the twelve states with the most metros, 2025"></a>\n        <figcaption><b>Figure 20.</b> Affordability within the twelve states with the most metros, 2025. Median price-to-income runs from 2.72 in Illinois to 8.12 in California, and the width of each shape shows that states differ internally as much as they differ from one another. A state-level average would hide most of this.</figcaption>\n      </figure>\n      <figure>\n        <a href="images/eda-10-large.png"><img src="images/eda-10.png" alt="Is metropolitan affordability normally distributed?"></a>\n        <figcaption><b>Figure 21.</b> Is metropolitan affordability normally distributed?. The points bend away from the fitted line in the upper tail and the distribution carries a skewness of 2.76. Affordability is strongly right-skewed, which argues for a log transform or rank-based methods in the modelling sections rather than assuming normality.</figcaption>\n      </figure>'
 
 def build_all():
     for href, label, subtitle, _group in PAGES:
@@ -456,7 +465,7 @@ def build_all():
                 t_concl=todo("What the results mean for the homeownership question. Not a restatement of the metrics."),
             )
         with open(href, "w") as f:
-            f.write(page(href, label, subtitle, body))
+            f.write(page(href, label, subtitle, body, show_title=(href != "index.html")))
         print("wrote", href)
 
 
