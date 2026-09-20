@@ -1,4 +1,4 @@
-# Gen Z Homeownership — Module 1 Project
+# Gen Z Homeownership - Module 1 Project
 
 Research topic: how the likelihood of homeownership for Americans in their
 twenties and early thirties has changed relative to earnings, home prices and
