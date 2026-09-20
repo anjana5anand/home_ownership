@@ -298,53 +298,60 @@ ol.questions li span.maps {
   position: relative;
   margin: -60px -56px 40px;
   width: calc(100% + 112px);
+  height: 640px;
   max-width: none;
   overflow: hidden;
-}
-.hero-banner img {
-  width: 100%;
-  height: 640px;
-  object-fit: cover;
-  object-position: center 46%;
-  display: block;
-  animation: hero-kenburns 13s ease-out forwards;
+  display: flex;
+  align-items: stretch;
+  background: var(--ink);
 }
 
-.hero-overlay {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 120px 56px 40px;
-  background: linear-gradient(to top, rgba(23,19,15,.74) 0%, rgba(23,19,15,.4) 48%, rgba(23,19,15,0) 100%);
-  pointer-events: none;
+.hero-text {
+  flex: 0 0 420px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 48px;
 }
-.hero-overlay h1 {
+.hero-text h1 {
   font-family: var(--serif);
   font-style: normal;
   font-weight: 600;
-  font-size: clamp(34px, 4.6vw, 54px);
-  line-height: 1.1;
+  font-size: clamp(32px, 3.4vw, 46px);
+  line-height: 1.12;
   letter-spacing: -.015em;
   color: #fdfbf8;
-  max-width: 640px;
   margin: 0;
   text-wrap: balance;
-  text-shadow: 0 2px 18px rgba(0,0,0,.3);
 }
-
-.hero-overlay .hero-sub {
+.hero-text .hero-sub {
   font-family: var(--serif);
   font-style: italic;
   font-weight: 400;
-  font-size: clamp(16px, 1.9vw, 20px);
-  line-height: 1.4;
+  font-size: clamp(15px, 1.5vw, 18px);
+  line-height: 1.45;
   letter-spacing: -.006em;
-  color: rgba(253,251,248,.86);
-  max-width: 560px;
-  margin: 10px 0 0;
+  color: rgba(253,251,248,.78);
+  margin: 14px 0 0;
   text-wrap: balance;
-  text-shadow: 0 1px 12px rgba(0,0,0,.28);
+}
+
+.hero-photo-wrap {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 44px;
+}
+.hero-photo {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  animation: hero-kenburns 13s ease-out forwards;
 }
 
 /* A slow, one-time drift rather than a loop, so it reads as ambient
@@ -354,7 +361,7 @@ ol.questions li span.maps {
   to   { transform: scale(1.06); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero-banner img { animation: none; }
+  .hero-photo { animation: none; }
 }
 
 /* ---------- figures ---------- */
@@ -498,8 +505,9 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: now
   .content { padding: 34px 18px 72px; }
   .hero-banner { margin: -34px -18px 30px; width: calc(100% + 36px); }
   ol.questions li { padding-left: 42px; font-size: 15.5px; }
-  .hero-banner img { height: 420px; }
-  .hero-overlay { padding: 70px 22px 26px; }
+  .hero-banner { height: auto; flex-direction: column; }
+  .hero-text { flex: 0 0 auto; padding: 26px 22px 18px; }
+  .hero-photo-wrap { flex: 0 0 auto; min-height: 260px; padding: 0 18px 26px; }
 }
 
 /* ---------- pipeline flowchart ---------- */
@@ -526,20 +534,25 @@ figure.flow svg { width: 100%; height: auto; display: block; }
 
 .nav-toggle {
   appearance: none;
+  position: fixed;
+  top: 22px;
+  left: 320px;
+  z-index: 41;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 30px;
   height: 30px;
-  margin: 0 0 22px -4px;
+  margin: 0;
   padding: 0;
   border: 1px solid var(--rule);
   border-radius: 5px;
   background: var(--surface);
   color: var(--muted);
   cursor: pointer;
-  transition: color .12s ease, border-color .12s ease, background .12s ease;
+  transition: color .12s ease, border-color .12s ease, background .12s ease, left .22s ease;
 }
+.shell.nav-collapsed .nav-toggle { left: 60px; }
 
 .nav-toggle svg { width: 16px; height: 16px; display: block; }
 
