@@ -60,12 +60,10 @@ def questions_html():
 
 INTRO_BODY = """
     <div class="hero-banner">
-      <div class="hero-text">
+      <img class="hero-photo" src="images/intro-hero.jpg" alt="A large Mediterranean-style house behind a paved forecourt">
+      <div class="hero-overlay">
         <h1>Housing Out of Reach</h1>
         <p class="hero-sub">Why homeownership has slipped out of reach for a generation</p>
-      </div>
-      <div class="hero-photo-wrap">
-        <img class="hero-photo" src="images/intro-hero.jpg" alt="A large Mediterranean-style house behind a paved forecourt">
       </div>
     </div>
 
