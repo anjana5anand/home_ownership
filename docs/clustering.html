@@ -43,87 +43,177 @@
 
     <main class="content">
       <h1>Clustering</h1>
-      <p class="subtitle">PLACEHOLDER subtitle</p>
+      <p class="subtitle">Partitional and hierarchical clustering of metro housing markets</p>
       <hr class="rule-under">
 
     <div class="meta">
       <dl>
-        <dt>Category</dt><dd>PLACEHOLDER: regression / classification / clustering / dimensionality reduction</dd>
-        <dt>Target</dt><dd>PLACEHOLDER: the column being predicted, or &ldquo;unsupervised&rdquo;</dd>
-        <dt>Data used</dt><dd>PLACEHOLDER: which cleaned table, and how many rows</dd>
+        <dt>Category</dt><dd>Unsupervised &middot; clustering (partitional and hierarchical)</dd>
+        <dt>Target</dt><dd>None, unsupervised</dd>
+        <dt>Data used</dt><dd><code>metro_2025_unsupervised_scaled.csv</code>, 894 metros &times; 11 standardized features</dd>
       </dl>
     </div>
 
-    <h2>Why This Model Was Chosen</h2>
-    <div class="todo">
-      <p>Why this method suits this question, in your own words.</p>
-    </div>
-    <ul class="tight">
-      <li>PLACEHOLDER: reason one</li>
-      <li>PLACEHOLDER: reason two</li>
-      <li>PLACEHOLDER: reason three</li>
-    </ul>
+    <h2>Overview</h2>
+    
+    <p>Clustering groups observations by similarity without being told in advance what the groups should
+    look like, which is why it is called unsupervised. Two families of method are used here. Partitional
+    methods, of which k-means is the standard example, start by choosing a number of clusters k, place k
+    centroids, and iteratively reassign each point to its nearest centroid and recompute the centroids
+    until the assignments stop changing. Hierarchical methods instead build a tree of merges: every
+    observation starts as its own cluster, and at each step the two closest clusters are merged, continuing
+    until everything belongs to one cluster. Cutting that tree at a chosen height produces clusters at any
+    k the reader wants, a flexibility k-means does not have on its own.</p>
 
-    <h2>Core Assumptions</h2>
-    <div class="todo">
-      <p>What this model assumes about the data, and whether the data actually meets those assumptions.</p>
-    </div>
-    <ul class="tight">
-      <li>PLACEHOLDER: assumption one</li>
-      <li>PLACEHOLDER: assumption two</li>
-      <li>PLACEHOLDER: assumption three</li>
-    </ul>
-
-    <h2>Data Preparation</h2>
-    <div class="todo">
-      <p>What this method requires that the others do not, and what was done to meet it.</p>
-    </div>
 
     <figure>
-      <img src="images/PLACEHOLDER-clustering-before.png" alt="Data before preparation">
-      <figcaption><b>Before.</b> PLACEHOLDER: the data before preparation for this method.</figcaption>
+      <img src="images/theory-partitional.png" alt="Partitional clustering concept: points assigned to the nearest centroid">
+      <figcaption><b>Figure.</b> Partitional clustering (k-means). Every point joins the nearest centroid, and centroids move to the mean of their assigned points until the assignment stops changing.</figcaption>
     </figure>
     <figure>
-      <img src="images/PLACEHOLDER-clustering-after.png" alt="Data after preparation">
-      <figcaption><b>After.</b> PLACEHOLDER: the data as fed to the model.</figcaption>
+      <img src="images/theory-hierarchical.png" alt="Hierarchical clustering concept: a dendrogram of six points">
+      <figcaption><b>Figure.</b> Hierarchical clustering. The closest pair merges first, then the next closest, building a tree that can be cut at any height to produce a chosen number of clusters.</figcaption>
     </figure>
 
-    <h2>Parameters Explored</h2>
-    <div class="scroll">
-      <table>
-        <thead><tr><th>Run</th><th>Parameters</th><th>Note</th></tr></thead>
-        <tbody>
-          <tr><td>1</td><td><code>PLACEHOLDER</code></td><td>PLACEHOLDER</td></tr>
-          <tr><td>2</td><td><code>PLACEHOLDER</code></td><td>PLACEHOLDER</td></tr>
-          <tr><td>3</td><td><code>PLACEHOLDER</code></td><td>PLACEHOLDER</td></tr>
-        </tbody>
-      </table>
-    </div>
+    
+    <p>Both methods depend on a notion of distance between observations, and the choice of distance metric
+    is not neutral. The k-means run here uses ordinary Euclidean distance on the standardized features,
+    which treats each metro as a point in an eleven-dimensional space and measures straight-line closeness.
+    The hierarchical clustering instead uses <strong>cosine distance</strong>, which measures the angle
+    between two metros' feature vectors rather than their magnitude. On this dataset that distinction
+    matters, because several of the engineered features (home value, price-to-income, monthly payment and
+    so on) move together almost in lockstep. Cosine distance groups metros with a similar profile across
+    features, a different and complementary way of finding structure than Euclidean distance provides.
+    Clustering is used here for discovery, not prediction: the goal is to see whether American metropolitan
+    housing markets fall into a small number of natural types, which is one of this project's ten research
+    questions.</p>
 
-    <h2>Results</h2>
-    <figure>
-      <img src="images/PLACEHOLDER-clustering-result.png" alt="Model results">
-      <figcaption><b>Figure.</b> PLACEHOLDER: what this figure shows, then what it means.</figcaption>
+
+    <h2>Data Prep</h2>
+    
+    <p>Clustering and PCA both require unlabeled, numeric data on comparable scales, which is different
+    from the labeled data used by the supervised models elsewhere on this site. The input here is the 2025
+    cross-section of the metro-year panel: one row per metropolitan area, 894 of them, with eleven
+    engineered numeric features describing each metro's home value, price growth, volatility and
+    affordability relative to a national income benchmark. No ownership rate, age bracket or other outcome
+    variable is included, since adding one would make this a labeled rather than unlabeled dataset. All
+    eleven features were standardized to zero mean and unit variance before either method ran, because the
+    raw columns sit on very different scales (dollars in the hundreds of thousands next to percentages and
+    small ratios) and an unscaled distance would be dominated by whichever column happens to have the
+    largest numbers.</p>
+
+
+    <figure class="sample">
+      <img src="images/data-sample-unsupervised.png" alt="Sample rows of the unlabeled numeric clustering dataset">
+      <figcaption><b>Sample.</b> First rows of <code>metro_2025_unsupervised.csv</code>, the 894-metro by 11-feature table clustering runs on (4 of 11 columns shown).
+      <a href="https://github.com/anjana5anand/home_ownership/blob/main/data_clean/metro_2025_unsupervised.csv" target="_blank" rel="noopener">Full file on GitHub &#8599;</a></figcaption>
     </figure>
-    <div class="scroll">
-      <table>
-        <thead><tr><th>Metric</th><th class="num">Value</th><th>Direction</th><th>What it means here</th></tr></thead>
-        <tbody>
-          <tr><td>PLACEHOLDER</td><td class="num">n/a</td><td>Higher is better</td><td>PLACEHOLDER</td></tr>
-          <tr><td>PLACEHOLDER</td><td class="num">n/a</td><td>Lower is better</td><td>PLACEHOLDER</td></tr>
-        </tbody>
-      </table>
-    </div>
 
     <h2>Code</h2>
+    <p>Python, using scikit-learn for k-means and SciPy for hierarchical clustering. Hierarchical clustering
+    uses <strong>cosine distance</strong> with average linkage; k-means uses Euclidean distance on the same
+    standardized features.</p>
+
+    <div class="codeblock">
+      <div class="codehead">run_clustering.py<span>k-means sweep &amp; hierarchical, cosine distance</span>
+        <a class="code-link" href="https://github.com/anjana5anand/home_ownership/blob/main/run_clustering.py" target="_blank" rel="noopener">View full file on GitHub &#8599;</a>
+        <button class="code-toggle" type="button" aria-expanded="false">Show excerpt</button>
+      </div>
+      <div class="code-body">
+        <pre><code>k_range = list(range(2, 11))
+sil_scores = [silhouette_score(X, KMeans(n_clusters=k, n_init=10,
+              random_state=42).fit_predict(X)) for k in k_range]
+best_k = k_range[int(np.argmax(sil_scores))]
+
+&#8942;  # hierarchical clustering with cosine distance, the point of this script
+
+Z = linkage(X, method=&quot;average&quot;, metric=&quot;cosine&quot;)
+hclust_labels = fcluster(Z, t=hclust_suggested_k, criterion=&quot;maxclust&quot;)
+ari = adjusted_rand_score(km_same_k, hclust_labels)</code></pre>
+        <button class="code-close" type="button" aria-label="Collapse code excerpt">&times;</button>
+      </div>
+    </div>
+
     <ul class="linklist">
-      <li><a href="#">PLACEHOLDER</a> <span>: notebook or script for this section</span></li>
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/prep_unsupervised_data.py" target="_blank" rel="noopener">prep_unsupervised_data.py</a> <span>: builds the standardized 894&times;11 table from the metro panel</span></li>
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/run_clustering.py" target="_blank" rel="noopener">run_clustering.py</a> <span>: k-means sweep, hierarchical clustering, comparison figures</span></li>
     </ul>
 
-    <h2>Conclusions</h2>
-    <div class="todo">
-      <p>What the results mean for the homeownership question. Not a restatement of the metrics.</p>
+    <h2>Results</h2>
+    
+    <p>The silhouette method was run across every k from 2 to 10 for k-means, and hierarchical clustering
+    was cut at the height suggested by its own largest internal gap. Both methods point to the same answer
+    from two different directions.</p>
+
+
+    <figure>
+      <img src="images/cluster-silhouette-curve.png" alt="Silhouette score by k for k-means">
+      <figcaption><b>Figure.</b> Average silhouette score for k-means across nine values of k, from 2 to 10. The score peaks at k = 2 and falls steadily as k grows, meaning additional clusters beyond two do not separate the data any more cleanly.</figcaption>
+    </figure>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>k</th><th class="num">Silhouette score</th></tr></thead>
+        <tbody>
+          <tr><td><strong>2</strong></td><td class="num"><strong>0.433</strong></td></tr>
+          <tr><td>3</td><td class="num">0.333</td></tr>
+          <tr><td>4</td><td class="num">0.338</td></tr>
+          <tr><td>5</td><td class="num">0.271</td></tr>
+          <tr><td>6</td><td class="num">0.270</td></tr>
+          <tr><td>7</td><td class="num">0.260</td></tr>
+          <tr><td>8</td><td class="num">0.259</td></tr>
+          <tr><td>9</td><td class="num">0.259</td></tr>
+          <tr><td>10</td><td class="num">0.250</td></tr>
+        </tbody>
+      </table>
     </div>
+
+    <figure>
+      <img src="images/cluster-silhouette-plot.png" alt="Per-metro silhouette plot at k=2">
+      <figcaption><b>Figure.</b> Per-metro silhouette values at the chosen k = 2. Both clusters sit mostly above the average line with few negative values, meaning few metros are ambiguously placed between the two groups.</figcaption>
+    </figure>
+
+    <figure class="wide">
+      <img src="images/cluster-kmeans-k-compare.png" alt="k-means clusters compared at k=2, 3 and 6">
+      <figcaption><b>Figure.</b> k-means at three different values of k (2, 3 and 6), projected onto the first two principal components. The k = 2 split shown at left is the one the silhouette method prefers; higher k values mostly subdivide the larger, more affordable group rather than finding new structure.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="images/cluster-dendrogram.png" alt="Hierarchical clustering dendrogram, cosine distance">
+      <figcaption><b>Figure.</b> Hierarchical clustering dendrogram, average linkage, cosine distance, all 894 metros. The single tall merge near the top is the largest gap in the tree, and cutting there produces two clusters, the same number the silhouette method chose independently.</figcaption>
+    </figure>
+
+    <figure class="wide">
+      <img src="images/cluster-kmeans-vs-hclust.png" alt="k-means versus hierarchical clustering at k=2">
+      <figcaption><b>Figure.</b> k-means versus hierarchical clustering at the same k = 2. Adjusted Rand Index = 0.74: the two methods, using different distance metrics, largely agree on which metros belong together.</figcaption>
+    </figure>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Cluster</th><th class="num">Metros</th><th class="num">Avg. home value</th><th class="num">Avg. price/income</th><th class="num">Avg. payment % income</th></tr></thead>
+        <tbody>
+          <tr><td>0, expensive</td><td class="num">196</td><td class="num">$541,934</td><td class="num">9.16</td><td class="num">56.1%</td></tr>
+          <tr><td>1, affordable</td><td class="num">698</td><td class="num">$229,315</td><td class="num">3.87</td><td class="num">23.7%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Conclusions</h2>
+    
+    <p>Both methods agree that American metropolitan housing markets split most cleanly into two groups
+    rather than many: the silhouette method selects k = 2 for k-means, with an average silhouette score of
+    about 0.43, and the hierarchical dendrogram's largest internal gap also points to two clusters when cut.
+    The two methods assign metros to those two groups quite similarly, with an Adjusted Rand Index of about
+    0.74 between k-means and hierarchical clustering at the same k, a reasonably strong agreement for two
+    algorithms measuring similarity in different ways (Euclidean versus cosine distance). Looking at what
+    separates the two clusters, the divide tracks overall affordability: the smaller cluster of 196 metros
+    averages a home value near $542,000 and a payment-to-income burden above 56 percent, while the larger
+    cluster of 698 metros averages a home value near $229,000 and a burden near 24 percent. This is
+    consistent with earlier EDA findings that metropolitan markets differ far more from each other than any
+    single national trend would suggest, and it gives a first, purely data-driven answer to the research
+    question of whether a young buyer's chances depend heavily on which metro they live in: the data say
+    yes, and the split looks closer to binary, affordable versus not, than finely graded.</p>
+
 
     </main>
 

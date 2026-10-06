@@ -286,3 +286,116 @@ PREP_EDA = """
 
 
 PREP_SOURCES = '\n    <h2><span class="srcnum">01</span>Census Housing Vacancy Survey, Table 12</h2>\n\n    <h3>Raw sample</h3>\n    <figure class="sample">\n      <img src="images/raw-hvs.png" alt="Raw sample of Census Housing Vacancy Survey, Table 12">\n      <figcaption><b>Figure 3.</b> The first fourteen rows of the workbook as published. Column headers sit several rows down, shaded cells are structurally blank rather than missing, and the whole year-block repeats further down the sheet for earlier years.</figcaption>\n    </figure>\n\n    <h3>What needs to change</h3>\n    <ul class="tight">\n      <li>Locate each repeating <code>Age of Householder</code> block and read the paired total and owner columns beneath it.</li>\n      <li>Strip trailing dot leaders and footnote letters from row labels before they can be matched.</li>\n      <li>Resolve years that appear in more than one block, keeping the later revised estimate.</li>\n      <li>Convert counts stored as text into numbers.</li>\n      <li>Compute the ownership rate, which the file does not contain, as owner households divided by total households.</li>\n    </ul>\n\n    <h3>Cleaned output</h3>\n    <figure class="sample">\n      <img src="images/clean-hvs.png" alt="Cleaned output for Census Housing Vacancy Survey, Table 12">\n      <figcaption><b>Figure 4.</b> The result: one row per year and age bracket, with the rate computed. 220 rows covering 1982 to 2025 across five age brackets.</figcaption>\n    </figure>\n\n    <h3>Code used</h3>\n    <div class="codeblock">\n      <div class="codehead">build_datasets.py<span>parse_histtab12()</span>\n        <a class="code-link" href="https://github.com/anjana5anand/home_ownership/blob/main/build_datasets.py" target="_blank" rel="noopener">View full file on GitHub &#8599;</a>\n        <button class="code-toggle" type="button" aria-expanded="false">Show excerpt</button>\n      </div>\n      <div class="code-body">\n        <pre><code>def parse_histtab12(path=f&quot;{RAW}/histtab12.xlsx&quot;):\n    import openpyxl\n    ws = openpyxl.load_workbook(path, data_only=True)[&quot;Sheet1&quot;]\n    rows = list(ws.iter_rows(values_only=True))\n\n    targets = {&quot;less than 25 years&quot;: &quot;&lt;25&quot;, &quot;25 to 29 years&quot;: &quot;25-29&quot;,\n               &quot;30 to 34 years&quot;: &quot;30-34&quot;, &quot;35 to 39 years&quot;: &quot;35-39&quot;,\n               &quot;40 to 44 years&quot;: &quot;40-44&quot;}\n\n    records, i, n = [], 0, len(rows)\n    while i &lt; n:\n        if rows[i][0] and str(rows[i][0]).strip() == &quot;Age of Householder&quot;:\n            &#8942;  # walk each repeating year-block, match age labels, dedupe revised years</code></pre>\n        <button class="code-close" type="button" aria-label="Collapse code excerpt">&times;</button>\n      </div>\n    </div>\n\n    <h2><span class="srcnum">02</span>BLS and Census via the FRED API</h2>\n\n    <h3>Raw sample</h3>\n    <figure class="sample">\n      <img src="images/raw-fred.png" alt="Raw sample of BLS and Census via the FRED API">\n      <figcaption><b>Figure 5.</b> Six observations from the MORTGAGE30US response. The series is weekly, and two realtime columns record when the figure was published rather than anything about housing.</figcaption>\n    </figure>\n\n    <h3>What needs to change</h3>\n    <ul class="tight">\n      <li>Collapse eight series arriving weekly, monthly and quarterly onto a single annual grain.</li>\n      <li>Drop <code>realtime_start</code> and <code>realtime_end</code>, which carry no analytical information.</li>\n      <li>Treat the string <code>&quot;.&quot;</code> as missing, since reading it as a value turns the whole column into text.</li>\n      <li>Convert median weekly earnings to an annual figure.</li>\n      <li>Deflate nominal dollars to constant 2025 terms using the Consumer Price Index.</li>\n    </ul>\n\n    <h3>Cleaned output</h3>\n    <figure class="sample">\n      <img src="images/clean-fred.png" alt="Cleaned output for BLS and Census via the FRED API">\n      <figcaption><b>Figure 6.</b> The result: one row per year with every series on the same grain, four of thirteen columns shown. 2,771 raw observations reduce to 27 annual rows.</figcaption>\n    </figure>\n\n    <h3>Code used</h3>\n    <div class="codeblock">\n      <div class="codehead">fred_api_fetch.py<span>fetch_series()</span>\n        <a class="code-link" href="https://github.com/anjana5anand/home_ownership/blob/main/fred_api_fetch.py" target="_blank" rel="noopener">View full file on GitHub &#8599;</a>\n        <button class="code-toggle" type="button" aria-expanded="false">Show excerpt</button>\n      </div>\n      <div class="code-body">\n        <pre><code>def fetch_series(series_id, key):\n    &quot;&quot;&quot;Return (metadata_dict, {year: [values]}).&quot;&quot;&quot;\n    meta_payload = api_get(&quot;series&quot;, {&quot;series_id&quot;: series_id, &quot;api_key&quot;: key, &quot;file_type&quot;: &quot;json&quot;})\n    meta = {}\n    if meta_payload and meta_payload.get(&quot;seriess&quot;):\n        s = meta_payload[&quot;seriess&quot;][0]\n        meta = {&quot;series_id&quot;: series_id, &quot;title&quot;: s.get(&quot;title&quot;), &quot;units&quot;: s.get(&quot;units&quot;), &#8230;}\n\n    obs = api_get(&quot;series/observations&quot;, {\n        &quot;series_id&quot;: series_id, &quot;api_key&quot;: key, &quot;file_type&quot;: &quot;json&quot;,\n        &quot;observation_start&quot;: START,\n    })\n    &#8942;  # writes the raw response to disk, then collapses to annual values, skipping FRED&#x27;s &quot;.&quot; missing marker</code></pre>\n        <button class="code-close" type="button" aria-label="Collapse code excerpt">&times;</button>\n      </div>\n    </div>\n\n    <h2><span class="srcnum">03</span>Zillow Home Value Index, metro</h2>\n\n    <h3>Raw sample</h3>\n    <figure class="sample">\n      <img src="images/raw-zhvi.png" alt="Raw sample of Zillow Home Value Index, metro">\n      <figcaption><b>Figure 7.</b> The file in its published shape, 895 rows by 324 columns. Eight columns are shown here; 313 further month columns continue to the right.</figcaption>\n    </figure>\n\n    <h3>What needs to change</h3>\n    <ul class="tight">\n      <li>Reshape 319 month columns into rows, so each observation occupies one row.</li>\n      <li>Reduce each metro-year to a single value, taking the latest month reported in that year.</li>\n      <li>Fill the empty <code>StateName</code> on the national row, which a default groupby silently discards.</li>\n      <li>Separate the country row from the 894 metropolitan rows, since they feed different tables.</li>\n    </ul>\n\n    <h3>Cleaned output</h3>\n    <figure class="sample">\n      <img src="images/clean-zhvi.png" alt="Cleaned output for Zillow Home Value Index, metro">\n      <figcaption><b>Figure 8.</b> The result: one row per metropolitan area per year. The wide file becomes 20,209 long rows covering 2000 to 2026.</figcaption>\n    </figure>\n\n    <h3>Code used</h3>\n    <div class="codeblock">\n      <div class="codehead">build_datasets.py<span>parse_zhvi()</span>\n        <a class="code-link" href="https://github.com/anjana5anand/home_ownership/blob/main/build_datasets.py" target="_blank" rel="noopener">View full file on GitHub &#8599;</a>\n        <button class="code-toggle" type="button" aria-expanded="false">Show excerpt</button>\n      </div>\n      <div class="code-body">\n        <pre><code>def parse_zhvi(path=f&quot;{RAW}/Metro_zhvi_uc_sfrcondo_tier_0.33_0.67_sm_sa_month.csv&quot;):\n    wide = pd.read_csv(path)\n    id_cols = [&quot;RegionID&quot;, &quot;SizeRank&quot;, &quot;RegionName&quot;, &quot;RegionType&quot;, &quot;StateName&quot;]\n    date_cols = [c for c in wide.columns if c not in id_cols]\n\n    long = wide.melt(id_vars=id_cols, value_vars=date_cols,\n                     var_name=&quot;month&quot;, value_name=&quot;zhvi&quot;).dropna(subset=[&quot;zhvi&quot;])\n    long[&quot;year&quot;] = long[&quot;month&quot;].str.slice(0, 4).astype(int)\n\n    # StateName is empty for the national row; without dropna=False groupby\n    # silently discards it and the whole national series disappears.\n    long[&quot;StateName&quot;] = long[&quot;StateName&quot;].fillna(&quot;&quot;)\n    &#8942;  # groups to one value per metro-year, keeping the latest month reported</code></pre>\n        <button class="code-close" type="button" aria-label="Collapse code excerpt">&times;</button>\n      </div>\n    </div>\n\n    <h2>Merging the Sources</h2>\n\n    <p>Each source answers a different part of the question and none answers it alone. The Census survey\n    records whether young households own but says nothing about what a home costs or what they earn. FRED\n    records earnings and borrowing costs but only nationally. Zillow records prices across 894 metropolitan\n    areas but nothing about who buys. Affordability is a relationship between all three, so the measures this\n    project depends on, price against income and payment against income, exist only after the join.</p>\n\n    <p>Both merges use <code>year</code> as the key, because that is the finest grain the three sources share:\n    the Census and FRED series are national, so nothing narrower is available to join on.</p>\n\n    <h3>Merge 1: national_annual</h3>\n    <p>An <b>inner join on year</b> across the ownership table, the FRED annual table, and the national row of\n    the Zillow data. Inner rather than outer, because a year missing any of the three cannot support the\n    derived measures. The result spans 2000 to 2025 and is 26 rows rather than 44, since ownership data begins\n    in 1982 but prices and earnings begin in 2000, and 2026 ownership is not yet published. Five derived\n    columns are added after the join: price-to-income, years to a down payment, monthly mortgage payment,\n    payment as a share of income, and earnings in real terms.</p>\n\n    <figure class="sample">\n      <img src="images/merge-national.png" alt="First rows of national_annual after the merge">\n      <figcaption><b>Figure 9.</b> The merged national table, six of twenty-three columns shown. Ownership,\n      earnings, price and mortgage rate now sit on one row, which is what makes the payment burden in the\n      final column computable at all.</figcaption>\n    </figure>\n\n    <h3>Merge 2: metro_year_panel</h3>\n    <p>A <b>left join on year</b>, attaching each national row to every metropolitan area in that year. This is\n    one-to-many by design, and it has a consequence worth stating plainly: earnings and the mortgage rate are\n    identical across all 894 metros within a year and vary only down the time axis. They are national controls\n    rather than local measurements, and no model should treat them as distinguishing one city from another.\n    The result is 19,288 rows, 894 metros across 2000 to 2025.</p>\n\n    <figure class="sample">\n      <img src="images/merge-panel.png" alt="First rows of metro_year_panel after the merge">\n      <figcaption><b>Figure 10.</b> The merged metro panel, seven of twenty-five columns shown. Price varies by\n      metro while earnings do not, which is precisely why the price-to-income column differs between rows of\n      the same year.</figcaption>\n    </figure>\n\n    <h3>Code used</h3>\n    <div class="codeblock">\n      <div class="codehead">build_datasets.py<span>the merge and derived columns</span>\n        <a class="code-link" href="https://github.com/anjana5anand/home_ownership/blob/main/build_datasets.py" target="_blank" rel="noopener">View full file on GitHub &#8599;</a>\n        <button class="code-toggle" type="button" aria-expanded="false">Show excerpt</button>\n      </div>\n      <div class="code-body">\n        <pre><code># ---- national annual table -------------------------------------------------\nnational = own_wide.merge(fred, on=&quot;year&quot;).merge(national_zhvi, on=&quot;year&quot;)\nnational[&quot;price_to_income_25_34&quot;] = (national[&quot;national_zhvi&quot;] /\n                                     national[&quot;annual_earnings_25_34&quot;]).round(2)\n&#8942;  # years to down payment, monthly payment, and payment-to-income follow the same pattern\nnational.to_csv(f&quot;{OUT}/national_annual.csv&quot;, index=False)\n\n# ---- metro-year panel with engineered features -----------------------------\npanel = zhvi[zhvi.region_type == &quot;msa&quot;].copy()\npanel = panel[panel.year.between(2000, 2025)].sort_values([&quot;region_id&quot;, &quot;year&quot;])\n&#8942;  # growth, volatility, percentile rank, and affordability quartile computed per metro\npanel[&quot;affordability_quartile&quot;] = (panel.groupby(&quot;year&quot;)[&quot;price_to_income_25_34&quot;]\n                                   .transform(lambda s: pd.qcut(s, 4, duplicates=&quot;drop&quot;, labels=False) + 1\n                                              if s.notna().sum() &gt;= 4 else pd.Series(index=s.index, dtype=&quot;float&quot;)))\npanel.to_csv(f&quot;{OUT}/metro_year_panel.csv&quot;, index=False)</code></pre>\n        <button class="code-close" type="button" aria-label="Collapse code excerpt">&times;</button>\n      </div>\n    </div>\n'
+
+CLUSTER_OVERVIEW_1 = """
+    <p>Clustering groups observations by similarity without being told in advance what the groups should
+    look like, which is why it is called unsupervised. Two families of method are used here. Partitional
+    methods, of which k-means is the standard example, start by choosing a number of clusters k, place k
+    centroids, and iteratively reassign each point to its nearest centroid and recompute the centroids
+    until the assignments stop changing. Hierarchical methods instead build a tree of merges: every
+    observation starts as its own cluster, and at each step the two closest clusters are merged, continuing
+    until everything belongs to one cluster. Cutting that tree at a chosen height produces clusters at any
+    k the reader wants, a flexibility k-means does not have on its own.</p>
+"""
+
+CLUSTER_OVERVIEW_2 = """
+    <p>Both methods depend on a notion of distance between observations, and the choice of distance metric
+    is not neutral. The k-means run here uses ordinary Euclidean distance on the standardized features,
+    which treats each metro as a point in an eleven-dimensional space and measures straight-line closeness.
+    The hierarchical clustering instead uses <strong>cosine distance</strong>, which measures the angle
+    between two metros' feature vectors rather than their magnitude. On this dataset that distinction
+    matters, because several of the engineered features (home value, price-to-income, monthly payment and
+    so on) move together almost in lockstep. Cosine distance groups metros with a similar profile across
+    features, a different and complementary way of finding structure than Euclidean distance provides.
+    Clustering is used here for discovery, not prediction: the goal is to see whether American metropolitan
+    housing markets fall into a small number of natural types, which is one of this project's ten research
+    questions.</p>
+"""
+
+CLUSTER_DATAPREP = """
+    <p>Clustering and PCA both require unlabeled, numeric data on comparable scales, which is different
+    from the labeled data used by the supervised models elsewhere on this site. The input here is the 2025
+    cross-section of the metro-year panel: one row per metropolitan area, 894 of them, with eleven
+    engineered numeric features describing each metro's home value, price growth, volatility and
+    affordability relative to a national income benchmark. No ownership rate, age bracket or other outcome
+    variable is included, since adding one would make this a labeled rather than unlabeled dataset. All
+    eleven features were standardized to zero mean and unit variance before either method ran, because the
+    raw columns sit on very different scales (dollars in the hundreds of thousands next to percentages and
+    small ratios) and an unscaled distance would be dominated by whichever column happens to have the
+    largest numbers.</p>
+"""
+
+CLUSTER_RESULTS = """
+    <p>The silhouette method was run across every k from 2 to 10 for k-means, and hierarchical clustering
+    was cut at the height suggested by its own largest internal gap. Both methods point to the same answer
+    from two different directions.</p>
+"""
+
+CLUSTER_CONCL = """
+    <p>Both methods agree that American metropolitan housing markets split most cleanly into two groups
+    rather than many: the silhouette method selects k = 2 for k-means, with an average silhouette score of
+    about 0.43, and the hierarchical dendrogram's largest internal gap also points to two clusters when cut.
+    The two methods assign metros to those two groups quite similarly, with an Adjusted Rand Index of about
+    0.74 between k-means and hierarchical clustering at the same k, a reasonably strong agreement for two
+    algorithms measuring similarity in different ways (Euclidean versus cosine distance). Looking at what
+    separates the two clusters, the divide tracks overall affordability: the smaller cluster of 196 metros
+    averages a home value near $542,000 and a payment-to-income burden above 56 percent, while the larger
+    cluster of 698 metros averages a home value near $229,000 and a burden near 24 percent. This is
+    consistent with earlier EDA findings that metropolitan markets differ far more from each other than any
+    single national trend would suggest, and it gives a first, purely data-driven answer to the research
+    question of whether a young buyer's chances depend heavily on which metro they live in: the data say
+    yes, and the split looks closer to binary, affordable versus not, than finely graded.</p>
+"""
+
+PCA_OVERVIEW_1 = """
+    <p>Principal component analysis re-expresses a set of correlated numeric features as a smaller set of
+    new, uncorrelated axes called principal components, each a linear combination of the original features.
+    The first principal component is the single direction through the data that captures the most variance
+    possible; the second is the direction, orthogonal to the first, that captures the most of what remains;
+    and so on. Once the input features are standardized, the principal components are exactly the
+    eigenvectors of the feature correlation matrix, and the amount of variance each component explains is
+    its corresponding eigenvalue. When a small number of components together explain most of the total
+    variance, the original features were carrying a lot of redundant information, and the data can be
+    described almost as well in far fewer dimensions.</p>
+"""
+
+PCA_OVERVIEW_2 = """
+    <p>This project's eleven engineered features turn out to be a useful illustration of a common challenge
+    with high-dimensional data: several of them are not really independent pieces of information.
+    Price-to-income, monthly payment, years to a down payment and the price-versus-national ratio are all
+    simple rescalings of the same home value figure against a national income or rate that does not vary
+    across metros within a single year, so they sit close to collinear with one another. Highly collinear,
+    high-dimensional data like this can make distance-based methods and models harder to interpret, because
+    several columns are effectively voting on the same underlying signal rather than contributing
+    independent information. PCA is one standard way to surface and correct for exactly this problem, since
+    collinear features collapse onto the same principal component rather than inflating the apparent
+    dimensionality of the data.</p>
+"""
+
+PCA_DATAPREP = """
+    <p>PCA requires the same kind of input as clustering: unlabeled, numeric data on comparable scales. The
+    identical 894-metro, eleven-feature 2025 cross-section used for clustering is used here, standardized
+    the same way. Reusing one prepared dataset for both unsupervised methods keeps the comparison between
+    them fair, since neither method is given an advantage from different preprocessing.</p>
+"""
+
+PCA_RESULTS = """
+    <p>Eleven principal components were extracted (one per original feature), and their eigenvalues and
+    loadings were inspected directly rather than only their plotted shape.</p>
+"""
+
+PCA_CONCL = """
+    <p>Three principal components recover most of the information in the original eleven features: the
+    first two alone explain about 87.2 percent of the total variance (63.0 percent and 24.2 percent
+    respectively), and a third component pushes the cumulative total to 94.8 percent. That is a large
+    reduction, from eleven dimensions down to three, and it follows directly from the collinearity described
+    above rather than showing that the underlying affordability problem is actually simple. The loadings on
+    the first component are almost identical in size and sign across home value, price-to-income, monthly
+    payment, price-versus-national and years to a down payment, confirming that PC1 is best read as a
+    single generalized &ldquo;expensiveness&rdquo; axis built from several near-duplicate measurements of
+    the same thing. The second component instead loads most heavily on the one-year, three-year and
+    five-year price-growth variables, a genuinely separate axis: a metro can be expensive without having
+    grown quickly recently, or the reverse. Read together, the two components suggest a metro's affordability
+    situation is well described by two underlying ideas, how expensive it already is and how fast it has
+    been getting more so, rather than needing all eleven engineered features to tell a complete story.</p>
+"""

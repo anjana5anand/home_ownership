@@ -43,87 +43,160 @@
 
     <main class="content">
       <h1>PCA</h1>
-      <p class="subtitle">PLACEHOLDER subtitle</p>
+      <p class="subtitle">Reducing eleven affordability features to a handful that matter</p>
       <hr class="rule-under">
 
     <div class="meta">
       <dl>
-        <dt>Category</dt><dd>PLACEHOLDER: regression / classification / clustering / dimensionality reduction</dd>
-        <dt>Target</dt><dd>PLACEHOLDER: the column being predicted, or &ldquo;unsupervised&rdquo;</dd>
-        <dt>Data used</dt><dd>PLACEHOLDER: which cleaned table, and how many rows</dd>
+        <dt>Category</dt><dd>Unsupervised &middot; dimensionality reduction</dd>
+        <dt>Target</dt><dd>None, unsupervised</dd>
+        <dt>Data used</dt><dd><code>metro_2025_unsupervised_scaled.csv</code>, 894 metros &times; 11 standardized features</dd>
       </dl>
     </div>
 
-    <h2>Why This Model Was Chosen</h2>
-    <div class="todo">
-      <p>Why this method suits this question, in your own words.</p>
-    </div>
-    <ul class="tight">
-      <li>PLACEHOLDER: reason one</li>
-      <li>PLACEHOLDER: reason two</li>
-      <li>PLACEHOLDER: reason three</li>
-    </ul>
+    <h2>Overview</h2>
+    
+    <p>Principal component analysis re-expresses a set of correlated numeric features as a smaller set of
+    new, uncorrelated axes called principal components, each a linear combination of the original features.
+    The first principal component is the single direction through the data that captures the most variance
+    possible; the second is the direction, orthogonal to the first, that captures the most of what remains;
+    and so on. Once the input features are standardized, the principal components are exactly the
+    eigenvectors of the feature correlation matrix, and the amount of variance each component explains is
+    its corresponding eigenvalue. When a small number of components together explain most of the total
+    variance, the original features were carrying a lot of redundant information, and the data can be
+    described almost as well in far fewer dimensions.</p>
 
-    <h2>Core Assumptions</h2>
-    <div class="todo">
-      <p>What this model assumes about the data, and whether the data actually meets those assumptions.</p>
-    </div>
-    <ul class="tight">
-      <li>PLACEHOLDER: assumption one</li>
-      <li>PLACEHOLDER: assumption two</li>
-      <li>PLACEHOLDER: assumption three</li>
-    </ul>
-
-    <h2>Data Preparation</h2>
-    <div class="todo">
-      <p>What this method requires that the others do not, and what was done to meet it.</p>
-    </div>
 
     <figure>
-      <img src="images/PLACEHOLDER-pca-before.png" alt="Data before preparation">
-      <figcaption><b>Before.</b> PLACEHOLDER: the data before preparation for this method.</figcaption>
+      <img src="images/theory-pca-direction.png" alt="PCA concept: the first principal component is the direction of maximum variance">
+      <figcaption><b>Figure.</b> PCA finds new axes in order of how much variance each one captures. PC1 runs through the long axis of the cloud; PC2 is orthogonal to it and catches most of what PC1 misses.</figcaption>
     </figure>
     <figure>
-      <img src="images/PLACEHOLDER-pca-after.png" alt="Data after preparation">
-      <figcaption><b>After.</b> PLACEHOLDER: the data as fed to the model.</figcaption>
+      <img src="images/theory-dim-reduction.png" alt="Dimensionality reduction concept: projecting many features onto one principal component">
+      <figcaption><b>Figure.</b> Dimensionality reduction. Points that originally need several axes to describe can be projected onto just the first component and still keep most of their relative spread.</figcaption>
     </figure>
 
-    <h2>Parameters Explored</h2>
-    <div class="scroll">
-      <table>
-        <thead><tr><th>Run</th><th>Parameters</th><th>Note</th></tr></thead>
-        <tbody>
-          <tr><td>1</td><td><code>PLACEHOLDER</code></td><td>PLACEHOLDER</td></tr>
-          <tr><td>2</td><td><code>PLACEHOLDER</code></td><td>PLACEHOLDER</td></tr>
-          <tr><td>3</td><td><code>PLACEHOLDER</code></td><td>PLACEHOLDER</td></tr>
-        </tbody>
-      </table>
-    </div>
+    
+    <p>This project's eleven engineered features turn out to be a useful illustration of a common challenge
+    with high-dimensional data: several of them are not really independent pieces of information.
+    Price-to-income, monthly payment, years to a down payment and the price-versus-national ratio are all
+    simple rescalings of the same home value figure against a national income or rate that does not vary
+    across metros within a single year, so they sit close to collinear with one another. Highly collinear,
+    high-dimensional data like this can make distance-based methods and models harder to interpret, because
+    several columns are effectively voting on the same underlying signal rather than contributing
+    independent information. PCA is one standard way to surface and correct for exactly this problem, since
+    collinear features collapse onto the same principal component rather than inflating the apparent
+    dimensionality of the data.</p>
 
-    <h2>Results</h2>
-    <figure>
-      <img src="images/PLACEHOLDER-pca-result.png" alt="Model results">
-      <figcaption><b>Figure.</b> PLACEHOLDER: what this figure shows, then what it means.</figcaption>
+
+    <h2>Data Prep</h2>
+    
+    <p>PCA requires the same kind of input as clustering: unlabeled, numeric data on comparable scales. The
+    identical 894-metro, eleven-feature 2025 cross-section used for clustering is used here, standardized
+    the same way. Reusing one prepared dataset for both unsupervised methods keeps the comparison between
+    them fair, since neither method is given an advantage from different preprocessing.</p>
+
+
+    <figure class="sample">
+      <img src="images/data-sample-unsupervised.png" alt="Sample rows of the unlabeled numeric PCA dataset">
+      <figcaption><b>Sample.</b> First rows of <code>metro_2025_unsupervised.csv</code>, the same 894-metro by 11-feature table used for clustering (4 of 11 columns shown).
+      <a href="https://github.com/anjana5anand/home_ownership/blob/main/data_clean/metro_2025_unsupervised.csv" target="_blank" rel="noopener">Full file on GitHub &#8599;</a></figcaption>
     </figure>
-    <div class="scroll">
-      <table>
-        <thead><tr><th>Metric</th><th class="num">Value</th><th>Direction</th><th>What it means here</th></tr></thead>
-        <tbody>
-          <tr><td>PLACEHOLDER</td><td class="num">n/a</td><td>Higher is better</td><td>PLACEHOLDER</td></tr>
-          <tr><td>PLACEHOLDER</td><td class="num">n/a</td><td>Lower is better</td><td>PLACEHOLDER</td></tr>
-        </tbody>
-      </table>
-    </div>
 
     <h2>Code</h2>
+    <p>Python, using scikit-learn's <code>PCA</code> on the standardized features. <code>explained_variance_</code>
+    and <code>components_</code> are exactly the eigenvalues and eigenvectors of the feature correlation matrix
+    once the inputs are standardized.</p>
+
+    <div class="codeblock">
+      <div class="codehead">run_pca.py<span>eigenvalues, loadings, scree plot, biplot</span>
+        <a class="code-link" href="https://github.com/anjana5anand/home_ownership/blob/main/run_pca.py" target="_blank" rel="noopener">View full file on GitHub &#8599;</a>
+        <button class="code-toggle" type="button" aria-expanded="false">Show excerpt</button>
+      </div>
+      <div class="code-body">
+        <pre><code>pca = PCA(n_components=11, random_state=42)
+coords = pca.fit_transform(X)
+
+eigenvalues  = pca.explained_variance_       # eigenvalues of the correlation matrix
+eigenvectors = pca.components_               # rows are eigenvectors (loadings)
+explained    = pca.explained_variance_ratio_
+cum_explained = np.cumsum(explained)
+
+&#8942;  # scree plot of eigenvalues, then a biplot of PC1/PC2 with variable loadings</code></pre>
+        <button class="code-close" type="button" aria-label="Collapse code excerpt">&times;</button>
+      </div>
+    </div>
+
     <ul class="linklist">
-      <li><a href="#">PLACEHOLDER</a> <span>: notebook or script for this section</span></li>
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/prep_unsupervised_data.py" target="_blank" rel="noopener">prep_unsupervised_data.py</a> <span>: builds the standardized 894&times;11 table from the metro panel</span></li>
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/run_pca.py" target="_blank" rel="noopener">run_pca.py</a> <span>: eigen-decomposition, scree plot, biplot</span></li>
     </ul>
 
-    <h2>Conclusions</h2>
-    <div class="todo">
-      <p>What the results mean for the homeownership question. Not a restatement of the metrics.</p>
+    <h2>Results</h2>
+    
+    <p>Eleven principal components were extracted (one per original feature), and their eigenvalues and
+    loadings were inspected directly rather than only their plotted shape.</p>
+
+
+    <figure>
+      <img src="images/pca-scree.png" alt="Scree plot of eigenvalues by principal component">
+      <figcaption><b>Figure.</b> Scree plot: percent of variance explained by each of the 11 components (bars) and the cumulative total (line). The curve bends sharply after component 2 and flattens near zero after component 5, the signature of a handful of collinear features rather than eleven independent ones.</figcaption>
+    </figure>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Component</th><th class="num">% variance</th><th class="num">Cumulative %</th></tr></thead>
+        <tbody>
+          <tr><td>PC1</td><td class="num">63.0</td><td class="num">63.0</td></tr>
+          <tr><td>PC2</td><td class="num">24.2</td><td class="num">87.2</td></tr>
+          <tr><td>PC3</td><td class="num">7.6</td><td class="num"><strong>94.8</strong></td></tr>
+          <tr><td>PC4</td><td class="num">2.5</td><td class="num">97.3</td></tr>
+          <tr><td>PC5</td><td class="num">2.4</td><td class="num">99.7</td></tr>
+          <tr><td>PC6&ndash;PC11</td><td class="num">&lt;0.3 each</td><td class="num">100.0</td></tr>
+        </tbody>
+      </table>
     </div>
+
+    <figure>
+      <img src="images/pca-biplot.png" alt="Biplot of metro areas and variable loadings on PC1 and PC2">
+      <figcaption><b>Figure.</b> Biplot: each point is a metro, projected onto PC1 and PC2; each arrow is one of the 11 original features, pointing in the direction it increases. Six features point almost identically along PC1, direct confirmation that they are measuring close to the same thing, while the price-change variables point in a separate direction along PC2.</figcaption>
+    </figure>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Feature</th><th class="num">PC1 loading</th><th class="num">PC2 loading</th></tr></thead>
+        <tbody>
+          <tr><td>Home value</td><td class="num">0.378</td><td class="num">0.001</td></tr>
+          <tr><td>Price vs. national</td><td class="num">0.378</td><td class="num">0.001</td></tr>
+          <tr><td>Price-to-income</td><td class="num">0.378</td><td class="num">0.001</td></tr>
+          <tr><td>Years to down payment</td><td class="num">0.378</td><td class="num">0.001</td></tr>
+          <tr><td>Monthly payment</td><td class="num">0.378</td><td class="num">0.001</td></tr>
+          <tr><td>Payment % income</td><td class="num">0.378</td><td class="num">0.001</td></tr>
+          <tr><td>Price percentile</td><td class="num">0.326</td><td class="num">0.060</td></tr>
+          <tr><td>5yr price change</td><td class="num">0.120</td><td class="num">0.439</td></tr>
+          <tr><td>Price volatility</td><td class="num">0.153</td><td class="num">-0.376</td></tr>
+          <tr><td>3yr price change</td><td class="num">-0.003</td><td class="num">0.599</td></tr>
+          <tr><td>1yr price change</td><td class="num">-0.026</td><td class="num">0.551</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Conclusions</h2>
+    
+    <p>Three principal components recover most of the information in the original eleven features: the
+    first two alone explain about 87.2 percent of the total variance (63.0 percent and 24.2 percent
+    respectively), and a third component pushes the cumulative total to 94.8 percent. That is a large
+    reduction, from eleven dimensions down to three, and it follows directly from the collinearity described
+    above rather than showing that the underlying affordability problem is actually simple. The loadings on
+    the first component are almost identical in size and sign across home value, price-to-income, monthly
+    payment, price-versus-national and years to a down payment, confirming that PC1 is best read as a
+    single generalized &ldquo;expensiveness&rdquo; axis built from several near-duplicate measurements of
+    the same thing. The second component instead loads most heavily on the one-year, three-year and
+    five-year price-growth variables, a genuinely separate axis: a metro can be expensive without having
+    grown quickly recently, or the reverse. Read together, the two components suggest a metro's affordability
+    situation is well described by two underlying ideas, how expensive it already is and how fast it has
+    been getting more so, rather than needing all eleven engineered features to tell a complete story.</p>
+
 
     </main>
 

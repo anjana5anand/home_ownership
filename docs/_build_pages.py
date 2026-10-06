@@ -9,15 +9,15 @@ PAGES = [
     ("index.html",           "Introduction",    "Why homeownership slipped out of reach for a generation", None),
     ("dataprep.html",        "Data Prep",       "Three sources, and what was wrong with each one", "Analysis"),
     ("eda.html",             "EDA",              "Summary statistics and ten figures exploring the cleaned data", None),
-    ("clustering.html",      "Clustering",      "PLACEHOLDER subtitle", "Models"),
-    ("pca.html",             "PCA",             "PLACEHOLDER subtitle", None),
+    ("clustering.html",      "Clustering",      "Partitional and hierarchical clustering of metro housing markets", "Models"),
+    ("pca.html",             "PCA",             "Reducing eleven affordability features to a handful that matter", None),
     ("naive-bayes.html",     "Naive Bayes",     "PLACEHOLDER subtitle", None),
     ("decision-trees.html",  "Decision Trees",  "PLACEHOLDER subtitle", None),
     ("svm.html",             "SVMs",            "PLACEHOLDER subtitle", None),
     ("regression.html",      "Regression",      "PLACEHOLDER subtitle", None),
     ("neural-networks.html", "Neural Networks", "PLACEHOLDER subtitle", None),
     ("conclusions.html",     "Conclusions",     "What the evidence says about affordability", "Findings"),
-    ("about.html",           "About Me",        "PLACEHOLDER subtitle", None),
+    ("about.html",           "About Me",        "MS Data Science student, CU Boulder", None),
 ]
 
 QUESTIONS = [
@@ -242,6 +242,238 @@ save(fig1, &quot;eda-01&quot;)
       </div>
     </div>
 
+"""
+
+CLUSTERING_BODY = """
+    <div class="meta">
+      <dl>
+        <dt>Category</dt><dd>Unsupervised &middot; clustering (partitional and hierarchical)</dd>
+        <dt>Target</dt><dd>None, unsupervised</dd>
+        <dt>Data used</dt><dd><code>metro_2025_unsupervised_scaled.csv</code>, 894 metros &times; 11 standardized features</dd>
+      </dl>
+    </div>
+
+    <h2>Overview</h2>
+    {t_overview1}
+
+    <figure>
+      <img src="images/theory-partitional.png" alt="Partitional clustering concept: points assigned to the nearest centroid">
+      <figcaption><b>Figure.</b> Partitional clustering (k-means). Every point joins the nearest centroid, and centroids move to the mean of their assigned points until the assignment stops changing.</figcaption>
+    </figure>
+    <figure>
+      <img src="images/theory-hierarchical.png" alt="Hierarchical clustering concept: a dendrogram of six points">
+      <figcaption><b>Figure.</b> Hierarchical clustering. The closest pair merges first, then the next closest, building a tree that can be cut at any height to produce a chosen number of clusters.</figcaption>
+    </figure>
+
+    {t_overview2}
+
+    <h2>Data Prep</h2>
+    {t_dataprep}
+
+    <figure class="sample">
+      <img src="images/data-sample-unsupervised.png" alt="Sample rows of the unlabeled numeric clustering dataset">
+      <figcaption><b>Sample.</b> First rows of <code>metro_2025_unsupervised.csv</code>, the 894-metro by 11-feature table clustering runs on (4 of 11 columns shown).
+      <a href="https://github.com/anjana5anand/home_ownership/blob/main/data_clean/metro_2025_unsupervised.csv" target="_blank" rel="noopener">Full file on GitHub &#8599;</a></figcaption>
+    </figure>
+
+    <h2>Code</h2>
+    <p>Python, using scikit-learn for k-means and SciPy for hierarchical clustering. Hierarchical clustering
+    uses <strong>cosine distance</strong> with average linkage; k-means uses Euclidean distance on the same
+    standardized features.</p>
+
+    <div class="codeblock">
+      <div class="codehead">run_clustering.py<span>k-means sweep &amp; hierarchical, cosine distance</span>
+        <a class="code-link" href="https://github.com/anjana5anand/home_ownership/blob/main/run_clustering.py" target="_blank" rel="noopener">View full file on GitHub &#8599;</a>
+        <button class="code-toggle" type="button" aria-expanded="false">Show excerpt</button>
+      </div>
+      <div class="code-body">
+        <pre><code>k_range = list(range(2, 11))
+sil_scores = [silhouette_score(X, KMeans(n_clusters=k, n_init=10,
+              random_state=42).fit_predict(X)) for k in k_range]
+best_k = k_range[int(np.argmax(sil_scores))]
+
+&#8942;  # hierarchical clustering with cosine distance, the point of this script
+
+Z = linkage(X, method=&quot;average&quot;, metric=&quot;cosine&quot;)
+hclust_labels = fcluster(Z, t=hclust_suggested_k, criterion=&quot;maxclust&quot;)
+ari = adjusted_rand_score(km_same_k, hclust_labels)</code></pre>
+        <button class="code-close" type="button" aria-label="Collapse code excerpt">&times;</button>
+      </div>
+    </div>
+
+    <ul class="linklist">
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/prep_unsupervised_data.py" target="_blank" rel="noopener">prep_unsupervised_data.py</a> <span>: builds the standardized 894&times;11 table from the metro panel</span></li>
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/run_clustering.py" target="_blank" rel="noopener">run_clustering.py</a> <span>: k-means sweep, hierarchical clustering, comparison figures</span></li>
+    </ul>
+
+    <h2>Results</h2>
+    {t_results}
+
+    <figure>
+      <img src="images/cluster-silhouette-curve.png" alt="Silhouette score by k for k-means">
+      <figcaption><b>Figure.</b> Average silhouette score for k-means across nine values of k, from 2 to 10. The score peaks at k = 2 and falls steadily as k grows, meaning additional clusters beyond two do not separate the data any more cleanly.</figcaption>
+    </figure>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>k</th><th class="num">Silhouette score</th></tr></thead>
+        <tbody>
+          <tr><td><strong>2</strong></td><td class="num"><strong>0.433</strong></td></tr>
+          <tr><td>3</td><td class="num">0.333</td></tr>
+          <tr><td>4</td><td class="num">0.338</td></tr>
+          <tr><td>5</td><td class="num">0.271</td></tr>
+          <tr><td>6</td><td class="num">0.270</td></tr>
+          <tr><td>7</td><td class="num">0.260</td></tr>
+          <tr><td>8</td><td class="num">0.259</td></tr>
+          <tr><td>9</td><td class="num">0.259</td></tr>
+          <tr><td>10</td><td class="num">0.250</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <figure>
+      <img src="images/cluster-silhouette-plot.png" alt="Per-metro silhouette plot at k=2">
+      <figcaption><b>Figure.</b> Per-metro silhouette values at the chosen k = 2. Both clusters sit mostly above the average line with few negative values, meaning few metros are ambiguously placed between the two groups.</figcaption>
+    </figure>
+
+    <figure class="wide">
+      <img src="images/cluster-kmeans-k-compare.png" alt="k-means clusters compared at k=2, 3 and 6">
+      <figcaption><b>Figure.</b> k-means at three different values of k (2, 3 and 6), projected onto the first two principal components. The k = 2 split shown at left is the one the silhouette method prefers; higher k values mostly subdivide the larger, more affordable group rather than finding new structure.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="images/cluster-dendrogram.png" alt="Hierarchical clustering dendrogram, cosine distance">
+      <figcaption><b>Figure.</b> Hierarchical clustering dendrogram, average linkage, cosine distance, all 894 metros. The single tall merge near the top is the largest gap in the tree, and cutting there produces two clusters, the same number the silhouette method chose independently.</figcaption>
+    </figure>
+
+    <figure class="wide">
+      <img src="images/cluster-kmeans-vs-hclust.png" alt="k-means versus hierarchical clustering at k=2">
+      <figcaption><b>Figure.</b> k-means versus hierarchical clustering at the same k = 2. Adjusted Rand Index = 0.74: the two methods, using different distance metrics, largely agree on which metros belong together.</figcaption>
+    </figure>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Cluster</th><th class="num">Metros</th><th class="num">Avg. home value</th><th class="num">Avg. price/income</th><th class="num">Avg. payment % income</th></tr></thead>
+        <tbody>
+          <tr><td>0, expensive</td><td class="num">196</td><td class="num">$541,934</td><td class="num">9.16</td><td class="num">56.1%</td></tr>
+          <tr><td>1, affordable</td><td class="num">698</td><td class="num">$229,315</td><td class="num">3.87</td><td class="num">23.7%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Conclusions</h2>
+    {t_concl}
+"""
+
+PCA_BODY = """
+    <div class="meta">
+      <dl>
+        <dt>Category</dt><dd>Unsupervised &middot; dimensionality reduction</dd>
+        <dt>Target</dt><dd>None, unsupervised</dd>
+        <dt>Data used</dt><dd><code>metro_2025_unsupervised_scaled.csv</code>, 894 metros &times; 11 standardized features</dd>
+      </dl>
+    </div>
+
+    <h2>Overview</h2>
+    {t_overview1}
+
+    <figure>
+      <img src="images/theory-pca-direction.png" alt="PCA concept: the first principal component is the direction of maximum variance">
+      <figcaption><b>Figure.</b> PCA finds new axes in order of how much variance each one captures. PC1 runs through the long axis of the cloud; PC2 is orthogonal to it and catches most of what PC1 misses.</figcaption>
+    </figure>
+    <figure>
+      <img src="images/theory-dim-reduction.png" alt="Dimensionality reduction concept: projecting many features onto one principal component">
+      <figcaption><b>Figure.</b> Dimensionality reduction. Points that originally need several axes to describe can be projected onto just the first component and still keep most of their relative spread.</figcaption>
+    </figure>
+
+    {t_overview2}
+
+    <h2>Data Prep</h2>
+    {t_dataprep}
+
+    <figure class="sample">
+      <img src="images/data-sample-unsupervised.png" alt="Sample rows of the unlabeled numeric PCA dataset">
+      <figcaption><b>Sample.</b> First rows of <code>metro_2025_unsupervised.csv</code>, the same 894-metro by 11-feature table used for clustering (4 of 11 columns shown).
+      <a href="https://github.com/anjana5anand/home_ownership/blob/main/data_clean/metro_2025_unsupervised.csv" target="_blank" rel="noopener">Full file on GitHub &#8599;</a></figcaption>
+    </figure>
+
+    <h2>Code</h2>
+    <p>Python, using scikit-learn's <code>PCA</code> on the standardized features. <code>explained_variance_</code>
+    and <code>components_</code> are exactly the eigenvalues and eigenvectors of the feature correlation matrix
+    once the inputs are standardized.</p>
+
+    <div class="codeblock">
+      <div class="codehead">run_pca.py<span>eigenvalues, loadings, scree plot, biplot</span>
+        <a class="code-link" href="https://github.com/anjana5anand/home_ownership/blob/main/run_pca.py" target="_blank" rel="noopener">View full file on GitHub &#8599;</a>
+        <button class="code-toggle" type="button" aria-expanded="false">Show excerpt</button>
+      </div>
+      <div class="code-body">
+        <pre><code>pca = PCA(n_components=11, random_state=42)
+coords = pca.fit_transform(X)
+
+eigenvalues  = pca.explained_variance_       # eigenvalues of the correlation matrix
+eigenvectors = pca.components_               # rows are eigenvectors (loadings)
+explained    = pca.explained_variance_ratio_
+cum_explained = np.cumsum(explained)
+
+&#8942;  # scree plot of eigenvalues, then a biplot of PC1/PC2 with variable loadings</code></pre>
+        <button class="code-close" type="button" aria-label="Collapse code excerpt">&times;</button>
+      </div>
+    </div>
+
+    <ul class="linklist">
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/prep_unsupervised_data.py" target="_blank" rel="noopener">prep_unsupervised_data.py</a> <span>: builds the standardized 894&times;11 table from the metro panel</span></li>
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/run_pca.py" target="_blank" rel="noopener">run_pca.py</a> <span>: eigen-decomposition, scree plot, biplot</span></li>
+    </ul>
+
+    <h2>Results</h2>
+    {t_results}
+
+    <figure>
+      <img src="images/pca-scree.png" alt="Scree plot of eigenvalues by principal component">
+      <figcaption><b>Figure.</b> Scree plot: percent of variance explained by each of the 11 components (bars) and the cumulative total (line). The curve bends sharply after component 2 and flattens near zero after component 5, the signature of a handful of collinear features rather than eleven independent ones.</figcaption>
+    </figure>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Component</th><th class="num">% variance</th><th class="num">Cumulative %</th></tr></thead>
+        <tbody>
+          <tr><td>PC1</td><td class="num">63.0</td><td class="num">63.0</td></tr>
+          <tr><td>PC2</td><td class="num">24.2</td><td class="num">87.2</td></tr>
+          <tr><td>PC3</td><td class="num">7.6</td><td class="num"><strong>94.8</strong></td></tr>
+          <tr><td>PC4</td><td class="num">2.5</td><td class="num">97.3</td></tr>
+          <tr><td>PC5</td><td class="num">2.4</td><td class="num">99.7</td></tr>
+          <tr><td>PC6&ndash;PC11</td><td class="num">&lt;0.3 each</td><td class="num">100.0</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <figure>
+      <img src="images/pca-biplot.png" alt="Biplot of metro areas and variable loadings on PC1 and PC2">
+      <figcaption><b>Figure.</b> Biplot: each point is a metro, projected onto PC1 and PC2; each arrow is one of the 11 original features, pointing in the direction it increases. Six features point almost identically along PC1, direct confirmation that they are measuring close to the same thing, while the price-change variables point in a separate direction along PC2.</figcaption>
+    </figure>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Feature</th><th class="num">PC1 loading</th><th class="num">PC2 loading</th></tr></thead>
+        <tbody>
+          <tr><td>Home value</td><td class="num">0.378</td><td class="num">0.001</td></tr>
+          <tr><td>Price vs. national</td><td class="num">0.378</td><td class="num">0.001</td></tr>
+          <tr><td>Price-to-income</td><td class="num">0.378</td><td class="num">0.001</td></tr>
+          <tr><td>Years to down payment</td><td class="num">0.378</td><td class="num">0.001</td></tr>
+          <tr><td>Monthly payment</td><td class="num">0.378</td><td class="num">0.001</td></tr>
+          <tr><td>Payment % income</td><td class="num">0.378</td><td class="num">0.001</td></tr>
+          <tr><td>Price percentile</td><td class="num">0.326</td><td class="num">0.060</td></tr>
+          <tr><td>5yr price change</td><td class="num">0.120</td><td class="num">0.439</td></tr>
+          <tr><td>Price volatility</td><td class="num">0.153</td><td class="num">-0.376</td></tr>
+          <tr><td>3yr price change</td><td class="num">-0.003</td><td class="num">0.599</td></tr>
+          <tr><td>1yr price change</td><td class="num">-0.026</td><td class="num">0.551</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Conclusions</h2>
+    {t_concl}
 """
 
 MODEL_BODY = """
@@ -475,6 +707,22 @@ def build_all():
             )
         elif href == "about.html":
             body = ABOUT_BODY
+        elif href == "clustering.html":
+            body = CLUSTERING_BODY.format(
+                t_overview1=COPY['CLUSTER_OVERVIEW_1'],
+                t_overview2=COPY['CLUSTER_OVERVIEW_2'],
+                t_dataprep=COPY['CLUSTER_DATAPREP'],
+                t_results=COPY['CLUSTER_RESULTS'],
+                t_concl=COPY['CLUSTER_CONCL'],
+            )
+        elif href == "pca.html":
+            body = PCA_BODY.format(
+                t_overview1=COPY['PCA_OVERVIEW_1'],
+                t_overview2=COPY['PCA_OVERVIEW_2'],
+                t_dataprep=COPY['PCA_DATAPREP'],
+                t_results=COPY['PCA_RESULTS'],
+                t_concl=COPY['PCA_CONCL'],
+            )
         else:
             body = MODEL_BODY.format(
                 slug=slug,
