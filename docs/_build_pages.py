@@ -13,9 +13,10 @@ PAGES = [
     ("pca.html",             "PCA",             "Reducing eleven affordability features to a handful that matter", None),
     ("naive-bayes.html",     "Naive Bayes",     "PLACEHOLDER subtitle", None),
     ("decision-trees.html",  "Decision Trees",  "PLACEHOLDER subtitle", None),
-    ("svm.html",             "SVMs",            "PLACEHOLDER subtitle", None),
     ("regression.html",      "Regression",      "PLACEHOLDER subtitle", None),
-    ("neural-networks.html", "Neural Networks", "PLACEHOLDER subtitle", None),
+    ("adaboost.html",        "AdaBoost",        "PLACEHOLDER subtitle", None),
+    ("gradient-boosting.html","Gradient Boosting", "PLACEHOLDER subtitle", None),
+    ("xgboost.html",         "XGBoost",         "PLACEHOLDER subtitle", None),
     ("conclusions.html",     "Conclusions",     "What the evidence says about affordability", "Findings"),
     ("about.html",           "About Me",        "MS Data Science student, CU Boulder", None),
 ]
@@ -38,7 +39,7 @@ QUESTIONS = [
     ("Which characteristics most separate an affordable metropolitan area from an unaffordable one?",
      "Decision Trees · PCA"),
     ("Can a metropolitan area's affordability be anticipated from its recent price behaviour alone?",
-     "Naive Bayes · SVMs · Neural Networks"),
+     "Naive Bayes · AdaBoost · Gradient Boosting · XGBoost"),
     ("Did the 2008 financial crisis and the 2020 pandemic leave lasting marks on young-adult homeownership, or did the market return to its earlier path?",
      "Data Prep &amp; EDA · Regression"),
 ]
@@ -561,9 +562,10 @@ CONCL_BODY = """
           <tr><td>PCA</td><td>PLACEHOLDER</td><td>PLACEHOLDER</td></tr>
           <tr><td>Naive Bayes</td><td>PLACEHOLDER</td><td>PLACEHOLDER</td></tr>
           <tr><td>Decision Trees</td><td>PLACEHOLDER</td><td>PLACEHOLDER</td></tr>
-          <tr><td>SVMs</td><td>PLACEHOLDER</td><td>PLACEHOLDER</td></tr>
           <tr><td>Regression</td><td>PLACEHOLDER</td><td>PLACEHOLDER</td></tr>
-          <tr><td>Neural Networks</td><td>PLACEHOLDER</td><td>PLACEHOLDER</td></tr>
+          <tr><td>AdaBoost</td><td>PLACEHOLDER</td><td>PLACEHOLDER</td></tr>
+          <tr><td>Gradient Boosting</td><td>PLACEHOLDER</td><td>PLACEHOLDER</td></tr>
+          <tr><td>XGBoost</td><td>PLACEHOLDER</td><td>PLACEHOLDER</td></tr>
         </tbody>
       </table>
     </div>
