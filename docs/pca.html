@@ -57,15 +57,14 @@
 
     <h2>Overview</h2>
     
-    <p>Principal component analysis re-expresses a set of correlated numeric features as a smaller set of
-    new, uncorrelated axes called principal components, each a linear combination of the original features.
-    The first principal component is the single direction through the data that captures the most variance
-    possible; the second is the direction, orthogonal to the first, that captures the most of what remains;
-    and so on. Once the input features are standardized, the principal components are exactly the
-    eigenvectors of the feature correlation matrix, and the amount of variance each component explains is
-    its corresponding eigenvalue. When a small number of components together explain most of the total
-    variance, the original features were carrying a lot of redundant information, and the data can be
-    described almost as well in far fewer dimensions.</p>
+    <p>Principal component analysis consolidates a set of correlated numeric features as a smaller set of
+    new uncorrelated axes called principal components, each a linear combination of the original features.
+    The first principle component is the single direction through the data that captures most variance,
+    the second is the direction orthogonal to the first that captures the most of what remains and so on.
+    Once the input variables have been scaled, the principal components are precisely the eigenvectors of
+    the correlation matrix of the input variables, with their variance explained being their respective
+    eigenvalues. If a small number of the components account for the majority of the total variance, then
+    there must have been much redundant information contained within the input variables.</p>
 
 
     <figure>
