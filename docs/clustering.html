@@ -57,11 +57,11 @@
 
     <h2>Overview</h2>
     
-    <p>Clustering groups observations by similarity without being told in advance what the groups should
-    look like, which is why it is called unsupervised. Two families of method are used here. Partitional
-    methods, of which k-means is the standard example, start by choosing a number of clusters k, place k
-    centroids, and iteratively reassign each point to its nearest centroid and recompute the centroids
-    until the assignments stop changing. Hierarchical methods instead build a tree of merges: every
+    <p>Clustering groups observation by similarity without the labels of the groups or what it should look
+    like which is why its called unsupervised learning. 2 methods are used here. Partitional methods, k
+    means is the standard example. Start by choosing a number of clusters k, place k centroids, and
+    iteratively reassign each point to its nearest centroid and recompute the centroids until the
+    assignments stop changing. Hierarchical clustering methods instead build a tree then merges. Every
     observation starts as its own cluster, and at each step the two closest clusters are merged, continuing
     until everything belongs to one cluster. Cutting that tree at a chosen height produces clusters at any
     k the reader wants, a flexibility k-means does not have on its own.</p>
@@ -77,24 +77,24 @@
     </figure>
 
     
-    <p>Both methods depend on a notion of distance between observations, and the choice of distance metric
+    <p>Both of these methods depends on the distance between observations and the choice of distance metric
     is not neutral. The k-means run here uses ordinary Euclidean distance on the standardized features,
     which treats each metro as a point in an eleven-dimensional space and measures straight-line closeness.
-    The hierarchical clustering instead uses <strong>cosine distance</strong>, which measures the angle
-    between two metros' feature vectors rather than their magnitude. On this dataset that distinction
-    matters, because several of the engineered features (home value, price-to-income, monthly payment and
-    so on) move together almost in lockstep. Cosine distance groups metros with a similar profile across
-    features, a different and complementary way of finding structure than Euclidean distance provides.
-    Clustering is used here for discovery, not prediction: the goal is to see whether American metropolitan
-    housing markets fall into a small number of natural types, which is one of this project's ten research
-    questions.</p>
+    The hierarchical clustering instead uses cosine distance, which measures the angle between two metros'
+    feature vectors rather than their magnitude.</p>
+
+    <p>On this particular dataset this distinction is very important since many of the created features
+    (the home value, the price-to-income ratio, the monthly payment, etc.) show almost perfect correlation
+    with each other. The cosine distance defines groupings of metro areas having similar feature profiles,
+    and therefore this method offers an alternative way of detecting patterns compared to the Euclidean
+    distance method. In this case clustering is used for discovering new information rather than predicting
+    something.</p>
 
 
     <h2>Data Prep</h2>
     
-    <p>Clustering and PCA both require unlabeled, numeric data on comparable scales, which is different
-    from the labeled data used by the supervised models elsewhere on this site. The input here is the 2025
-    cross-section of the metro-year panel: one row per metropolitan area, 894 of them, with eleven
+    <p>Clustering and PCA both require unlabeled, numeric data on comparable scales. The input here is the
+    2025 cross-section of the metro-year panel: one row per metropolitan area, 894 of them, with eleven
     engineered numeric features describing each metro's home value, price growth, volatility and
     affordability relative to a national income benchmark. No ownership rate, age bracket or other outcome
     variable is included, since adding one would make this a labeled rather than unlabeled dataset. All
