@@ -44,87 +44,163 @@
 
     <main class="content">
       <h1>Naive Bayes</h1>
-      <p class="subtitle">PLACEHOLDER subtitle</p>
+      <p class="subtitle">Multinomial and Bernoulli NB predicting affordability class</p>
       <hr class="rule-under">
 
     <div class="meta">
       <dl>
-        <dt>Category</dt><dd>PLACEHOLDER: regression / classification / clustering / dimensionality reduction</dd>
-        <dt>Target</dt><dd>PLACEHOLDER: the column being predicted, or &ldquo;unsupervised&rdquo;</dd>
-        <dt>Data used</dt><dd>PLACEHOLDER: which cleaned table, and how many rows</dd>
+        <dt>Category</dt><dd>Supervised &middot; classification (Naive Bayes)</dd>
+        <dt>Target</dt><dd><code>affordability_class</code>: Affordable / Moderate / Burdened, 3 classes</dd>
+        <dt>Data used</dt><dd><code>metro_2025_supervised.csv</code>, 894 metros &times; 4 predictors + label</dd>
       </dl>
     </div>
 
-    <h2>Why This Model Was Chosen</h2>
-    <div class="todo">
-      <p>Why this method suits this question, in your own words.</p>
-    </div>
-    <ul class="tight">
-      <li>PLACEHOLDER: reason one</li>
-      <li>PLACEHOLDER: reason two</li>
-      <li>PLACEHOLDER: reason three</li>
-    </ul>
+    <h2>Overview</h2>
+    
+    <p>Naive Bayes is a classification method based on Bayes theorem, which calculates the probability of a
+    class given the observed data by combining the probability of the data within each class with how common
+    that class already is. It is called naive because it assumes every predictor contributes independently
+    to that probability, ignoring any correlation between predictors, even though this assumption is rarely
+    exactly true in real data. Despite this simplification, Naive Bayes classifiers tend to perform
+    reasonably well and are fast to train, which is why they are a common first method tried for text
+    classification tasks such as spam detection and sentiment analysis, as well as for general-purpose
+    classification on tabular data like the one used in this project.</p>
 
-    <h2>Core Assumptions</h2>
-    <div class="todo">
-      <p>What this model assumes about the data, and whether the data actually meets those assumptions.</p>
-    </div>
-    <ul class="tight">
-      <li>PLACEHOLDER: assumption one</li>
-      <li>PLACEHOLDER: assumption two</li>
-      <li>PLACEHOLDER: assumption three</li>
-    </ul>
-
-    <h2>Data Preparation</h2>
-    <div class="todo">
-      <p>What this method requires that the others do not, and what was done to meet it.</p>
-    </div>
 
     <figure>
-      <img src="images/PLACEHOLDER-naive-bayes-before.png" alt="Data before preparation">
-      <figcaption><b>Before.</b> PLACEHOLDER: the data before preparation for this method.</figcaption>
+      <img src="images/theory-nb-independence.png" alt="Naive Bayes independence assumption: features point to a shared class node">
+      <figcaption><b>Figure.</b> Naive Bayes assumes every predictor is conditionally independent of the others once the class is known, which is the &ldquo;naive&rdquo; part of the name.</figcaption>
     </figure>
     <figure>
-      <img src="images/PLACEHOLDER-naive-bayes-after.png" alt="Data after preparation">
-      <figcaption><b>After.</b> PLACEHOLDER: the data as fed to the model.</figcaption>
+      <img src="images/theory-nb-feature-types.png" alt="Multinomial NB sees counts; Bernoulli NB sees 0/1 features">
+      <figcaption><b>Figure.</b> The two Naive Bayes variants used here differ only in how they read a feature: Multinomial NB treats each feature as a count (which quantile bin a metro falls into), Bernoulli NB treats it as present/absent (above or below the median).</figcaption>
     </figure>
 
-    <h2>Parameters Explored</h2>
-    <div class="scroll">
-      <table>
-        <thead><tr><th>Run</th><th>Parameters</th><th>Note</th></tr></thead>
-        <tbody>
-          <tr><td>1</td><td><code>PLACEHOLDER</code></td><td>PLACEHOLDER</td></tr>
-          <tr><td>2</td><td><code>PLACEHOLDER</code></td><td>PLACEHOLDER</td></tr>
-          <tr><td>3</td><td><code>PLACEHOLDER</code></td><td>PLACEHOLDER</td></tr>
-        </tbody>
-      </table>
-    </div>
+    
+    <p>Two variants of Naive Bayes are compared here. Multinomial Naive Bayes models each predictor as a
+    count, how many times something occurs or which category of a discrete scale it falls into, and
+    estimates, for each class, the probability distribution over those counts. It requires non-negative
+    input, so it is normally used with count data such as word frequencies in text, or, as done here, with
+    continuous features that have been discretized into ordered bins. Bernoulli Naive Bayes instead models
+    each predictor as a binary indicator, present or absent, true or false, above or below some threshold,
+    and separately estimates the probability of that indicator being true within each class. Bernoulli NB
+    explicitly accounts for a feature being absent as well as present, which matters when the absence of
+    something is itself informative, while Multinomial NB only looks at the counts of the features that do
+    occur.</p>
 
-    <h2>Results</h2>
-    <figure>
-      <img src="images/PLACEHOLDER-naive-bayes-result.png" alt="Model results">
-      <figcaption><b>Figure.</b> PLACEHOLDER: what this figure shows, then what it means.</figcaption>
+
+    <h2>Data Prep</h2>
+    
+    <p>Naive Bayes is a supervised method, so it needs labeled data: a class to predict for every row. This
+    differs from clustering and PCA in Module 2, which required unlabeled numeric data only. Supervised
+    methods also need the data split into a Training Set, used to fit the model's parameters, and a Testing
+    Set, used only to check how the fitted model performs on metros it never saw during training. These two
+    sets must be disjoint, contain no overlapping rows, because testing on rows the model already learned
+    from would overstate how well it actually generalizes. Here the 894 metros are split 75/25 into 670
+    training rows and 224 testing rows, using stratified sampling so the three affordability classes appear
+    in the same proportion in both sets. The four predictors (1, 3, and 5 year price change, and 5 year price
+    volatility) are left on their original numeric scale for Bernoulli NB's thresholding, and separately
+    discretized into four bins for Multinomial NB, since that model needs count-like input rather than raw
+    continuous numbers.</p>
+
+
+    <figure class="sample">
+      <img src="images/data-sample-supervised.png" alt="Sample rows of the labeled affordability-class dataset">
+      <figcaption><b>Sample.</b> First rows of <code>metro_2025_supervised.csv</code>: 4 price-growth/volatility predictors, the payment-to-income ratio the label is built from, and the resulting 3-class label.
+      <a href="https://github.com/anjana5anand/home_ownership/blob/main/data_clean/metro_2025_supervised.csv" target="_blank" rel="noopener">Full file on GitHub &#8599;</a></figcaption>
     </figure>
-    <div class="scroll">
-      <table>
-        <thead><tr><th>Metric</th><th class="num">Value</th><th>Direction</th><th>What it means here</th></tr></thead>
-        <tbody>
-          <tr><td>PLACEHOLDER</td><td class="num">n/a</td><td>Higher is better</td><td>PLACEHOLDER</td></tr>
-          <tr><td>PLACEHOLDER</td><td class="num">n/a</td><td>Lower is better</td><td>PLACEHOLDER</td></tr>
-        </tbody>
-      </table>
-    </div>
+
+    <figure class="sample">
+      <img src="images/data-split-supervised.png" alt="Training and testing split sizes by affordability class">
+      <figcaption><b>Sample.</b> The 75/25 train/test split, stratified by class so all three affordability classes are represented in the same proportion in both sets.
+      <a href="https://github.com/anjana5anand/home_ownership/blob/main/data_clean/metro_2025_supervised_train.csv" target="_blank" rel="noopener">Training set on GitHub &#8599;</a> &middot;
+      <a href="https://github.com/anjana5anand/home_ownership/blob/main/data_clean/metro_2025_supervised_test.csv" target="_blank" rel="noopener">Testing set on GitHub &#8599;</a></figcaption>
+    </figure>
 
     <h2>Code</h2>
+    <p>Python, using scikit-learn. Multinomial NB needs non-negative, count-like input, so each predictor is
+    discretized into 4 quantile bins (fit on the training set only) before fitting; Bernoulli NB needs binary
+    input, so each predictor is thresholded at its own training-set median.</p>
+
+    <figure>
+      <img src="images/nb-binning-illustration.png" alt="Quantile bin edges for two predictors, fit on the training set">
+      <figcaption><b>Figure.</b> Quantile bin edges (orange dashed lines) for two of the four predictors, computed on the training set only and then applied to both the training and testing sets.</figcaption>
+    </figure>
+
+    <div class="codeblock">
+      <div class="codehead">run_naive_bayes.py<span>Multinomial NB (binned) and Bernoulli NB (binarized)</span>
+        <a class="code-link" href="https://github.com/anjana5anand/home_ownership/blob/main/run_naive_bayes.py" target="_blank" rel="noopener">View full file on GitHub &#8599;</a>
+        <button class="code-toggle" type="button" aria-expanded="false">Show excerpt</button>
+      </div>
+      <div class="code-body">
+        <pre><code>binner = KBinsDiscretizer(n_bins=4, encode=&quot;ordinal&quot;, strategy=&quot;quantile&quot;)
+X_train_binned = binner.fit_transform(X_train)
+X_test_binned = binner.transform(X_test)
+
+mnb = MultinomialNB()
+mnb.fit(X_train_binned, y_train)
+mnb_pred = mnb.predict(X_test_binned)
+
+&#8942;  # Bernoulli NB: threshold each predictor at its training-set median instead
+
+medians = X_train.median()
+X_train_bin = (X_train &gt;= medians).astype(int)
+bnb = BernoulliNB().fit(X_train_bin, y_train)</code></pre>
+        <button class="code-close" type="button" aria-label="Collapse code excerpt">&times;</button>
+      </div>
+    </div>
+
     <ul class="linklist">
-      <li><a href="#">PLACEHOLDER</a> <span>: notebook or script for this section</span></li>
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/prep_supervised_data.py" target="_blank" rel="noopener">prep_supervised_data.py</a> <span>: builds the labeled table and the stratified train/test split</span></li>
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/run_naive_bayes.py" target="_blank" rel="noopener">run_naive_bayes.py</a> <span>: Multinomial NB and Bernoulli NB, confusion matrices, accuracy</span></li>
     </ul>
 
-    <h2>Conclusions</h2>
-    <div class="todo">
-      <p>What the results mean for the homeownership question. Not a restatement of the metrics.</p>
+    <h2>Results</h2>
+    
+    <p>Both Naive Bayes variants land well above the 33.3 percent random-guessing baseline for a 3-class
+    problem but well below what would count as reliable prediction. Multinomial NB reaches 49.6 percent test
+    accuracy and Bernoulli NB reaches 53.1 percent, so forcing each predictor down to a single above/below-
+    median bit actually did slightly better here than keeping four quantile bins. Looking at the confusion
+    matrices, most of both models' mistakes land in the class next to the true one (Affordable confused with
+    Moderate, Moderate confused with Burdened) rather than at the opposite extreme, which suggests the
+    predictors do carry some real signal about the ordering of affordability even where they fail to nail the
+    exact class. Bernoulli NB's biggest weakness is the Moderate class, which it predicts for only 1 of 75
+    metros that actually belong to it, collapsing most of that class into the model's prediction of Affordable
+    instead.</p>
+
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Model</th><th class="num">Test accuracy</th></tr></thead>
+        <tbody>
+          <tr><td>Multinomial NB (quantile-binned)</td><td class="num"><strong>49.6%</strong></td></tr>
+          <tr><td>Bernoulli NB (median-binarized)</td><td class="num">53.1%</td></tr>
+          <tr><td><em>Random guessing (3 balanced classes)</em></td><td class="num"><em>33.3%</em></td></tr>
+        </tbody>
+      </table>
     </div>
+
+    <figure>
+      <img src="images/nb-confusion-multinomial.png" alt="Multinomial NB confusion matrix on the test set">
+      <figcaption><b>Figure.</b> Multinomial NB confusion matrix, test set (n = 224). Most errors land in the adjacent class (Affordable mistaken for Moderate, Moderate for Burdened) rather than at the opposite extreme, which is what a reasonable model's mistakes should look like on an ordered label.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="images/nb-confusion-bernoulli.png" alt="Bernoulli NB confusion matrix on the test set">
+      <figcaption><b>Figure.</b> Bernoulli NB confusion matrix, test set (n = 224). Collapsing each predictor to a single above/below-median bit costs Bernoulli NB almost all of its ability to recognize the Moderate class, which gets predicted for only 1 of 75 metros that actually belong to it.</figcaption>
+    </figure>
+
+    <h2>Conclusions</h2>
+    
+    <p>Price growth and volatility alone, without being told how expensive a metro already is, can predict
+    its current affordability tier only moderately better than chance. This says something about the housing
+    affordability question this project is built around: a metro's trajectory does not fully determine its
+    outcome, since two metros with similar recent price growth can land in different affordability classes
+    depending on where their prices started. That is consistent with the Module 2 finding that price level
+    and price growth are largely separate dimensions (PC1 versus PC2 in the PCA results), and it suggests
+    that any model trying to predict or explain affordability for young buyers needs to include price level
+    directly rather than relying on growth and volatility trends by themselves.</p>
+
 
     </main>
 

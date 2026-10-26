@@ -1,0 +1,4 @@
+tree,test_accuracy,depth,n_leaves
+"Tree A (gini, depth=3)",0.5848214285714286,3,8
+"Tree B (entropy, depth=3)",0.5803571428571429,3,8
+"Tree C (gini, unpruned)",0.48214285714285715,22,243

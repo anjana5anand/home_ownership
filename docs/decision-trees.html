@@ -44,87 +44,179 @@
 
     <main class="content">
       <h1>Decision Trees</h1>
-      <p class="subtitle">PLACEHOLDER subtitle</p>
+      <p class="subtitle">Gini, entropy, and three trees of varying depth</p>
       <hr class="rule-under">
 
     <div class="meta">
       <dl>
-        <dt>Category</dt><dd>PLACEHOLDER: regression / classification / clustering / dimensionality reduction</dd>
-        <dt>Target</dt><dd>PLACEHOLDER: the column being predicted, or &ldquo;unsupervised&rdquo;</dd>
-        <dt>Data used</dt><dd>PLACEHOLDER: which cleaned table, and how many rows</dd>
+        <dt>Category</dt><dd>Supervised &middot; classification (Decision Trees)</dd>
+        <dt>Target</dt><dd><code>affordability_class</code>: Affordable / Moderate / Burdened, 3 classes</dd>
+        <dt>Data used</dt><dd><code>metro_2025_supervised.csv</code>, 894 metros &times; 4 predictors + label (same table used for Naive Bayes)</dd>
       </dl>
     </div>
 
-    <h2>Why This Model Was Chosen</h2>
-    <div class="todo">
-      <p>Why this method suits this question, in your own words.</p>
-    </div>
-    <ul class="tight">
-      <li>PLACEHOLDER: reason one</li>
-      <li>PLACEHOLDER: reason two</li>
-      <li>PLACEHOLDER: reason three</li>
-    </ul>
+    <h2>Overview</h2>
+    
+    <p>A decision tree is a supervised classification (or regression) method that predicts a class by asking
+    a sequence of yes or no questions about the predictors, each one splitting the data into two smaller,
+    more homogeneous groups, until a stopping point is reached and a class is assigned at each leaf. Decision
+    trees are popular because the resulting tree can be read directly: unlike Naive Bayes, which only
+    produces a probability from an equation, a tree shows exactly which feature and threshold led to each
+    prediction, which makes it easy to explain to someone without a statistics background.</p>
 
-    <h2>Core Assumptions</h2>
-    <div class="todo">
-      <p>What this model assumes about the data, and whether the data actually meets those assumptions.</p>
-    </div>
-    <ul class="tight">
-      <li>PLACEHOLDER: assumption one</li>
-      <li>PLACEHOLDER: assumption two</li>
-      <li>PLACEHOLDER: assumption three</li>
-    </ul>
-
-    <h2>Data Preparation</h2>
-    <div class="todo">
-      <p>What this method requires that the others do not, and what was done to meet it.</p>
-    </div>
 
     <figure>
-      <img src="images/PLACEHOLDER-decision-trees-before.png" alt="Data before preparation">
-      <figcaption><b>Before.</b> PLACEHOLDER: the data before preparation for this method.</figcaption>
+      <img src="images/theory-decision-tree-concept.png" alt="Conceptual decision tree: a sequence of yes/no splits ending in a predicted class">
+      <figcaption><b>Figure.</b> A decision tree is a sequence of yes/no questions about the predictors, each one splitting the data further, until a leaf is reached and a class is predicted.</figcaption>
     </figure>
     <figure>
-      <img src="images/PLACEHOLDER-decision-trees-after.png" alt="Data after preparation">
-      <figcaption><b>After.</b> PLACEHOLDER: the data as fed to the model.</figcaption>
+      <img src="images/theory-gini-entropy.png" alt="Gini impurity and entropy as a function of class proportion">
+      <figcaption><b>Figure.</b> Gini impurity and entropy measure the same thing on different scales: both are zero when a node is pure (every row the same class) and highest when classes are evenly mixed. A split is &ldquo;good&rdquo; when it lowers this impurity, weighted by how the data divides between the two children.</figcaption>
     </figure>
 
-    <h2>Parameters Explored</h2>
+    
+    <p>Each split in a tree is chosen to make the two resulting groups as pure as possible, meaning each
+    group contains mostly one class rather than an even mix. Gini impurity and entropy are the two most
+    common ways to measure how mixed a group is: both equal zero when a node is perfectly pure and both are
+    highest when classes are evenly split. Information gain is the reduction in entropy (or the equivalent
+    reduction in gini, sometimes called the gini gain) achieved by a split, the impurity of the parent node
+    minus the weighted average impurity of its two children. The table below works through the actual root
+    split chosen for Tree A on this project's data, splitting on 5-year price volatility at 6.44: the parent
+    node's gini impurity of 0.667 falls to a weighted average of 0.622 across its two children, a gini gain
+    of 0.044, and the parent's entropy of 1.585 falls to a weighted 1.489, an information gain of 0.096.
+    Because there is no single rule for which feature to split on first when several give a similar
+    improvement, and because a tree can keep splitting until every leaf is pure or runs out of data, an
+    essentially unlimited number of different, equally valid trees can be grown from the same data just by
+    varying the maximum depth, the impurity measure, or how ties between competing splits are broken.</p>
+
+
     <div class="scroll">
       <table>
-        <thead><tr><th>Run</th><th>Parameters</th><th>Note</th></tr></thead>
+        <thead><tr><th>Node</th><th class="num">n</th><th>Class counts (Afford. / Mod. / Burd.)</th><th class="num">Gini</th><th class="num">Entropy</th></tr></thead>
         <tbody>
-          <tr><td>1</td><td><code>PLACEHOLDER</code></td><td>PLACEHOLDER</td></tr>
-          <tr><td>2</td><td><code>PLACEHOLDER</code></td><td>PLACEHOLDER</td></tr>
-          <tr><td>3</td><td><code>PLACEHOLDER</code></td><td>PLACEHOLDER</td></tr>
+          <tr><td>Parent (root, before split)</td><td class="num">670</td><td>223 / 225 / 222</td><td class="num">0.667</td><td class="num">1.585</td></tr>
+          <tr><td>Left child (5yr volatility &le; 6.44)</td><td class="num">419</td><td>166 / 170 / 83</td><td class="num">0.639</td><td class="num">1.520</td></tr>
+          <tr><td>Right child (5yr volatility &gt; 6.44)</td><td class="num">251</td><td>57 / 55 / 139</td><td class="num">0.594</td><td class="num">1.438</td></tr>
+          <tr><td><strong>Weighted average after split</strong></td><td class="num">670</td><td>&ndash;</td><td class="num"><strong>0.622</strong></td><td class="num"><strong>1.489</strong></td></tr>
+          <tr><td><strong>Gain from this split</strong></td><td class="num">&ndash;</td><td>&ndash;</td><td class="num"><strong>0.044</strong></td><td class="num"><strong>0.096</strong></td></tr>
         </tbody>
       </table>
     </div>
 
-    <h2>Results</h2>
-    <figure>
-      <img src="images/PLACEHOLDER-decision-trees-result.png" alt="Model results">
-      <figcaption><b>Figure.</b> PLACEHOLDER: what this figure shows, then what it means.</figcaption>
+    <h2>Data Prep</h2>
+    
+    <p>Decision trees are also a supervised method and need the same kind of labeled, split data as Naive
+    Bayes: a class to predict for every metro, and a disjoint Training Set and Testing Set so accuracy is
+    measured on metros the tree never saw while growing. The same 894-metro table and the same 75/25
+    stratified 670/224 split used for Naive Bayes are reused here, so the two methods can be compared fairly
+    on identical data. Unlike Naive Bayes, trees do not need the predictors binned or binarized, since a
+    split just compares one feature to a numeric threshold directly, so the four price-growth and volatility
+    predictors are used here on their original continuous scale.</p>
+
+
+    <figure class="sample">
+      <img src="images/data-sample-supervised.png" alt="Sample rows of the labeled affordability-class dataset">
+      <figcaption><b>Sample.</b> First rows of <code>metro_2025_supervised.csv</code>, the same labeled table used for Naive Bayes.
+      <a href="https://github.com/anjana5anand/home_ownership/blob/main/data_clean/metro_2025_supervised.csv" target="_blank" rel="noopener">Full file on GitHub &#8599;</a></figcaption>
     </figure>
-    <div class="scroll">
-      <table>
-        <thead><tr><th>Metric</th><th class="num">Value</th><th>Direction</th><th>What it means here</th></tr></thead>
-        <tbody>
-          <tr><td>PLACEHOLDER</td><td class="num">n/a</td><td>Higher is better</td><td>PLACEHOLDER</td></tr>
-          <tr><td>PLACEHOLDER</td><td class="num">n/a</td><td>Lower is better</td><td>PLACEHOLDER</td></tr>
-        </tbody>
-      </table>
-    </div>
+
+    <figure class="sample">
+      <img src="images/data-split-supervised.png" alt="Training and testing split sizes by affordability class">
+      <figcaption><b>Sample.</b> The same 75/25 stratified train/test split used for Naive Bayes.
+      <a href="https://github.com/anjana5anand/home_ownership/blob/main/data_clean/metro_2025_supervised_train.csv" target="_blank" rel="noopener">Training set on GitHub &#8599;</a> &middot;
+      <a href="https://github.com/anjana5anand/home_ownership/blob/main/data_clean/metro_2025_supervised_test.csv" target="_blank" rel="noopener">Testing set on GitHub &#8599;</a></figcaption>
+    </figure>
 
     <h2>Code</h2>
+    <p>Python, using scikit-learn's <code>DecisionTreeClassifier</code> directly on the unscaled predictors;
+    trees compare one feature to a threshold at a time, so standardizing is not required the way it was for
+    k-means or PCA.</p>
+
+    <div class="codeblock">
+      <div class="codehead">run_decision_trees.py<span>three trees: gini/depth-3, entropy/depth-3, gini/unpruned</span>
+        <a class="code-link" href="https://github.com/anjana5anand/home_ownership/blob/main/run_decision_trees.py" target="_blank" rel="noopener">View full file on GitHub &#8599;</a>
+        <button class="code-toggle" type="button" aria-expanded="false">Show excerpt</button>
+      </div>
+      <div class="code-body">
+        <pre><code>trees = {
+    &quot;Tree A (gini, depth=3)&quot;:    DecisionTreeClassifier(criterion=&quot;gini&quot;,    max_depth=3,    random_state=42),
+    &quot;Tree B (entropy, depth=3)&quot;: DecisionTreeClassifier(criterion=&quot;entropy&quot;, max_depth=3,    random_state=42),
+    &quot;Tree C (gini, unpruned)&quot;:   DecisionTreeClassifier(criterion=&quot;gini&quot;,    max_depth=None, random_state=42),
+}
+&#8942;  # fit each on the training set, predict the test set, confusion matrix + accuracy</code></pre>
+        <button class="code-close" type="button" aria-label="Collapse code excerpt">&times;</button>
+      </div>
+    </div>
+
     <ul class="linklist">
-      <li><a href="#">PLACEHOLDER</a> <span>: notebook or script for this section</span></li>
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/prep_supervised_data.py" target="_blank" rel="noopener">prep_supervised_data.py</a> <span>: builds the labeled table and the stratified train/test split</span></li>
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/run_decision_trees.py" target="_blank" rel="noopener">run_decision_trees.py</a> <span>: three trees, confusion matrices, feature importance, the worked split example</span></li>
     </ul>
 
-    <h2>Conclusions</h2>
-    <div class="todo">
-      <p>What the results mean for the homeownership question. Not a restatement of the metrics.</p>
+    <h2>Results</h2>
+    
+    <p>The two shallow trees (max depth 3) perform almost identically regardless of which impurity measure
+    built them: Tree A (gini) reaches 58.5 percent test accuracy and Tree B (entropy) reaches 58.0 percent,
+    both well above the 33.3 percent random-guessing baseline and meaningfully better than either Naive Bayes
+    variant. The unpruned Tree C tells a different story: grown with no depth limit, it reaches 22 levels and
+    243 leaves, perfectly memorizing patterns in the 670 training metros, but its test accuracy actually
+    falls to 48.2 percent, below even the shallow trees. This is a textbook case of overfitting: a tree
+    flexible enough to carve out a leaf for nearly every unusual combination of training rows ends up
+    matching noise in that training data rather than a pattern that generalizes to new metros.</p>
+
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Tree</th><th class="num">Test accuracy</th><th class="num">Depth</th><th class="num">Leaves</th></tr></thead>
+        <tbody>
+          <tr><td>Tree A (gini, max depth 3)</td><td class="num"><strong>58.5%</strong></td><td class="num">3</td><td class="num">8</td></tr>
+          <tr><td>Tree B (entropy, max depth 3)</td><td class="num">58.0%</td><td class="num">3</td><td class="num">8</td></tr>
+          <tr><td>Tree C (gini, unpruned)</td><td class="num">48.2%</td><td class="num">22</td><td class="num">243</td></tr>
+          <tr><td><em>Random guessing (3 balanced classes)</em></td><td class="num"><em>33.3%</em></td><td class="num">&ndash;</td><td class="num">&ndash;</td></tr>
+        </tbody>
+      </table>
     </div>
+
+    <figure class="wide">
+      <img src="images/dt-tree-gini.png" alt="Tree A: gini criterion, max depth 3">
+      <figcaption><b>Figure.</b> Tree A, gini criterion, max depth 3. The root splits on 5-year price volatility; lower branches further split on 1-year and 5-year price change.</figcaption>
+    </figure>
+
+    <figure class="wide">
+      <img src="images/dt-tree-entropy.png" alt="Tree B: entropy criterion, max depth 3">
+      <figcaption><b>Figure.</b> Tree B, entropy criterion, max depth 3. Built on the same data with a different impurity measure; the structure is close to Tree A's but not identical, showing the two criteria usually agree without being guaranteed to.</figcaption>
+    </figure>
+
+    <figure class="wide">
+      <img src="images/dt-tree-unpruned-top.png" alt="Tree C: gini criterion, unpruned, top 3 levels shown">
+      <figcaption><b>Figure.</b> Tree C, grown without a depth limit, reaches 22 levels and 243 leaves; only the top 3 levels are shown here since the full tree is far too large to read. Despite fitting the training data far more closely, it scores lower on the test set than the two shallow trees.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="images/dt-confusion-tree-a.png" alt="Tree A confusion matrix">
+      <figcaption><b>Figure.</b> Tree A confusion matrix. Errors again cluster in adjacent classes rather than jumping from Affordable straight to Burdened.</figcaption>
+    </figure>
+    <figure>
+      <img src="images/dt-confusion-tree-c.png" alt="Tree C (unpruned) confusion matrix">
+      <figcaption><b>Figure.</b> Tree C (unpruned) confusion matrix, for comparison. More metros are misclassified overall than with the shallow Tree A, the signature of overfitting: the unpruned tree memorized quirks of the 670 training metros that did not generalize to the 224 it had never seen.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="images/dt-feature-importance.png" alt="Feature importance for Tree A">
+      <figcaption><b>Figure.</b> Which of the 4 predictors Tree A actually uses to split, weighted by how much each split reduced gini impurity.</figcaption>
+    </figure>
+
+    <h2>Conclusions</h2>
+    
+    <p>Letting a model ask a sequence of questions about recent price growth and volatility predicts a
+    metro's current affordability class meaningfully better than chance, and better than either Naive Bayes
+    variant managed with the same four predictors, but a shallow, limited tree generalizes better than one
+    left free to grow as deep as it wants. For this project's underlying question, that argues for favoring
+    simpler, more constrained models of housing affordability over more complex ones chasing marginal gains
+    on the training data, especially given how few predictors (only four) were available to the model and
+    how much of affordability's story, shown already in Module 2, is really about price level rather than
+    price movement.</p>
+
 
     </main>
 

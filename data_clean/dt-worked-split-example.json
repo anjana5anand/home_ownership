@@ -1,0 +1,27 @@
+{
+  "root_feature": "zhvi_volatility_5yr",
+  "root_threshold": 6.435,
+  "parent_counts": {
+    "Affordable": 223,
+    "Moderate": 225,
+    "Burdened": 222
+  },
+  "left_counts": {
+    "Affordable": 166,
+    "Moderate": 170,
+    "Burdened": 83
+  },
+  "right_counts": {
+    "Affordable": 57,
+    "Moderate": 55,
+    "Burdened": 139
+  },
+  "parent_gini": 0.6667,
+  "left_gini": 0.6392,
+  "right_gini": 0.5937,
+  "parent_entropy": 1.5849,
+  "left_entropy": 1.5199,
+  "right_entropy": 1.4377,
+  "gini_gain": 0.0445,
+  "information_gain": 0.0958
+}

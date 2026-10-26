@@ -1,0 +1,671 @@
+region_name,state_name,zhvi_yoy_pct,zhvi_3yr_pct,zhvi_5yr_pct,zhvi_volatility_5yr,payment_to_income_pct_25_34,affordability_class
+"Bemidji, MN",MN,2.68,13.23,37.89,3.95,27.8,Moderate
+"Danville, KY",KY,2.82,13.0,43.69,4.8,23.2,Moderate
+"Lewiston, ME",ME,1.4,17.18,51.18,6.0,34.6,Burdened
+"Paragould, AR",AR,-0.25,4.24,26.93,5.59,19.7,Affordable
+"Deltona, FL",FL,-5.11,-7.28,33.43,12.59,34.5,Burdened
+"Flagstaff, AZ",AZ,1.15,8.57,50.66,10.75,65.7,Burdened
+"Vernal, UT",UT,4.68,18.07,52.5,5.02,36.5,Burdened
+"Montrose, CO",CO,1.86,8.53,44.36,8.0,51.6,Burdened
+"Great Bend, KS",KS,1.9,17.71,45.69,3.84,12.2,Affordable
+"Garden City, KS",KS,1.62,6.12,28.52,4.46,24.3,Moderate
+"Battle Creek, MI",MI,3.45,16.13,39.79,5.79,19.5,Affordable
+"Oak Harbor, WA",WA,0.08,3.32,28.04,8.31,67.0,Burdened
+"Columbus, MS",MS,0.83,9.21,21.81,7.92,19.1,Affordable
+"Odessa, TX",TX,4.06,14.2,9.95,3.95,25.9,Moderate
+"Barre, VT",VT,-0.42,6.46,33.86,6.23,41.0,Burdened
+"Laredo, TX",TX,2.48,3.26,17.68,3.76,22.4,Moderate
+"Florence, AL",AL,-0.03,8.08,34.89,5.8,22.2,Moderate
+"State College, PA",PA,2.34,10.49,24.66,1.81,36.4,Burdened
+"Macon, GA",GA,-0.25,7.41,40.1,6.7,20.4,Affordable
+"Lewiston, ID",ID,1.97,6.55,39.02,8.32,38.9,Burdened
+"Athens, OH",OH,2.6,8.64,22.51,3.37,19.1,Affordable
+"Beatrice, NE",NE,4.96,15.89,42.57,3.83,21.0,Affordable
+"Morristown, TN",TN,1.45,16.72,52.17,6.4,30.6,Moderate
+"Wabash, IN",IN,4.77,19.46,42.59,2.22,19.4,Affordable
+"LaGrange, GA",GA,-0.3,10.78,46.17,6.69,20.7,Affordable
+"Malvern, AR",AR,-2.87,3.27,17.2,4.3,17.4,Affordable
+"Victoria, TX",TX,-1.76,0.58,20.54,5.3,22.9,Moderate
+"Vermillion, SD",SD,4.5,18.94,46.68,3.33,29.3,Moderate
+"Canton, OH",OH,4.88,19.81,40.38,1.52,22.2,Moderate
+"Warner Robins, GA",GA,3.21,12.63,47.35,5.82,26.1,Moderate
+"Roswell, NM",NM,-3.08,-6.14,3.94,7.59,17.8,Affordable
+"Austin, MN",MN,5.5,15.63,42.68,4.2,21.2,Affordable
+"Greenville, OH",OH,7.1,19.86,46.93,3.11,21.9,Moderate
+"Sevierville, TN",TN,-4.95,-8.38,36.3,15.76,42.4,Burdened
+"Pottsville, PA",PA,2.49,21.91,48.49,4.57,16.6,Affordable
+"Hutchinson, KS",KS,4.55,15.76,42.09,3.34,16.0,Affordable
+"Prineville, OR",OR,0.26,1.87,33.34,11.03,49.5,Burdened
+"Missoula, MT",MT,0.76,7.9,51.48,11.53,60.1,Burdened
+"Bradford, PA",PA,-1.58,2.8,9.23,3.21,11.8,Affordable
+"Indianola, MS",MS,-9.11,-19.32,-16.93,10.17,10.4,Affordable
+"Huntingdon, PA",PA,2.26,7.2,18.4,2.24,18.5,Affordable
+"Hammond, LA",LA,-0.48,-6.38,4.95,5.5,23.2,Moderate
+"Jackson, MI",MI,3.68,13.0,31.37,2.67,23.4,Moderate
+"Jacksonville, NC",NC,3.2,13.01,50.99,6.42,30.0,Moderate
+"Carlsbad, NM",NM,-2.65,-2.91,-5.97,3.47,25.1,Moderate
+"Wichita Falls, TX",TX,-1.03,3.28,34.01,7.71,18.2,Affordable
+"Lumberton, NC",NC,-2.58,2.48,35.61,8.16,13.7,Affordable
+"La Crosse, WI",WI,2.69,14.02,36.71,3.24,34.1,Burdened
+"New Castle, PA",PA,-0.11,6.22,27.59,4.39,16.3,Affordable
+"Riverside, CA",CA,-2.44,3.16,36.75,9.38,60.8,Burdened
+"Carbondale, IL",IL,4.4,9.96,18.39,0.91,15.8,Affordable
+"Galesburg, IL",IL,11.02,16.11,14.81,4.86,11.7,Affordable
+"Bismarck, ND",ND,5.23,12.48,29.6,2.2,36.6,Burdened
+"Auburn, AL",AL,3.76,12.9,35.66,3.72,35.6,Burdened
+"Kingsport, TN",TN,1.12,16.39,50.06,5.89,25.3,Moderate
+"Spokane, WA",WA,0.32,1.1,31.63,9.45,44.5,Burdened
+"San Luis Obispo, CA",CA,1.51,8.56,35.08,5.41,93.6,Burdened
+"The Dalles, OR",OR,1.63,4.02,29.2,7.17,41.5,Burdened
+"Milwaukee, WI",WI,4.51,19.34,38.12,1.67,39.7,Burdened
+"Huntsville, AL",AL,0.33,1.11,33.5,9.41,32.6,Burdened
+"Ellensburg, WA",WA,-0.69,-1.15,28.11,8.92,52.2,Burdened
+"Danville, IL",IL,1.28,10.11,22.2,2.66,10.8,Affordable
+"Hays, KS",KS,6.71,14.72,33.88,2.6,25.4,Moderate
+"Shelton, WA",WA,0.19,3.56,30.57,8.65,47.8,Burdened
+"Cookeville, TN",TN,1.78,7.35,43.54,8.77,30.3,Moderate
+"Newberry, SC",SC,-1.52,-1.76,13.93,6.21,22.2,Moderate
+"Roanoke, VA",VA,3.16,15.16,42.06,3.68,31.0,Moderate
+"Berlin, NH",NH,0.19,12.71,59.95,8.6,26.8,Moderate
+"Hailey, ID",ID,13.35,18.09,72.17,13.5,107.0,Burdened
+"Rocky Mount, NC",NC,-1.59,6.27,40.52,7.87,20.6,Affordable
+"Winnemucca, NV",NV,3.91,15.77,42.8,6.73,36.3,Burdened
+"Menomonie, WI",WI,3.23,12.52,37.37,3.78,32.8,Burdened
+"Talladega, AL",AL,0.14,7.26,26.22,5.72,18.8,Affordable
+"Sikeston, MO",MO,-0.7,-0.31,8.5,3.61,16.3,Affordable
+"Middlesborough, KY",KY,-18.99,-24.8,-23.92,9.93,9.8,Affordable
+"Torrington, CT",CT,3.33,20.72,54.03,4.34,43.8,Burdened
+"Gainesville, FL",FL,-2.72,2.59,32.57,7.43,31.6,Moderate
+"Cape Girardeau, MO",MO,3.47,9.21,31.81,4.02,23.0,Moderate
+"Espa±ola, NM",NM,2.57,10.55,22.82,4.37,34.5,Burdened
+"Ithaca, NY",NY,2.24,15.71,40.67,3.4,36.3,Burdened
+"Kerrville, TX",TX,-3.0,-5.01,24.04,10.08,39.4,Burdened
+"Cedar Rapids, IA",IA,3.55,10.73,30.99,2.94,25.1,Moderate
+"York, PA",PA,4.5,16.15,41.83,3.1,31.8,Moderate
+"McPherson, KS",KS,3.64,12.14,28.23,1.9,23.4,Moderate
+"Utica, NY",NY,6.57,20.57,47.41,2.39,23.3,Moderate
+"Anniston, AL",AL,3.56,5.76,20.94,4.25,17.4,Affordable
+"Durango, CO",CO,1.3,8.77,48.7,8.2,70.5,Burdened
+"Jesup, GA",GA,0.94,12.61,35.08,5.24,21.2,Affordable
+"Harrisonburg, VA",VA,3.56,13.74,34.63,2.91,36.3,Burdened
+"Oklahoma City, OK",OK,0.89,6.47,34.77,5.76,25.4,Moderate
+"Portsmouth, OH",OH,5.15,16.95,37.9,2.22,14.8,Affordable
+"Hanford, CA",CA,2.21,9.68,37.26,5.88,37.6,Burdened
+"Lafayette, LA",LA,-0.25,-4.26,0.99,2.41,20.5,Affordable
+"Billings, MT",MT,1.03,8.14,41.36,7.04,42.5,Burdened
+"Searcy, AR",AR,4.07,15.48,41.22,4.27,21.2,Affordable
+"Mount Vernon, IL",IL,4.6,5.78,16.32,3.0,14.8,Affordable
+"Jacksonville, IL",IL,1.83,13.0,13.01,3.16,13.6,Affordable
+"Springfield, IL",IL,7.44,18.85,29.75,1.54,20.3,Affordable
+"Pinehurst, NC",NC,0.72,7.76,50.17,8.72,43.0,Burdened
+"Dumas, TX",TX,9.09,7.74,18.53,4.92,19.1,Affordable
+"Andrews, TX",TX,5.37,7.21,11.67,5.09,26.2,Moderate
+"Sebastian, FL",FL,-5.51,-6.69,37.56,13.32,38.2,Burdened
+"Red Wing, MN",MN,3.65,8.71,30.59,4.17,33.6,Burdened
+"Punta Gorda, FL",FL,-12.94,-21.87,21.56,18.71,31.4,Moderate
+"Omaha, NE",NE,1.74,10.45,34.71,4.07,31.9,Moderate
+"Marquette, MI",MI,7.6,16.95,49.17,4.44,26.1,Moderate
+"McAllen, TX",TX,-1.18,7.89,41.27,7.28,19.9,Affordable
+"Woodward, OK",OK,1.6,2.78,11.36,1.99,13.2,Affordable
+"Huntington, WV",OH,2.45,8.46,23.69,3.13,17.1,Affordable
+"Key West, FL",FL,-4.51,-3.55,45.32,13.4,98.0,Burdened
+"Brookings, SD",SD,5.38,12.86,36.28,3.4,33.2,Burdened
+"Binghamton, NY",NY,2.9,20.17,45.54,3.01,20.3,Affordable
+"Daphne, AL",AL,-0.81,2.39,33.98,8.39,38.9,Burdened
+"Calhoun, GA",GA,2.31,14.38,55.15,7.2,28.5,Moderate
+"Cullowhee, NC",NC,0.41,9.1,48.5,8.24,42.9,Burdened
+"Sioux City, IA",IA,2.88,10.95,31.52,2.97,23.1,Moderate
+"Terre Haute, IN",IN,2.33,15.66,38.99,3.29,17.3,Affordable
+"Juneau, AK",AK,3.97,6.82,20.79,3.22,48.4,Burdened
+"Butte, MT",MT,2.78,12.45,65.18,10.81,29.4,Moderate
+"Plainview, TX",TX,-4.21,-11.08,0.05,5.62,12.9,Affordable
+"Rockford, IL",IL,7.86,30.94,60.68,1.8,22.2,Moderate
+"Bloomington, IN",IN,2.05,9.62,33.01,4.19,31.2,Moderate
+"Redding, CA",CA,-1.38,-0.41,19.3,7.01,39.0,Burdened
+"Big Stone Gap, VA",VA,-3.01,7.35,30.38,5.53,13.5,Affordable
+"St. Louis, MO",MO,2.44,12.04,32.82,2.95,28.3,Moderate
+"Breckenridge, CO",CO,-2.48,-7.65,26.98,13.48,102.0,Burdened
+"Albany, GA",GA,-1.72,7.6,39.24,6.68,17.0,Affordable
+"Palatka, FL",FL,-1.74,0.82,34.03,9.1,22.5,Moderate
+"Coffeyville, KS",KS,-0.46,3.02,33.42,8.84,10.2,Affordable
+"Picayune, MS",MS,0.91,10.4,27.79,3.06,19.6,Affordable
+"Storm Lake, IA",IA,1.2,7.68,31.33,4.52,19.6,Affordable
+"Bennettsville, SC",SC,-14.96,-32.45,-22.78,11.94,8.9,Affordable
+"Sacramento, CA",CA,-2.26,-0.76,21.01,8.46,60.6,Burdened
+"Tyler, TX",TX,-0.79,4.38,36.1,7.42,28.0,Moderate
+"Cortland, NY",NY,5.42,15.93,38.91,2.6,20.9,Affordable
+"Oneonta, NY",NY,-1.72,7.81,27.01,4.52,21.8,Affordable
+"Warren, PA",PA,0.97,8.76,28.76,4.68,14.1,Affordable
+"Summerville, GA",GA,-0.72,1.58,33.3,8.31,17.9,Affordable
+"Corsicana, TX",TX,-0.98,4.11,39.36,8.61,23.7,Moderate
+"Los Alamos, NM",NM,0.36,16.16,35.72,3.43,61.0,Burdened
+"Urbana, OH",OH,4.25,15.62,41.82,3.57,25.8,Moderate
+"Mobile, AL",AL,-1.65,4.88,28.76,5.9,20.2,Affordable
+"Newport, OR",OR,-1.04,1.57,38.63,11.32,49.8,Burdened
+"Sulphur Springs, TX",TX,-3.12,-10.56,11.62,9.08,27.6,Moderate
+"La Grande, OR",OR,6.47,14.15,44.9,7.07,34.3,Burdened
+"Big Rapids, MI",MI,3.52,9.47,32.44,5.24,23.4,Moderate
+"New Bern, NC",NC,2.35,15.15,50.02,5.52,27.1,Moderate
+"Kokomo, IN",IN,6.41,21.82,49.95,3.29,19.7,Affordable
+"Brookhaven, MS",MS,-2.11,-3.45,1.08,5.03,17.2,Affordable
+"Lynchburg, VA",VA,1.49,13.09,39.48,4.3,29.7,Moderate
+"Fremont, OH",OH,5.38,19.66,40.77,2.03,19.4,Affordable
+"Alexandria, MN",MN,2.13,12.35,33.69,3.65,36.1,Burdened
+"Portales, NM",NM,-1.74,0.11,1.2,2.1,14.8,Affordable
+"Easton, MD",MD,-0.31,9.43,32.17,5.34,51.4,Burdened
+"Cullman, AL",AL,4.05,5.25,31.67,6.81,26.0,Moderate
+"West Plains, MO",MO,4.96,16.15,56.57,6.22,22.5,Moderate
+"Kearney, NE",NE,5.22,11.9,35.6,3.62,30.1,Moderate
+"Lawton, OK",OK,3.52,9.62,35.51,4.55,15.8,Affordable
+"Hobbs, NM",NM,0.47,-9.39,-25.82,4.9,20.2,Affordable
+"New York, NY",NY,3.25,15.16,33.34,2.66,74.3,Burdened
+"Huntsville, TX",TX,0.23,-4.32,19.36,8.03,28.6,Moderate
+"Johnstown, PA",PA,-7.18,-17.57,-12.15,8.67,10.3,Affordable
+"Barnstable Town, MA",MA,0.02,10.84,52.46,8.75,78.7,Burdened
+"Burlington, VT",VT,-0.05,8.44,34.19,5.1,49.6,Burdened
+"Milledgeville, GA",GA,3.58,8.52,34.35,5.89,23.6,Moderate
+"Gallup, NM",NM,1.5,6.34,13.07,2.56,23.0,Moderate
+"Hattiesburg, MS",MS,1.74,9.18,25.0,3.64,21.9,Moderate
+"Mount Sterling, KY",KY,2.37,5.82,31.24,5.2,20.4,Affordable
+"Gulfport, MS",MS,-0.08,4.01,28.81,6.56,22.7,Moderate
+"Clarksburg, WV",WV,-0.29,5.88,18.01,2.61,15.7,Affordable
+"Jackson, MS",MS,2.23,5.19,27.61,5.01,21.7,Affordable
+"Holland, MI",MI,5.39,17.41,42.7,3.71,36.1,Burdened
+"Dickinson, ND",ND,7.7,17.25,24.32,3.0,33.3,Burdened
+"Sayre, PA",PA,2.71,13.57,28.79,2.56,20.8,Affordable
+"Niles, MI",MI,2.77,10.33,36.37,4.45,28.3,Moderate
+"Waco, TX",TX,-1.4,-1.51,34.22,9.65,26.4,Moderate
+"Naples, FL",FL,-7.28,-9.04,46.93,17.23,58.0,Burdened
+"Morehead City, NC",NC,0.8,8.18,49.29,8.57,48.4,Burdened
+"Salem, OH",OH,0.03,8.64,27.77,3.76,16.5,Affordable
+"Susanville, CA",CA,-0.44,-0.49,10.59,4.02,24.1,Moderate
+"Tupelo, MS",MS,4.01,8.58,27.12,6.71,19.4,Affordable
+"Kingsville, TX",TX,1.21,1.42,9.3,4.28,15.5,Affordable
+"Clarksville, TN",TN,-0.4,4.47,41.01,8.38,30.2,Moderate
+"Topeka, KS",KS,1.57,15.36,43.91,4.34,22.6,Moderate
+"Hutchinson, MN",MN,4.03,14.2,39.41,5.04,31.0,Moderate
+"Connersville, IN",IN,7.71,21.49,58.68,5.19,16.9,Affordable
+"Kalamazoo, MI",MI,3.07,12.29,34.04,3.69,28.5,Moderate
+"Fredericksburg, TX",TX,-2.83,-6.36,26.14,11.88,54.1,Burdened
+"Corinth, MS",MS,3.97,6.0,23.19,9.19,17.6,Affordable
+"Thomasville, GA",GA,1.39,9.52,40.31,6.27,23.0,Moderate
+"Asheville, NC",NC,-3.39,4.23,37.33,8.06,44.9,Burdened
+"Sonora, CA",CA,-3.79,-5.84,16.03,9.33,40.8,Burdened
+"Clewiston, FL",FL,-2.99,7.53,57.15,11.34,29.2,Moderate
+"Columbia, SC",SC,0.86,7.14,41.22,6.9,26.3,Moderate
+"Lake Charles, LA",LA,3.65,-8.75,-12.39,4.77,20.4,Affordable
+"South Bend, IN",IN,3.97,16.3,45.04,3.75,24.2,Moderate
+"Provo, UT",UT,2.62,2.88,34.63,10.3,56.7,Burdened
+"Denver, CO",CO,-3.12,-2.51,21.58,8.02,60.0,Burdened
+"Vallejo, CA",CA,-3.09,-1.79,16.29,7.5,60.3,Burdened
+"Green Bay, WI",WI,5.59,23.3,51.07,2.51,35.5,Burdened
+"Shawano, WI",WI,8.32,28.92,54.02,3.5,27.8,Moderate
+"Vicksburg, MS",MS,-4.36,-2.82,4.22,7.2,14.7,Affordable
+"Waycross, GA",GA,-1.84,6.17,37.88,7.36,16.9,Affordable
+"Morgan City, LA",LA,-10.5,-11.14,-13.2,4.68,12.6,Affordable
+"Bangor, ME",ME,1.65,14.97,48.78,5.67,29.1,Moderate
+"Mount Pleasant, MI",MI,1.96,7.68,27.93,4.5,23.1,Moderate
+"Pittsfield, MA",MA,2.29,14.4,47.31,5.56,40.4,Burdened
+"Roanoke Rapids, NC",NC,-0.44,-1.56,19.64,6.39,10.6,Affordable
+"Orangeburg, SC",SC,-2.34,2.54,15.91,8.66,16.3,Affordable
+"Steamboat Springs, CO",CO,0.88,11.2,68.51,12.9,115.5,Burdened
+"Winchester, VA",VA,1.48,9.98,35.62,4.85,40.1,Burdened
+"Seattle, WA",WA,-1.3,4.71,29.55,7.09,78.7,Burdened
+"Hermiston, OR",OR,2.13,5.42,34.67,7.56,32.2,Moderate
+"Dublin, GA",GA,-3.59,1.45,20.93,5.64,17.3,Affordable
+"New Orleans, LA",LA,0.54,-9.96,-1.57,6.3,26.9,Moderate
+"Savannah, GA",GA,-2.23,10.93,50.65,8.08,36.5,Burdened
+"Norwalk, OH",OH,4.73,15.17,33.75,1.82,20.2,Affordable
+"Columbus, OH",OH,1.32,10.3,37.39,4.72,34.3,Burdened
+"Big Spring, TX",TX,-2.7,-12.16,-20.21,2.44,15.1,Affordable
+"North Platte, NE",NE,5.32,13.96,36.3,3.12,22.9,Moderate
+"Williamsport, PA",PA,4.67,12.53,27.66,1.76,24.1,Moderate
+"Moberly, MO",MO,6.16,18.22,41.89,2.44,18.4,Affordable
+"Twin Falls, ID",ID,2.49,3.15,44.64,13.7,39.8,Burdened
+"Campbellsville, KY",KY,3.73,14.97,51.23,6.2,21.4,Affordable
+"Jefferson City, MO",MO,4.42,15.04,39.3,3.04,27.6,Moderate
+"Crescent City, CA",CA,-1.7,6.19,21.1,7.33,38.2,Burdened
+"Monroe, MI",MI,5.68,15.1,31.09,1.36,27.6,Moderate
+"Fond du Lac, WI",WI,5.06,21.23,48.57,2.61,29.9,Moderate
+"Bucyrus, OH",OH,5.24,13.32,41.25,4.22,16.6,Affordable
+"Alma, MI",MI,7.13,8.02,24.64,6.87,18.7,Affordable
+"Brownwood, TX",TX,-2.89,-1.42,21.08,7.94,19.2,Affordable
+"Texarkana, TX",TX,-3.3,-5.27,11.69,7.05,18.8,Affordable
+"Stockton, CA",CA,-4.06,-2.07,21.74,9.18,55.5,Burdened
+"Merced, CA",CA,-2.03,1.72,30.17,9.14,43.6,Burdened
+"Brenham, TX",TX,-0.41,-1.41,24.52,7.78,38.4,Burdened
+"Toledo, OH",OH,3.09,16.16,34.61,2.0,20.9,Affordable
+"Sandpoint, ID",ID,1.14,3.62,45.96,14.3,67.6,Burdened
+"Evanston, WY",WY,3.37,10.63,48.67,7.0,34.1,Burdened
+"Kennewick, WA",WA,-0.14,3.23,29.17,6.63,45.8,Burdened
+"Sanford, NC",NC,0.61,10.33,55.04,8.8,30.4,Moderate
+"Santa Rosa, CA",CA,-2.85,-0.05,14.02,4.58,82.3,Burdened
+"Baraboo, WI",WI,3.43,12.48,33.65,3.18,35.3,Burdened
+"Cedartown, GA",GA,-1.73,6.9,53.53,9.94,22.9,Moderate
+"Plattsburgh, NY",NY,3.05,13.5,36.3,3.3,23.4,Moderate
+"Cheyenne, WY",WY,3.15,7.27,16.07,1.04,40.2,Burdened
+"Athens, TX",TX,-2.25,-4.28,25.44,10.64,28.2,Moderate
+"Lewisburg, TN",TN,3.3,6.56,42.26,9.16,33.5,Burdened
+"Hagerstown, MD",MD,2.78,13.34,40.38,4.61,33.4,Burdened
+"Ruston, LA",LA,-0.16,0.94,10.48,2.6,22.9,Moderate
+"Olympia, WA",WA,0.29,5.12,30.67,7.44,55.6,Burdened
+"Albany, OR",OR,0.59,5.97,34.1,7.27,42.9,Burdened
+"San Diego, CA",CA,-2.37,8.94,39.69,7.32,96.6,Burdened
+"Bluefield, WV",VA,-3.81,7.14,36.25,7.0,14.8,Affordable
+"Dixon, IL",IL,8.22,20.05,34.33,2.39,18.9,Affordable
+"Seneca, SC",SC,1.99,10.81,44.13,6.04,30.1,Moderate
+"Duluth, MN",MN,5.62,15.4,38.44,3.36,27.2,Moderate
+"Anchorage, AK",AK,4.56,10.73,22.94,1.4,43.1,Burdened
+"Gardnerville Ranchos, NV",NV,1.94,1.34,26.21,10.03,72.4,Burdened
+"Jackson, OH",OH,-4.1,0.26,14.29,4.64,15.3,Affordable
+"Boulder, CO",CO,-2.85,-3.86,21.91,8.15,75.6,Burdened
+"Warrensburg, MO",MO,3.64,9.09,29.26,4.72,29.0,Moderate
+"Fayetteville, AR",AR,3.41,11.73,54.36,8.02,37.8,Burdened
+"Colorado Springs, CO",CO,-2.21,-2.07,22.7,8.94,48.0,Burdened
+"Borger, TX",TX,-1.84,-1.52,6.45,6.18,12.1,Affordable
+"Tulsa, OK",OK,2.28,9.42,38.33,5.4,26.0,Moderate
+"Ozark, AL",AL,-0.26,8.79,26.78,3.68,16.7,Affordable
+"Astoria, OR",OR,-1.6,0.29,33.56,9.48,54.2,Burdened
+"Longview, TX",TX,0.15,3.92,26.34,4.96,22.7,Moderate
+"Safford, AZ",AZ,4.19,11.06,33.75,5.05,31.3,Moderate
+"Memphis, TN",TN,-0.39,-0.26,30.26,8.11,25.4,Moderate
+"Van Wert, OH",OH,5.75,23.03,49.58,2.5,19.3,Affordable
+"Amsterdam, NY",NY,-1.74,10.38,37.2,5.49,21.5,Affordable
+"Blacksburg, VA",VA,1.97,8.76,30.54,4.1,29.5,Moderate
+"Lima, OH",OH,6.98,17.2,41.37,2.67,19.6,Affordable
+"Oil City, PA",PA,-1.99,3.1,25.0,6.31,13.5,Affordable
+"Montgomery, AL",AL,2.29,7.75,31.46,4.47,21.8,Affordable
+"Saginaw, MI",MI,7.88,21.47,50.78,2.72,17.9,Affordable
+"Ashland, OH",OH,4.95,18.82,45.24,2.81,24.8,Moderate
+"St. Cloud, MN",MN,3.88,12.73,37.72,4.25,32.3,Burdened
+"Grand Junction, CO",CO,2.32,10.63,40.93,6.85,44.8,Burdened
+"Fayetteville, NC",NC,0.18,11.27,49.01,7.44,26.7,Moderate
+"Columbus, IN",IN,3.31,14.8,40.92,3.89,28.4,Moderate
+"Vernon, TX",TX,-6.74,-17.32,-10.66,5.88,10.6,Affordable
+"Winston, NC",NC,1.77,9.94,41.7,5.74,29.1,Moderate
+"Waterloo, IA",IA,3.91,14.45,32.52,1.97,20.9,Affordable
+"Wisconsin Rapids, WI",WI,7.71,25.19,44.87,0.24,23.9,Moderate
+"Aberdeen, WA",WA,-2.27,-0.96,23.79,9.36,34.0,Burdened
+"Quincy, IL",IL,4.35,3.58,17.83,4.08,19.4,Affordable
+"Spencer, IA",IA,5.55,10.9,33.1,3.66,20.0,Affordable
+"Knoxville, TN",TN,1.04,15.41,60.26,8.02,37.7,Burdened
+"Owatonna, MN",MN,3.62,14.19,38.88,4.91,30.9,Moderate
+"Bay City, TX",TX,1.96,2.3,17.0,4.81,21.5,Affordable
+"Douglas, GA",GA,-5.94,-1.83,25.68,9.04,17.1,Affordable
+"Nacogdoches, TX",TX,0.71,2.64,24.74,6.37,22.3,Moderate
+"Wilmington, NC",NC,-0.77,7.26,46.59,8.37,46.3,Burdened
+"Dothan, AL",AL,2.05,9.14,30.24,3.76,20.2,Affordable
+"Lafayette, IN",IN,2.82,18.24,44.47,4.31,29.4,Moderate
+"Platteville, WI",WI,5.11,14.5,36.73,3.0,23.7,Moderate
+"Walla Walla, WA",WA,1.61,5.0,34.2,7.47,43.3,Burdened
+"Troy, AL",AL,-5.37,-4.56,11.28,6.28,17.6,Affordable
+"Fort Smith, AR",AR,3.15,9.2,34.05,5.14,20.6,Affordable
+"Glasgow, KY",KY,2.22,12.8,35.18,3.31,22.1,Moderate
+"Mountain Home, AR",AR,1.17,8.74,36.07,7.14,24.2,Moderate
+"Corpus Christi, TX",TX,-2.27,-3.8,12.47,5.51,23.1,Moderate
+"The Villages, FL",FL,-1.6,-5.79,30.14,10.73,40.5,Burdened
+"Tullahoma, TN",TN,2.88,11.69,51.24,8.46,32.5,Burdened
+"Vineyard Haven, MA",MA,0.76,6.85,53.05,10.27,157.4,Burdened
+"Scottsboro, AL",AL,-0.83,5.71,30.77,5.46,20.2,Affordable
+"Whitewater, WI",WI,3.84,13.96,39.56,4.26,42.2,Burdened
+"Pullman, WA",WA,-2.34,1.11,25.42,7.0,34.3,Burdened
+"Warsaw, IN",IN,2.18,10.34,36.57,4.52,29.3,Moderate
+"Alice, TX",TX,-4.88,-12.51,-21.26,1.83,13.6,Affordable
+"Macomb, IL",IL,-2.06,1.25,9.67,3.61,10.5,Affordable
+"Glenwood Springs, CO",CO,4.51,16.01,62.1,8.78,100.5,Burdened
+"Paducah, KY",KY,4.14,14.36,32.74,2.28,17.8,Affordable
+"Elkins, WV",WV,0.27,11.23,28.38,3.65,16.8,Affordable
+"Burlington, NC",NC,0.61,8.82,49.91,8.14,30.6,Moderate
+"Sidney, OH",OH,9.46,21.74,46.12,2.64,24.8,Moderate
+"Grand Rapids, MI",MI,4.39,14.6,42.68,4.43,36.6,Burdened
+"Parkersburg, WV",WV,1.13,9.55,29.06,3.28,17.7,Affordable
+"Appleton, WI",WI,6.58,23.63,49.83,2.08,35.9,Burdened
+"Bloomsburg, PA",PA,3.81,6.17,16.58,2.46,25.6,Moderate
+"Birmingham, AL",AL,0.55,1.35,26.41,6.3,27.0,Moderate
+"Meadville, PA",PA,6.59,5.5,23.3,4.81,17.4,Affordable
+"Dover, DE",DE,2.16,13.03,41.92,4.9,38.3,Burdened
+"Emporia, KS",KS,1.87,13.08,35.62,3.99,19.2,Affordable
+"Chicago, IL",IL,3.83,15.37,34.62,2.29,36.4,Burdened
+"Riverton, WY",WY,0.15,7.84,43.14,7.22,33.2,Burdened
+"El Centro, CA",CA,6.99,21.07,41.61,3.69,39.2,Burdened
+"Albertville, AL",AL,-0.8,6.9,34.85,6.78,24.8,Moderate
+"Tuscaloosa, AL",AL,-1.03,3.23,22.7,4.66,23.0,Moderate
+"Laurel, MS",MS,-6.52,-6.15,5.12,8.08,15.8,Affordable
+"Owensboro, KY",KY,2.09,10.72,34.87,3.91,21.7,Affordable
+"Tiffin, OH",OH,3.36,12.49,32.76,3.03,18.1,Affordable
+"Spearfish, SD",SD,-0.14,4.93,40.66,9.23,47.3,Burdened
+"Dalton, GA",GA,1.69,13.78,46.19,6.7,25.6,Moderate
+"Pontiac, IL",IL,10.31,25.13,47.15,1.69,17.2,Affordable
+"Truckee, CA",CA,-1.75,-3.34,15.56,8.77,64.2,Burdened
+"Thomaston, GA",GA,3.87,16.56,66.38,7.85,19.1,Affordable
+"Bainbridge, GA",GA,-4.32,2.99,31.94,9.05,17.2,Affordable
+"Cordele, GA",GA,-5.09,-1.62,24.75,7.77,13.9,Affordable
+"Alamogordo, NM",NM,-0.22,13.16,50.19,6.62,24.0,Moderate
+"Alpena, MI",MI,3.49,13.54,43.61,4.68,20.2,Affordable
+"Enterprise, AL",AL,-1.11,7.88,27.54,4.39,19.0,Affordable
+"Beeville, TX",TX,-6.02,-18.4,-13.38,7.48,16.7,Affordable
+"Fitzgerald, GA",GA,-4.79,-3.0,36.75,11.47,13.0,Affordable
+"Zanesville, OH",OH,0.64,15.96,40.96,3.93,21.8,Affordable
+"Fargo, ND",ND,3.48,8.72,24.93,2.78,33.9,Burdened
+"Boise City, ID",ID,0.63,0.74,30.05,14.86,51.7,Burdened
+"Rutland, VT",VT,1.0,5.64,38.83,8.28,32.5,Burdened
+"Forrest City, AR",AR,-6.83,-5.79,-10.52,4.3,8.4,Affordable
+"Portland, ME",ME,0.39,12.19,45.05,6.45,56.1,Burdened
+"Oshkosh, WI",WI,6.04,19.96,42.96,1.77,31.2,Moderate
+"McMinnville, TN",TN,-0.05,10.88,45.86,9.01,26.4,Moderate
+"Syracuse, NY",NY,4.65,26.68,54.3,2.61,27.0,Moderate
+"Auburn, NY",NY,1.7,17.52,40.66,3.17,23.8,Moderate
+"Clovis, NM",NM,-4.72,-7.67,-2.34,5.67,16.3,Affordable
+"Gainesville, GA",GA,-1.85,4.95,45.92,9.63,40.9,Burdened
+"Jacksonville, FL",FL,-3.17,-5.06,35.91,11.9,36.5,Burdened
+"Ashtabula, OH",OH,5.44,16.97,45.86,4.04,18.5,Affordable
+"Huron, SD",SD,6.85,-2.65,19.98,10.04,20.3,Affordable
+"Eagle Pass, TX",TX,2.12,15.9,33.55,3.41,23.4,Moderate
+"Decatur, IN",IN,6.86,22.97,51.0,2.05,25.3,Moderate
+"Lakeland, FL",FL,-4.38,-6.16,36.53,12.57,31.3,Moderate
+"Farmington, NM",NM,1.86,13.48,33.34,2.82,27.7,Moderate
+"Springfield, MO",MO,1.36,7.62,43.9,7.41,27.9,Moderate
+"Sterling, IL",IL,5.67,14.87,27.99,1.81,15.4,Affordable
+"Winona, MN",MN,4.43,17.1,39.5,2.36,29.1,Moderate
+"Hartford, CT",CT,4.69,24.83,52.74,2.92,40.8,Burdened
+"Ontario, OR",OR,2.05,3.76,47.24,14.27,38.5,Burdened
+"Somerset, KY",KY,-2.53,-1.23,12.23,5.51,18.1,Affordable
+"Lake City, FL",FL,-0.46,4.7,43.87,8.78,27.8,Moderate
+"Richmond, VA",VA,1.61,11.07,38.19,4.54,40.8,Burdened
+"Bridgeport, CT",CT,3.93,19.4,46.59,3.46,69.8,Burdened
+"New Haven, CT",CT,3.85,21.81,53.46,3.74,41.4,Burdened
+"Plymouth, IN",IN,2.98,17.04,44.96,4.63,26.5,Moderate
+"Reading, PA",PA,2.82,16.53,44.95,4.03,32.0,Moderate
+"Guymon, OK",OK,5.32,0.57,28.93,8.63,17.1,Affordable
+"Statesboro, GA",GA,1.42,21.09,61.39,5.99,29.2,Moderate
+"Olean, NY",NY,1.96,10.12,44.87,6.4,16.7,Affordable
+"Taos, NM",NM,-3.65,-12.73,4.78,8.84,45.1,Burdened
+"Seneca Falls, NY",NY,3.14,15.87,44.69,4.3,23.0,Moderate
+"Deming, NM",NM,-0.65,-2.76,10.63,5.94,16.6,Affordable
+"Kahului, HI",HI,-6.54,-1.07,35.02,10.2,105.3,Burdened
+"Bedford, IN",IN,4.06,13.5,40.24,4.85,21.7,Affordable
+"Rexburg, ID",ID,5.38,2.26,43.46,13.78,45.0,Burdened
+"Urban Honolulu, HI",HI,-1.01,-1.52,22.35,6.83,88.0,Burdened
+"Rochester, MN",MN,3.35,9.27,29.44,3.62,35.1,Burdened
+"Hereford, TX",TX,-0.56,6.27,25.7,6.77,18.6,Affordable
+"Portland, OR",OR,-1.21,0.57,20.7,6.81,57.5,Burdened
+"Bardstown, KY",KY,3.83,14.08,42.28,4.01,27.1,Moderate
+"Atlanta, GA",GA,-2.83,0.3,38.44,10.26,40.0,Burdened
+"Mount Vernon, WA",WA,1.37,7.34,32.62,7.06,61.1,Burdened
+"Norfolk, NE",NE,5.16,14.7,37.18,2.83,26.4,Moderate
+"Rochester, NY",NY,2.96,21.63,49.17,3.37,29.0,Moderate
+"Mason City, IA",IA,4.38,9.07,35.05,5.08,20.7,Affordable
+"Bay City, MI",MI,5.53,22.3,43.67,2.11,18.9,Affordable
+"Levelland, TX",TX,-0.85,-0.95,5.98,3.39,17.1,Affordable
+"Washington, IN",IN,4.71,15.14,39.65,3.33,23.9,Moderate
+"Starkville, MS",MS,2.72,10.68,26.12,2.91,26.5,Moderate
+"Beaumont, TX",TX,1.36,-2.82,4.5,4.3,18.9,Affordable
+"Gloversville, NY",NY,2.7,11.6,37.35,4.26,22.6,Moderate
+"Ocala, FL",FL,-3.6,-4.99,43.8,13.63,28.6,Moderate
+"Stevens Point, WI",WI,9.38,23.53,40.44,1.56,32.2,Moderate
+"Grenada, MS",MS,3.96,3.43,15.35,8.45,13.3,Affordable
+"Corning, NY",NY,-0.82,5.15,26.43,5.05,17.5,Affordable
+"Sweetwater, TX",TX,-4.82,-17.92,-17.1,4.54,12.2,Affordable
+"Modesto, CA",CA,-1.03,3.71,27.39,7.24,48.5,Burdened
+"Midland, TX",TX,3.52,12.07,13.32,2.02,34.2,Burdened
+"Amarillo, TX",TX,1.38,5.54,33.8,6.06,22.5,Moderate
+"Enid, OK",OK,3.26,12.52,24.08,1.53,14.5,Affordable
+"Wheeling, WV",OH,3.82,6.93,14.48,1.84,14.6,Affordable
+"Hastings, NE",NE,3.91,12.79,30.08,1.85,22.1,Moderate
+"Decatur, IL",IL,7.19,24.53,34.98,3.35,12.8,Affordable
+"Del Rio, TX",TX,-3.19,2.19,21.54,6.36,21.9,Moderate
+"Russellville, AR",AR,0.35,6.32,22.93,3.87,20.2,Affordable
+"Frankfort, IN",IN,3.59,18.7,50.82,4.29,23.0,Moderate
+"Eugene, OR",OR,-0.21,2.63,28.18,7.05,47.8,Burdened
+"Pueblo, CO",CO,-1.54,-3.42,24.7,9.72,30.2,Moderate
+"Idaho Falls, ID",ID,0.9,1.73,36.16,14.3,42.9,Burdened
+"Virginia Beach, VA",VA,1.83,12.67,34.56,3.43,38.4,Burdened
+"Boston, MA",MA,1.61,14.16,33.86,2.95,76.5,Burdened
+"London, KY",KY,1.83,4.44,28.19,5.34,16.0,Affordable
+"Bowling Green, KY",KY,1.42,8.61,37.67,5.45,27.3,Moderate
+"Heber, UT",UT,1.76,6.44,49.05,11.39,116.9,Burdened
+"Cambridge, MD",MD,0.94,10.4,31.98,4.61,28.2,Moderate
+"Elmira, NY",NY,0.8,9.02,29.65,3.63,16.4,Affordable
+"Charleston, SC",SC,-0.67,7.2,45.35,8.16,45.2,Burdened
+"Gettysburg, PA",PA,4.5,14.53,35.49,2.33,34.6,Burdened
+"Duncan, OK",OK,-2.3,9.66,45.91,8.18,14.4,Affordable
+"Jackson, WY",WY,-0.63,7.04,62.32,15.32,143.1,Burdened
+"Muncie, IN",IN,3.82,18.7,50.02,4.23,17.2,Affordable
+"Eau Claire, WI",WI,2.81,13.95,37.58,3.37,33.5,Burdened
+"Coshocton, OH",OH,5.64,14.92,39.59,3.05,19.0,Affordable
+"Minot, ND",ND,2.45,11.88,26.81,1.87,27.7,Moderate
+"Greenwood, SC",SC,-2.92,2.0,27.35,6.59,18.3,Affordable
+"Mount Vernon, OH",OH,5.29,18.8,46.13,2.96,29.6,Moderate
+"Bellingham, WA",WA,0.49,5.94,32.5,7.35,64.8,Burdened
+"Laurinburg, NC",NC,-0.75,5.85,50.12,10.28,14.8,Affordable
+"Bogalusa, LA",LA,-0.75,-9.16,-11.15,2.03,13.0,Affordable
+"Hudson, NY",NY,2.98,11.8,51.35,7.55,48.7,Burdened
+"Johnson City, TN",TN,0.07,13.99,48.83,7.54,29.0,Moderate
+"Tifton, GA",GA,-1.41,3.19,23.58,4.95,21.1,Affordable
+"Cleveland, TN",TN,0.5,12.12,45.83,7.1,32.1,Moderate
+"Pittsburg, KS",KS,-1.81,10.12,38.67,6.07,14.5,Affordable
+"Hillsdale, MI",MI,6.37,11.24,30.95,4.05,21.9,Moderate
+"Janesville, WI",WI,6.98,23.46,49.13,2.51,30.2,Moderate
+"Minneapolis, MN",MN,1.81,4.79,21.19,4.06,40.7,Burdened
+"Palm Bay, FL",FL,-4.13,-5.41,34.98,11.87,35.8,Burdened
+"Ludington, MI",MI,0.78,5.51,34.18,9.43,27.3,Moderate
+"St. George, UT",UT,-0.25,0.33,38.74,14.04,55.4,Burdened
+"New Castle, IN",IN,3.58,16.08,47.44,4.7,19.7,Affordable
+"Lincoln, IL",IL,5.8,15.04,15.46,2.92,14.4,Affordable
+"Ukiah, CA",CA,-4.21,-13.1,-11.75,7.55,51.1,Burdened
+"Greenville, SC",SC,1.2,6.56,39.58,6.78,32.3,Burdened
+"Chambersburg, PA",PA,2.2,10.76,31.56,3.68,29.9,Moderate
+"Greenville, NC",NC,1.51,9.82,48.74,7.42,25.3,Moderate
+"Kapaa, HI",HI,-1.68,6.6,41.45,7.57,104.1,Burdened
+"Edwards, CO",CO,0.37,13.1,68.46,11.37,132.8,Burdened
+"Arcadia, FL",FL,-5.33,-6.2,41.42,13.77,26.2,Moderate
+"Glens Falls, NY",NY,1.39,13.38,38.34,4.08,31.8,Moderate
+"Burlington, IA",IA,1.96,3.12,12.61,2.43,14.9,Affordable
+"Phoenix, AZ",AZ,-3.2,-4.04,31.71,13.36,46.6,Burdened
+"McAlester, OK",OK,1.25,7.78,30.73,4.28,15.0,Affordable
+"Harrison, AR",AR,-2.27,12.05,43.2,6.75,23.3,Moderate
+"Atlantic City, NJ",NJ,3.46,22.77,61.2,6.06,39.1,Burdened
+"Ponca City, OK",OK,2.27,0.98,26.97,7.07,11.8,Affordable
+"Lamesa, TX",TX,3.6,-6.31,-11.57,7.57,11.7,Affordable
+"Adrian, MI",MI,4.24,10.44,33.47,3.71,25.0,Moderate
+"Coos Bay, OR",OR,-2.07,-0.25,28.63,8.64,36.7,Burdened
+"Marion, OH",OH,4.98,18.64,43.12,2.33,18.4,Affordable
+"Fairbanks, AK",AK,-1.84,-1.11,5.34,2.98,31.4,Moderate
+"Oxnard, CA",CA,-1.23,6.42,28.77,5.54,91.3,Burdened
+"Little Rock, AR",AR,1.86,7.08,28.75,4.28,23.5,Moderate
+"Reno, NV",NV,-0.29,2.89,31.16,10.85,59.0,Burdened
+"Sedalia, MO",MO,6.66,18.09,46.7,3.65,19.9,Affordable
+"Las Vegas, NV",NV,-1.93,2.13,37.45,10.1,45.2,Burdened
+"Visalia, CA",CA,1.0,6.16,35.33,6.91,37.5,Burdened
+"Fort Morgan, CO",CO,-1.13,-0.2,23.14,7.21,34.6,Burdened
+"Weirton, WV",OH,3.08,11.34,31.23,2.99,13.5,Affordable
+"Spirit Lake, IA",IA,-0.12,8.55,34.24,5.13,40.1,Burdened
+"Mankato, MN",MN,5.49,12.52,34.44,3.09,32.0,Moderate
+"Greensburg, IN",IN,4.51,15.3,42.04,4.53,26.4,Moderate
+"Faribault, MN",MN,3.95,11.45,31.77,3.47,36.6,Burdened
+"Detroit, MI",MI,3.49,13.09,34.72,3.21,27.8,Moderate
+"Gaffney, SC",SC,-5.63,-8.85,4.87,7.27,20.4,Affordable
+"Erie, PA",PA,5.71,21.29,46.37,1.85,22.7,Moderate
+"Marshalltown, IA",IA,3.64,11.64,32.52,3.45,20.0,Affordable
+"Worthington, MN",MN,6.06,11.25,37.85,5.62,24.6,Moderate
+"Sioux Falls, SD",SD,1.31,7.54,36.2,5.85,35.4,Burdened
+"Davenport, IA",IL,4.25,9.21,22.12,1.84,20.0,Affordable
+"El Paso, TX",TX,0.81,10.31,44.32,6.31,23.8,Moderate
+"Providence, RI",RI,2.52,17.7,45.12,3.67,54.0,Burdened
+"Charlotte, NC",NC,-0.73,3.02,42.21,9.76,40.5,Burdened
+"Ann Arbor, MI",MI,1.91,9.85,26.46,2.42,43.4,Burdened
+"Camden, AR",AR,-7.8,-7.41,-4.44,5.03,10.8,Affordable
+"Yuba City, CA",CA,-1.73,0.73,23.68,7.73,45.0,Burdened
+"Elizabethtown, KY",KY,1.96,10.34,37.97,4.77,26.3,Moderate
+"San Angelo, TX",TX,2.77,8.41,28.92,6.5,25.5,Moderate
+"Richmond, IN",IN,6.99,19.08,47.21,3.47,17.4,Affordable
+"Lewistown, PA",PA,5.87,20.16,45.69,2.54,19.6,Affordable
+"Forest City, NC",NC,-0.38,2.35,32.77,7.29,22.4,Moderate
+"Fernley, NV",NV,0.31,1.13,27.52,10.59,42.9,Burdened
+"Carson City, NV",NV,1.26,6.85,31.14,8.15,51.5,Burdened
+"Yakima, WA",WA,1.95,7.43,27.31,4.38,37.0,Burdened
+"Danville, VA",VA,-1.42,10.7,42.36,6.25,17.1,Affordable
+"Jamestown, ND",ND,8.74,6.55,16.04,5.24,23.3,Moderate
+"Houghton, MI",MI,3.14,8.9,32.63,4.63,19.9,Affordable
+"Jackson, TN",TN,-0.18,3.89,36.17,8.76,21.2,Affordable
+"Kingston, NY",NY,1.57,16.29,53.98,6.47,45.6,Burdened
+"Stephenville, TX",TX,-0.57,6.36,46.57,9.46,35.5,Burdened
+"Sandusky, OH",OH,2.31,16.32,40.64,3.23,24.5,Moderate
+"Huntington, IN",IN,3.35,18.55,45.98,3.49,21.5,Affordable
+"Harrisburg, PA",PA,3.8,14.91,39.46,3.15,32.0,Moderate
+"San Jose, CA",CA,-1.8,11.64,32.0,6.1,166.1,Burdened
+"Wichita, KS",KS,0.81,13.35,39.3,4.22,23.1,Moderate
+"Altoona, PA",PA,6.93,12.88,14.32,2.79,17.9,Affordable
+"Monroe, LA",LA,-3.07,-1.95,11.1,4.81,16.9,Affordable
+"Iron Mountain, MI",MI,3.44,17.97,26.04,2.61,18.9,Affordable
+"Bakersfield, CA",CA,-0.22,8.41,39.89,7.07,37.8,Burdened
+"Fallon, NV",NV,2.39,7.07,36.28,9.06,40.2,Burdened
+"Watertown, WI",WI,4.64,18.99,39.26,2.46,37.5,Burdened
+"Beaver Dam, WI",WI,7.2,24.25,45.88,2.15,33.1,Burdened
+"Sturgis, MI",MI,3.1,10.87,28.88,3.16,22.5,Moderate
+"Vidalia, GA",GA,1.58,14.0,36.4,5.87,17.8,Affordable
+"Washington, NC",NC,1.57,13.28,48.88,6.27,24.4,Moderate
+"Freeport, IL",IL,10.79,25.79,59.7,4.84,16.2,Affordable
+"Peoria, IL",IL,8.61,20.49,40.44,1.69,17.6,Affordable
+"Brookings, OR",OR,-2.99,-1.68,20.22,7.0,47.8,Burdened
+"Sheridan, WY",WY,3.38,7.47,36.69,6.29,45.6,Burdened
+"College Station, TX",TX,0.54,6.01,26.18,4.07,32.0,Moderate
+"Madison, IN",IN,5.64,19.74,49.73,3.15,24.3,Moderate
+"Ottumwa, IA",IA,-0.35,10.88,35.04,4.61,13.5,Affordable
+"Manchester, NH",NH,2.71,18.38,50.31,4.27,54.6,Burdened
+"Parsons, KS",KS,-5.73,-4.43,20.34,9.53,9.9,Affordable
+"Sherman, TX",TX,-3.89,-2.28,31.84,9.9,30.7,Moderate
+"Seymour, IN",IN,3.37,15.43,38.6,2.95,23.7,Moderate
+"Wahpeton, ND",ND,4.34,7.72,25.21,4.11,23.3,Moderate
+"Price, UT",UT,5.73,15.29,62.91,8.94,29.0,Moderate
+"Madisonville, KY",KY,-0.65,8.02,35.21,5.51,15.9,Affordable
+"Washington, DC",VA,0.18,7.78,22.74,3.18,60.3,Burdened
+"Pecos, TX",TX,-3.0,-34.09,-34.72,13.71,18.2,Affordable
+"Findlay, OH",OH,2.5,13.94,32.51,2.23,24.7,Moderate
+"Stillwater, OK",OK,3.42,10.83,31.34,3.3,24.8,Moderate
+"Celina, OH",OH,7.0,18.94,42.3,2.12,28.0,Moderate
+"Beckley, WV",WV,-5.01,10.78,36.88,7.32,15.3,Affordable
+"Great Falls, MT",MT,5.14,20.27,58.42,5.11,35.0,Burdened
+"Racine, WI",WI,4.28,18.27,40.6,2.99,31.9,Moderate
+"Cape Coral, FL",FL,-10.27,-15.83,31.96,17.58,35.6,Burdened
+"Shawnee, OK",OK,4.1,15.18,47.8,5.35,19.8,Affordable
+"Cadillac, MI",MI,1.68,11.76,32.89,4.04,23.5,Moderate
+"Hannibal, MO",MO,6.37,19.46,48.13,4.22,22.0,Moderate
+"Ogdensburg, NY",NY,2.03,10.97,34.14,3.7,14.9,Affordable
+"Charlottesville, VA",VA,0.86,10.75,33.27,3.82,48.8,Burdened
+"Santa Fe, NM",NM,-0.77,4.65,28.7,6.02,57.9,Burdened
+"Batavia, NY",NY,2.54,14.81,39.04,3.24,23.1,Moderate
+"Muskegon, MI",MI,3.5,12.26,42.51,5.24,26.3,Moderate
+"Coldwater, MI",MI,3.87,6.81,22.48,5.18,21.5,Affordable
+"Mount Pleasant, TX",TX,-3.45,-3.16,23.2,9.85,23.1,Moderate
+"Yuma, AZ",AZ,1.42,6.62,48.97,9.22,29.0,Moderate
+"Sierra Vista, AZ",AZ,1.34,4.15,29.27,6.32,27.4,Moderate
+"Abilene, TX",TX,1.94,4.75,26.86,5.0,21.6,Affordable
+"Concord, NH",NH,3.58,19.03,55.82,4.88,51.1,Burdened
+"Alexandria, LA",LA,-2.52,-2.53,0.46,3.71,17.4,Affordable
+"Henderson, NC",NC,-2.5,7.19,30.43,7.06,19.1,Affordable
+"Lock Haven, PA",PA,4.64,8.79,26.32,3.25,20.6,Affordable
+"Manhattan, KS",KS,6.09,15.95,34.94,2.21,27.8,Moderate
+"Crossville, TN",TN,-0.4,10.62,53.86,10.08,31.9,Moderate
+"Jamestown, NY",NY,3.77,14.99,47.56,4.78,18.0,Affordable
+"Raymondville, TX",TX,-3.33,-12.76,-20.69,11.45,19.5,Affordable
+"Snyder, TX",TX,0.07,1.92,5.98,6.85,15.1,Affordable
+"Gillette, WY",WY,-2.62,10.75,25.1,4.48,35.0,Burdened
+"Sebring, FL",FL,-2.78,2.39,49.32,11.48,24.3,Moderate
+"Red Bluff, CA",CA,0.14,-1.62,14.48,6.47,33.1,Burdened
+"Iowa City, IA",IA,4.11,10.78,28.94,2.48,31.2,Moderate
+"Greeley, CO",CO,-2.26,-2.97,21.6,8.3,52.2,Burdened
+"Americus, GA",GA,-1.52,3.66,30.99,6.55,14.3,Affordable
+"Elk City, OK",OK,3.48,13.66,25.91,1.4,15.5,Affordable
+"Martin, TN",TN,6.98,18.31,53.2,5.41,19.6,Affordable
+"Hot Springs, AR",AR,-0.81,5.56,43.7,9.11,25.3,Moderate
+"DeRidder, LA",LA,0.18,-3.22,-15.83,5.55,22.0,Moderate
+"Cumberland, MD",MD,2.98,10.89,30.05,3.63,17.2,Affordable
+"Houston, TX",TX,-2.02,-2.39,27.24,8.39,32.3,Burdened
+"DuBois, PA",PA,-0.14,-6.38,-4.26,5.14,13.7,Affordable
+"Springfield, OH",OH,4.74,21.12,49.4,2.8,20.7,Affordable
+"Orlando, FL",FL,-4.3,-1.99,37.63,10.74,40.5,Burdened
+"Port Angeles, WA",WA,0.88,5.72,35.94,8.38,52.3,Burdened
+"Evansville, IN",IN,4.02,15.34,39.79,3.33,23.2,Moderate
+"Trenton, NJ",NJ,0.62,19.94,47.59,4.81,46.5,Burdened
+"New Ulm, MN",MN,10.3,19.34,41.67,3.46,25.4,Moderate
+"Jasper, IN",IN,5.19,15.51,36.78,2.4,24.7,Moderate
+"Cornelia, GA",GA,2.5,15.67,55.0,6.46,33.5,Burdened
+"Greensboro, NC",NC,0.63,8.45,37.55,5.6,27.4,Moderate
+"Marion, NC",NC,-2.47,3.67,29.65,6.97,27.4,Moderate
+"Mitchell, SD",SD,4.67,11.76,40.93,5.31,27.1,Moderate
+"Willmar, MN",MN,2.49,12.02,35.02,4.29,29.7,Moderate
+"Decatur, AL",AL,0.59,7.5,29.89,6.19,24.0,Moderate
+"Moscow, ID",ID,1.42,6.47,38.98,9.41,49.5,Burdened
+"Othello, WA",WA,2.33,8.9,41.1,6.58,32.9,Burdened
+"Port St. Lucie, FL",FL,-4.84,-5.04,44.4,14.18,40.0,Burdened
+"Ogden, UT",UT,2.76,5.87,38.97,10.12,53.7,Burdened
+"Greeneville, TN",TN,1.72,18.92,53.19,7.86,25.8,Moderate
+"Atchison, KS",KS,5.91,12.73,51.09,7.7,19.0,Affordable
+"Show Low, AZ",AZ,0.5,3.04,42.78,12.15,41.2,Burdened
+"Vineland, NJ",NJ,1.65,19.03,54.43,6.17,28.8,Moderate
+"Tampa, FL",FL,-5.64,-6.13,38.07,13.25,37.6,Burdened
+"Lawrence, KS",KS,2.91,15.33,40.57,3.72,34.9,Burdened
+"Norwich, CT",CT,5.05,23.87,53.59,3.02,43.3,Burdened
+"Durant, OK",OK,1.01,4.42,35.77,7.0,23.8,Moderate
+"Fort Polk South, LA",LA,-4.71,-4.77,-5.37,2.85,16.6,Affordable
+"Moultrie, GA",GA,1.76,13.25,27.02,7.08,16.8,Affordable
+"Farmington, MO",MO,1.74,10.25,36.67,4.75,19.8,Affordable
+"Rapid City, SD",SD,2.04,7.16,44.08,7.95,38.8,Burdened
+"McComb, MS",MS,-3.48,-12.87,-7.66,7.45,10.3,Affordable
+"Pocatello, ID",ID,0.14,6.79,45.34,11.69,36.6,Burdened
+"Cincinnati, OH",OH,2.99,13.11,37.28,3.5,31.9,Moderate
+"Houma, LA",LA,-4.77,-5.0,-15.58,4.08,19.3,Affordable
+"Dodge City, KS",KS,1.49,22.9,56.47,5.01,22.4,Moderate
+"Fort Leonard Wood, MO",MO,4.96,17.83,48.78,5.26,22.9,Moderate
+"Magnolia, AR",AR,-8.57,-14.27,-11.86,5.44,14.1,Affordable
+"Mansfield, OH",OH,6.5,20.91,49.38,3.03,20.0,Affordable
+"Ottawa, KS",KS,6.74,19.35,50.19,3.74,26.4,Moderate
+"Miami, OK",OK,-6.63,4.45,33.08,10.0,14.0,Affordable
+"Silver City, NM",NM,-12.23,-13.16,7.88,9.93,19.4,Affordable
+"Des Moines, IA",IA,1.78,8.56,29.02,3.53,30.7,Moderate
+"Salinas, CA",CA,-1.99,4.97,28.16,6.76,87.8,Burdened
+"Buffalo, NY",NY,3.91,16.31,43.75,3.39,29.7,Moderate
+"Springfield, MA",MA,1.5,15.15,38.41,3.36,38.6,Burdened
+"Dallas, TX",TX,-3.88,-5.01,30.12,10.58,38.5,Burdened
+"Elko, NV",NV,2.03,8.93,28.03,3.89,38.0,Burdened
+"Rockingham, NC",NC,1.34,3.72,33.74,7.24,13.7,Affordable
+"Panama City, FL",FL,-3.6,-6.09,32.31,11.58,35.4,Burdened
+"Mayfield, KY",KY,6.65,15.26,47.6,6.36,17.8,Affordable
+"Hood River, OR",OR,-1.06,1.26,28.33,8.1,71.4,Burdened
+"Port Lavaca, TX",TX,-4.04,-3.71,11.71,5.82,21.1,Affordable
+"Williston, ND",ND,7.49,8.93,14.33,4.33,36.2,Burdened
+"Yankton, SD",SD,3.35,4.27,27.14,6.03,29.0,Moderate
+"Fremont, NE",NE,5.85,14.63,43.79,4.18,25.3,Moderate
+"Elizabeth City, NC",NC,3.0,14.24,44.38,4.43,27.8,Moderate
+"Lufkin, TX",TX,0.45,1.21,21.9,6.38,20.4,Affordable
+"Altus, OK",OK,-5.48,3.31,27.28,8.01,11.9,Affordable
+"Malone, NY",NY,0.34,1.9,27.86,6.38,17.7,Affordable
+"Hickory, NC",NC,0.73,10.19,43.32,6.22,27.7,Moderate
+"Durham, NC",NC,-1.02,3.5,40.55,8.9,43.4,Burdened
+"Salina, KS",KS,2.32,10.41,33.63,3.87,18.4,Affordable
+"Tahlequah, OK",OK,2.54,9.44,43.21,6.98,21.2,Affordable
+"Morgantown, WV",WV,1.24,8.11,20.23,1.8,22.9,Moderate
+"Madison, WI",WI,2.95,16.37,38.08,2.49,46.5,Burdened
+"Florence, SC",SC,1.97,6.28,32.73,5.42,19.4,Affordable
+"Killeen, TX",TX,-1.63,-5.85,33.17,11.85,26.3,Moderate
+"Albany, NY",NY,3.76,15.59,38.52,2.74,37.7,Burdened
+"Mexico, MO",MO,10.21,19.96,46.78,3.57,19.0,Affordable
+"Spartanburg, SC",SC,2.18,8.43,44.02,6.87,28.8,Moderate
+"Paris, TN",TN,4.88,13.03,46.18,6.3,22.2,Moderate
+"Frankfort, KY",KY,4.85,19.93,45.9,2.83,26.3,Moderate
+"Ketchikan, AK",AK,8.47,6.4,19.93,4.86,41.2,Burdened
+"Rolla, MO",MO,2.44,13.62,42.09,5.13,23.7,Moderate
+"Nogales, AZ",AZ,-0.56,3.73,35.94,8.38,28.9,Moderate
+"El Campo, TX",TX,-2.23,-4.32,8.69,4.97,25.3,Moderate
+"Effingham, IL",IL,4.82,7.28,27.66,4.07,22.9,Moderate
+"Eureka, CA",CA,-5.01,-11.88,0.86,7.23,44.5,Burdened
+"Grand Forks, ND",MN,6.03,11.89,23.85,2.11,28.2,Moderate
+"Oxford, MS",MS,4.58,32.46,57.7,4.27,41.6,Burdened
+"Laconia, NH",NH,2.36,16.26,61.72,7.97,53.1,Burdened
+"Fergus Falls, MN",MN,2.83,13.41,36.9,4.22,34.0,Burdened
+"Watertown, SD",SD,0.81,4.43,33.09,6.66,34.9,Burdened
+"Boone, NC",NC,-0.84,8.2,51.71,9.54,53.1,Burdened
+"Burley, ID",ID,3.47,8.33,52.26,10.85,34.7,Burdened
+"Blackfoot, ID",ID,3.92,4.1,40.03,12.32,40.2,Burdened
+"Craig, CO",CO,2.69,13.63,47.31,5.6,31.7,Moderate
