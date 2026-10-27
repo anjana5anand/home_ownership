@@ -428,7 +428,11 @@ NB_OVERVIEW_1 = """
     exactly true in real data. Despite this simplification, Naive Bayes classifiers tend to perform
     reasonably well and are fast to train, which is why they are a common first method tried for text
     classification tasks such as spam detection and sentiment analysis, as well as for general-purpose
-    classification on tabular data like the one used in this project.</p>
+    classification on tabular data like the one used in this project. The goal of applying it here is to see
+    whether a metro's recent price growth and volatility alone, without being told how expensive it already
+    is, can predict which of the three affordability classes (Affordable, Moderate, Burdened) it currently
+    falls into, a step toward understanding which metros are moving toward becoming less affordable before
+    that shows up directly in the price-to-income ratio.</p>
 """
 
 NB_OVERVIEW_2 = """
@@ -488,7 +492,10 @@ DT_OVERVIEW_1 = """
     more homogeneous groups, until a stopping point is reached and a class is assigned at each leaf. Decision
     trees are popular because the resulting tree can be read directly: unlike Naive Bayes, which only
     produces a probability from an equation, a tree shows exactly which feature and threshold led to each
-    prediction, which makes it easy to explain to someone without a statistics background.</p>
+    prediction, which makes it easy to explain to someone without a statistics background. The goal of
+    applying decision trees here is the same classification task used for Naive Bayes, predicting a metro's
+    affordability class from its recent price growth and volatility, but with a method that can also show,
+    split by split, which of those four predictors actually drives the prediction and at what threshold.</p>
 """
 
 DT_OVERVIEW_2 = """
