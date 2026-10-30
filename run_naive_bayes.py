@@ -134,6 +134,55 @@ results = pd.DataFrame(
 )
 results.to_csv(f"{OUT_DIR}/nb-results-table.csv", index=False)
 
+# ---------------------------------------------------------------- worked example: Bayes' theorem by hand
+# Pick one test-set metro and reconstruct BernoulliNB's own posterior from its
+# fitted class_log_prior_ and feature_log_prob_, without calling predict_proba,
+# to show Bayes' theorem actually being multiplied out.
+import json
+
+row_idx = 0
+x_row = X_test_bin.iloc[row_idx].values
+metro_name = test.iloc[row_idx]["region_name"]
+true_label = y_test.iloc[row_idx]
+
+classes_ = list(bnb.classes_)
+log_prior = bnb.class_log_prior_
+feat_log_prob = bnb.feature_log_prob_
+
+log_joint = log_prior.copy()
+per_feature = {}
+for j, feat in enumerate(PREDICTORS):
+    p1 = np.exp(feat_log_prob[:, j])
+    bit = int(x_row[j])
+    log_joint = log_joint + (np.log(p1) if bit == 1 else np.log(1 - p1))
+    per_feature[feat] = {
+        "bit": bit,
+        **{c: round(float(p1[ci] if bit == 1 else 1 - p1[ci]), 4) for ci, c in enumerate(classes_)},
+    }
+
+posterior = np.exp(log_joint - log_joint.max())
+posterior = posterior / posterior.sum()
+sk_proba = bnb.predict_proba(X_test_bin.iloc[[row_idx]])[0]
+assert np.allclose(posterior, sk_proba, atol=1e-8), "hand calc must match predict_proba exactly"
+
+worked_example = {
+    "metro": metro_name,
+    "true_class": true_label,
+    "predicted_class": classes_[int(np.argmax(posterior))],
+    "classes_order": classes_,
+    "class_prior": dict(zip(classes_, np.exp(log_prior).round(4).tolist())),
+    "per_feature": per_feature,
+    "posterior": dict(zip(classes_, posterior.round(4).tolist())),
+}
+with open(f"{OUT_DIR}/nb-worked-example.json", "w") as f:
+    json.dump(worked_example, f, indent=2)
+
+print("\n--- worked Bayes example ---")
+print(f"metro: {metro_name} (true class: {true_label})")
+print("posterior:", worked_example["posterior"])
+print("predicted class:", worked_example["predicted_class"])
+print("matches predict_proba:", np.allclose(posterior, sk_proba, atol=1e-8))
+
 print("\nDONE")
 print("mnb_acc =", round(mnb_acc, 3))
 print("bnb_acc =", round(bnb_acc, 3))

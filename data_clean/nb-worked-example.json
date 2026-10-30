@@ -1,0 +1,46 @@
+{
+  "metro": "Bozeman, MT",
+  "true_class": "Burdened",
+  "predicted_class": "Burdened",
+  "classes_order": [
+    "Affordable",
+    "Burdened",
+    "Moderate"
+  ],
+  "class_prior": {
+    "Affordable": 0.3328,
+    "Burdened": 0.3313,
+    "Moderate": 0.3358
+  },
+  "per_feature": {
+    "zhvi_yoy_pct": {
+      "bit": 0,
+      "Affordable": 0.5111,
+      "Burdened": 0.6027,
+      "Moderate": 0.3877
+    },
+    "zhvi_3yr_pct": {
+      "bit": 0,
+      "Affordable": 0.5511,
+      "Burdened": 0.6027,
+      "Moderate": 0.3436
+    },
+    "zhvi_5yr_pct": {
+      "bit": 1,
+      "Affordable": 0.3333,
+      "Burdened": 0.558,
+      "Moderate": 0.6079
+    },
+    "zhvi_volatility_5yr": {
+      "bit": 1,
+      "Affordable": 0.4044,
+      "Burdened": 0.6786,
+      "Moderate": 0.4317
+    }
+  },
+  "posterior": {
+    "Affordable": 0.1807,
+    "Burdened": 0.6515,
+    "Moderate": 0.1678
+  }
+}

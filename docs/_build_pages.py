@@ -584,6 +584,54 @@ bnb = BernoulliNB().fit(X_train_bin, y_train)</code></pre>
       <figcaption><b>Figure.</b> Bernoulli NB confusion matrix, test set (n = 224). Collapsing each predictor to a single above/below-median bit costs Bernoulli NB almost all of its ability to recognize the Moderate class, which gets predicted for only 1 of 75 metros that actually belong to it.</figcaption>
     </figure>
 
+    <h3>Worked example: one metro, by hand</h3>
+    <p>Bernoulli NB's prediction for any single metro is Bayes&rsquo; theorem multiplied out across four
+    independent coin flips, one per predictor. For Bozeman, MT (true class: Burdened), the four predictors
+    come out to 0, 0, 1, 1 after thresholding at the training-set median: below median on 1 and 3 year price
+    change, at or above median on 5 year price change and 5 year volatility. Multiplying the training-set
+    probability of each of those four bits within each class by that class&rsquo;s overall share of the
+    training set, then normalizing so the three classes sum to 1, gives the posterior below without calling
+    the fitted model&rsquo;s <code>predict_proba</code> at all.</p>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Predictor</th><th class="num">Bozeman&rsquo;s bit</th><th class="num">P(bit | Affordable)</th><th class="num">P(bit | Burdened)</th><th class="num">P(bit | Moderate)</th></tr></thead>
+        <tbody>
+          <tr><td>1yr price change</td><td class="num">0</td><td class="num">0.511</td><td class="num">0.603</td><td class="num">0.388</td></tr>
+          <tr><td>3yr price change</td><td class="num">0</td><td class="num">0.551</td><td class="num">0.603</td><td class="num">0.344</td></tr>
+          <tr><td>5yr price change</td><td class="num">1</td><td class="num">0.333</td><td class="num">0.558</td><td class="num">0.608</td></tr>
+          <tr><td>5yr price volatility</td><td class="num">1</td><td class="num">0.404</td><td class="num">0.679</td><td class="num">0.432</td></tr>
+          <tr><td><strong>Class prior P(class)</strong></td><td class="num">&ndash;</td><td class="num">0.333</td><td class="num">0.331</td><td class="num">0.336</td></tr>
+          <tr><td><strong>Posterior P(class | these 4 bits)</strong></td><td class="num">&ndash;</td><td class="num">0.181</td><td class="num"><strong>0.652</strong></td><td class="num">0.168</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Multiplying each class&rsquo;s column of four conditional probabilities together with that class&rsquo;s
+    prior gives an unnormalized score per class; Burdened&rsquo;s comes out highest, so that is the predicted
+    class, matching Bozeman&rsquo;s actual label. The hand-computed posteriors above match
+    <code>bnb.predict_proba()</code> on this exact row.</p>
+
+    <div class="codeblock">
+      <div class="codehead">run_naive_bayes.py<span>Bayes&rsquo; theorem computed by hand for one metro, checked against predict_proba</span>
+        <a class="code-link" href="https://github.com/anjana5anand/home_ownership/blob/main/run_naive_bayes.py" target="_blank" rel="noopener">View full file on GitHub &#8599;</a>
+        <button class="code-toggle" type="button" aria-expanded="false">Show excerpt</button>
+      </div>
+      <div class="code-body">
+        <pre><code>log_prior = bnb.class_log_prior_          # log P(class)
+feat_log_prob = bnb.feature_log_prob_     # log P(bit=1 | class), one row per feature
+
+log_joint = log_prior.copy()
+for j, bit in enumerate(x_row):           # x_row = [0, 0, 1, 1] for Bozeman, MT
+    p1 = np.exp(feat_log_prob[:, j])
+    log_joint += np.log(p1) if bit == 1 else np.log(1 - p1)
+
+posterior = np.exp(log_joint - log_joint.max())
+posterior /= posterior.sum()              # matches bnb.predict_proba(x_row) exactly</code></pre>
+        <button class="code-close" type="button" aria-label="Collapse code excerpt">&times;</button>
+      </div>
+    </div>
+
     <h2>Conclusions</h2>
     {t_concl}
 """
@@ -689,12 +737,43 @@ DECISION_TREES_BODY = """
       </table>
     </div>
 
+    <p>A standard scikit-learn tree diagram draws a box for every node with four things in it: the
+    yes/no question, the gini or entropy score of that node, &ldquo;samples&rdquo; (how many training rows
+    reached it), and &ldquo;value&rdquo; (the exact count of rows belonging to each of the three classes at
+    that node). The majority class is then whichever entry in that value array is largest. The trees below
+    keep the question and the sample count, and replace the three-number value array with a single color
+    and class label, the one the tree would actually predict there, since reading three raw counts out of
+    every box adds little once the worked example above already shows exactly how those counts turn into a
+    gini or entropy score. The calculation behind that worked example, run directly against the training
+    data rather than read off a fitted model attribute, is shown below.</p>
+
+    <div class="codeblock">
+      <div class="codehead">run_decision_trees.py<span>gini, entropy, and information gain, computed by hand for the real root split</span>
+        <a class="code-link" href="https://github.com/anjana5anand/home_ownership/blob/main/run_decision_trees.py" target="_blank" rel="noopener">View full file on GitHub &#8599;</a>
+        <button class="code-toggle" type="button" aria-expanded="false">Show excerpt</button>
+      </div>
+      <div class="code-body">
+        <pre><code>def gini(counts):
+    p = counts / counts.sum()
+    return 1 - np.sum(p ** 2)
+
+def entropy(counts):
+    p = counts[counts &gt; 0] / counts.sum()
+    return -np.sum(p * np.log2(p))
+
+parent_counts = class_counts(np.ones_like(left_mask, dtype=bool))   # [223, 225, 222]
+left_counts   = class_counts(left_mask)                             # volatility &lt;= 6.44
+right_counts  = class_counts(right_mask)                            # volatility &gt;  6.44
+
+weighted_gini_after = (n_left / n_total) * gini(left_counts) + (n_right / n_total) * gini(right_counts)
+gini_gain = gini(parent_counts) - weighted_gini_after                # matches the table above</code></pre>
+        <button class="code-close" type="button" aria-label="Collapse code excerpt">&times;</button>
+      </div>
+    </div>
+
     <p><em>Reading the trees below: each white box is a yes/no question about one predictor. Following the
     orange True or grey False label down from a question box leads to the next question, or to a colored
-    leaf box. Each leaf box shows the affordability class that would be predicted for a metro that lands
-    there, and how many training metros actually reached that leaf. The gini or entropy number each split
-    actually used to choose its question is left out of these boxes to keep them readable; the worked
-    example above shows exactly how that number is calculated for the real root split.</em></p>
+    leaf box, which shows the predicted class and how many training metros reached it.</em></p>
 
     <figure class="wide">
       <img src="images/dt-tree-gini.png" alt="Tree A: gini criterion, max depth 3">

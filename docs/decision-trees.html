@@ -188,12 +188,43 @@
       </table>
     </div>
 
+    <p>A standard scikit-learn tree diagram draws a box for every node with four things in it: the
+    yes/no question, the gini or entropy score of that node, &ldquo;samples&rdquo; (how many training rows
+    reached it), and &ldquo;value&rdquo; (the exact count of rows belonging to each of the three classes at
+    that node). The majority class is then whichever entry in that value array is largest. The trees below
+    keep the question and the sample count, and replace the three-number value array with a single color
+    and class label, the one the tree would actually predict there, since reading three raw counts out of
+    every box adds little once the worked example above already shows exactly how those counts turn into a
+    gini or entropy score. The calculation behind that worked example, run directly against the training
+    data rather than read off a fitted model attribute, is shown below.</p>
+
+    <div class="codeblock">
+      <div class="codehead">run_decision_trees.py<span>gini, entropy, and information gain, computed by hand for the real root split</span>
+        <a class="code-link" href="https://github.com/anjana5anand/home_ownership/blob/main/run_decision_trees.py" target="_blank" rel="noopener">View full file on GitHub &#8599;</a>
+        <button class="code-toggle" type="button" aria-expanded="false">Show excerpt</button>
+      </div>
+      <div class="code-body">
+        <pre><code>def gini(counts):
+    p = counts / counts.sum()
+    return 1 - np.sum(p ** 2)
+
+def entropy(counts):
+    p = counts[counts &gt; 0] / counts.sum()
+    return -np.sum(p * np.log2(p))
+
+parent_counts = class_counts(np.ones_like(left_mask, dtype=bool))   # [223, 225, 222]
+left_counts   = class_counts(left_mask)                             # volatility &lt;= 6.44
+right_counts  = class_counts(right_mask)                            # volatility &gt;  6.44
+
+weighted_gini_after = (n_left / n_total) * gini(left_counts) + (n_right / n_total) * gini(right_counts)
+gini_gain = gini(parent_counts) - weighted_gini_after                # matches the table above</code></pre>
+        <button class="code-close" type="button" aria-label="Collapse code excerpt">&times;</button>
+      </div>
+    </div>
+
     <p><em>Reading the trees below: each white box is a yes/no question about one predictor. Following the
     orange True or grey False label down from a question box leads to the next question, or to a colored
-    leaf box. Each leaf box shows the affordability class that would be predicted for a metro that lands
-    there, and how many training metros actually reached that leaf. The gini or entropy number each split
-    actually used to choose its question is left out of these boxes to keep them readable; the worked
-    example above shows exactly how that number is calculated for the real root split.</em></p>
+    leaf box, which shows the predicted class and how many training metros reached it.</em></p>
 
     <figure class="wide">
       <img src="images/dt-tree-gini.png" alt="Tree A: gini criterion, max depth 3">
