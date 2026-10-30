@@ -78,10 +78,16 @@ for name, clf in trees.items():
     rows.append([name, acc, depth, leaves])
     trees[name] = clf  # fitted
 
-    fig, ax = plt.subplots(figsize=(5.2, 4.6), dpi=170)
+    # row-normalize: each row sums to 100%, so color intensity shows what
+    # share of a true class landed in each predicted class, not the raw
+    # count (which is pulled around by any class-size imbalance in the
+    # 224-metro test set).
+    cm_pct = cm / cm.sum(axis=1, keepdims=True) * 100
+
+    fig, ax = plt.subplots(figsize=(5.4, 4.8), dpi=170)
     fig.patch.set_facecolor(SURFACE)
     ax.set_facecolor(SURFACE)
-    im = ax.imshow(cm, cmap="Oranges")
+    im = ax.imshow(cm_pct, cmap="Oranges", vmin=0, vmax=100)
     ax.set_xticks(range(len(CLASSES))); ax.set_yticks(range(len(CLASSES)))
     ax.set_xticklabels(CLASSES, fontsize=9, color=INK)
     ax.set_yticklabels(CLASSES, fontsize=9, color=INK)
@@ -89,13 +95,17 @@ for name, clf in trees.items():
     ax.set_ylabel("true class", fontsize=10, color=INK)
     for i in range(len(CLASSES)):
         for j in range(len(CLASSES)):
-            val = cm[i, j]
-            color = "white" if val > cm.max() / 2 else INK
-            ax.text(j, i, str(val), ha="center", va="center", color=color, fontsize=12, fontweight="bold")
+            pct = cm_pct[i, j]
+            color = "white" if pct > 50 else INK
+            ax.text(j, i, f"{cm[i, j]}\n{pct:.0f}%", ha="center", va="center", color=color,
+                    fontsize=11, fontweight="bold", linespacing=1.6)
     short = name.split(" (")[0].replace(" ", "-").lower()
     ax.set_title(f"{name}\naccuracy = {acc:.1%}", fontsize=11.5, color=INK, pad=10)
     for spine in ax.spines.values():
         spine.set_visible(False)
+    cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+    cbar.set_label("% of that row's true class", fontsize=8.5, color=MUTED)
+    cbar.ax.tick_params(labelsize=8, colors=MUTED)
     fig.tight_layout()
     fig.savefig(f"{IMG_DIR}/dt-confusion-{short}.png", facecolor=SURFACE)
     plt.close(fig)
