@@ -188,13 +188,12 @@
       </table>
     </div>
 
-    <p><em>Reading the trees below: each box is a node. The top line is the yes/no question (a predictor
-    compared to a threshold); &ldquo;class = &hellip;&rdquo; on the last line is which affordability class
-    that node would predict if a metro landed there, and &ldquo;samples&rdquo; is how many training metros
-    reached that node. Following the arrows down from the root to any box shows the chain of questions that
-    led to that prediction. The gini or entropy number each split actually used to choose that question is
-    left out of these boxes to keep them readable; the worked example above shows exactly how that number is
-    calculated for the real root split.</em></p>
+    <p><em>Reading the trees below: each white box is a yes/no question about one predictor. Following the
+    orange True or grey False label down from a question box leads to the next question, or to a colored
+    leaf box. Each leaf box shows the affordability class that would be predicted for a metro that lands
+    there, and how many training metros actually reached that leaf. The gini or entropy number each split
+    actually used to choose its question is left out of these boxes to keep them readable; the worked
+    example above shows exactly how that number is calculated for the real root split.</em></p>
 
     <figure class="wide">
       <img src="images/dt-tree-gini.png" alt="Tree A: gini criterion, max depth 3">

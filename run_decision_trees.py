@@ -21,7 +21,7 @@ Writes figures to docs/images/, a results table to data_clean/.
 """
 import numpy as np
 import pandas as pd
-from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import confusion_matrix, accuracy_score
 
 import matplotlib
@@ -103,39 +103,129 @@ for name, clf in trees.items():
 results = pd.DataFrame(rows, columns=["tree", "test_accuracy", "depth", "n_leaves"])
 results.to_csv(f"{OUT_DIR}/dt-results-table.csv", index=False)
 
-# ---------------------------------------------------------------- tree diagrams (A and B, depth-3, fully readable)
-# Readability pass: friendly feature names instead of raw column names, and
-# impurity=False to drop the gini/entropy number from every box. That number
-# is already worked through once, by hand, in the table above (the actual
-# root split's gini and entropy, before and after); repeating it in all 15
-# boxes of every tree added clutter without adding information for a reader
-# who isn't going to re-derive the splits themselves.
-display_title = {
-    "Tree A (gini, depth=3)": "Tree A — split using gini impurity, max depth 3",
-    "Tree B (entropy, depth=3)": "Tree B — split using entropy, max depth 3",
-}
-for name, fname in [("Tree A (gini, depth=3)", "dt-tree-gini.png"), ("Tree B (entropy, depth=3)", "dt-tree-entropy.png")]:
-    clf = trees[name]
-    fig, ax = plt.subplots(figsize=(16, 7.5), dpi=160)
+# ---------------------------------------------------------------- tree diagrams, redrawn by hand for readability
+# plot_tree's default boxes (raw column names, a gini number, a full
+# value=[...] array, all in default-size text) were too dense to read at a
+# glance. Each tree is redrawn here as simple yes/no question boxes with
+# True/False branches and solid, color-coded leaf boxes, the same style as a
+# textbook decision-tree diagram: what matters for a reader is the question
+# asked at each step and the class predicted at the end, not the internal
+# gini bookkeeping (which the worked example table above shows once,
+# concretely, for the real root split).
+CLASS_COLOR = {"Affordable": BLUE, "Moderate": GREEN, "Burdened": ORANGE}
+
+def _leaf_label(tree_, node, classes_):
+    counts = tree_.value[node][0]
+    cls = classes_[int(np.argmax(counts))]
+    n = int(tree_.n_node_samples[node])
+    return cls, n
+
+def _layout(tree_, node, depth, leaf_x, positions, max_depth=None):
+    """Assigns each node an (x, y) position: x by leaf order, y by -depth."""
+    left, right = tree_.children_left[node], tree_.children_right[node]
+    is_leaf = (left == -1) or (max_depth is not None and depth == max_depth)
+    if is_leaf:
+        x = leaf_x[0]
+        leaf_x[0] += 1
+        positions[node] = (x, -depth, True)
+        return x
+    xl = _layout(tree_, left, depth + 1, leaf_x, positions, max_depth)
+    xr = _layout(tree_, right, depth + 1, leaf_x, positions, max_depth)
+    x = (xl + xr) / 2
+    positions[node] = (x, -depth, False)
+    return x
+
+def draw_custom_tree(clf, feature_names, title, fname, max_depth=None, figsize=(15, 7.5)):
+    tree_ = clf.tree_
+    classes_ = list(clf.classes_)
+    positions = {}
+    _layout(tree_, 0, 0, [0], positions, max_depth=max_depth)
+
+    fig, ax = plt.subplots(figsize=figsize, dpi=160)
     fig.patch.set_facecolor(SURFACE)
-    plot_tree(clf, feature_names=FRIENDLY_LABELS, class_names=CLASSES, filled=True, rounded=True,
-               impurity=False, fontsize=11, ax=ax, proportion=False)
-    ax.set_title(display_title[name], fontsize=15, color=INK, pad=14)
+    ax.set_facecolor(SURFACE)
+    ax.axis("off")
+
+    box_w, box_h = 0.9, 0.62
+    x_scale = 1.15
+
+    def xy(node):
+        x, y, _ = positions[node]
+        return x * x_scale, y * 1.5
+
+    # edges first, so boxes draw on top
+    for node, (x, y, is_leaf) in positions.items():
+        if is_leaf:
+            continue
+        left, right = tree_.children_left[node], tree_.children_right[node]
+        px, py = xy(node)
+        for child, branch_true in [(left, False), (right, True)]:
+            if child not in positions:
+                continue
+            cx, cy = xy(child)
+            ax.annotate("", xy=(cx, cy + box_h / 2), xytext=(px, py - box_h / 2),
+                        arrowprops=dict(arrowstyle="-", color=MUTED, linewidth=1.4), zorder=2)
+            mx, my = (px + cx) / 2, (py + cy) / 2 - box_h * 0.1
+            label, color = ("True", ORANGE) if branch_true else ("False", "#8a8176")
+            ax.text(mx, my, label, fontsize=11, color=color, fontweight="bold",
+                    ha="center", va="center", zorder=3,
+                    bbox=dict(boxstyle="round,pad=0.15", fc=SURFACE, ec="none"))
+
+    # boxes
+    for node, (x, y, is_leaf) in positions.items():
+        px, py = xy(node)
+        if is_leaf:
+            cls, n = _leaf_label(tree_, node, classes_)
+            color = CLASS_COLOR.get(cls, MUTED)
+            ax.add_patch(plt.Rectangle((px - box_w / 2, py - box_h / 2), box_w, box_h,
+                                        facecolor=color, edgecolor="none", zorder=4,
+                                        joinstyle="round", capstyle="round"))
+            ax.text(px, py + 0.08, cls, ha="center", va="center", fontsize=12.5,
+                    color="white", fontweight="bold", zorder=5)
+            ax.text(px, py - 0.18, f"{n} metros", ha="center", va="center", fontsize=9,
+                    color="white", zorder=5, alpha=0.9)
+        else:
+            feat = feature_names[tree_.feature[node]]
+            thresh = tree_.threshold[node]
+            ax.add_patch(plt.Rectangle((px - box_w / 2, py - box_h / 2), box_w, box_h,
+                                        facecolor="white", edgecolor=ORANGE, linewidth=1.8,
+                                        zorder=4))
+            ax.text(px, py, f"{feat}\n> {thresh:.1f} ?", ha="center", va="center", fontsize=11.5,
+                    color=INK, fontweight="bold", zorder=5, linespacing=1.4)
+
+    # "..." markers where the tree was truncated
+    if max_depth is not None:
+        for node, (x, y, is_leaf) in positions.items():
+            if is_leaf and tree_.children_left[node] != -1:
+                px, py = xy(node)
+                for dx in (-0.28, 0.28):
+                    ax.add_patch(plt.Rectangle((px + dx - 0.16, py - box_h * 1.55 - 0.1), 0.32, 0.42,
+                                                facecolor="#d8d3c8", edgecolor="none", zorder=4))
+                    ax.text(px + dx, py - box_h * 1.55 + 0.1, "⋯", ha="center", va="center",
+                            fontsize=13, color=MUTED, zorder=5)
+                    ax.annotate("", xy=(px + dx, py - box_h * 1.55 + 0.31), xytext=(px, py - box_h / 2),
+                                arrowprops=dict(arrowstyle="-", color=MUTED, linewidth=1.2), zorder=2)
+
+    xs = [xy(n)[0] for n in positions]
+    ys = [xy(n)[1] for n in positions]
+    pad_x, pad_y = box_w, box_h * 1.3
+    extra_bottom = 1.0 if max_depth is not None else 0.3
+    ax.set_xlim(min(xs) - pad_x, max(xs) + pad_x)
+    ax.set_ylim(min(ys) - pad_y - extra_bottom, max(ys) + pad_y)
+    ax.set_title(title, fontsize=16, color=INK, pad=16, fontweight="bold")
     fig.tight_layout()
     fig.savefig(f"{IMG_DIR}/{fname}", facecolor=SURFACE)
     plt.close(fig)
 
-# unpruned tree is too large to render legibly in full; show just the top 2 levels for comparison
+draw_custom_tree(trees["Tree A (gini, depth=3)"], FRIENDLY_LABELS,
+                  "Tree A — split using gini impurity, max depth 3", "dt-tree-gini.png")
+draw_custom_tree(trees["Tree B (entropy, depth=3)"], FRIENDLY_LABELS,
+                  "Tree B — split using entropy, max depth 3", "dt-tree-entropy.png")
+
 clf_c = trees["Tree C (gini, unpruned)"]
-fig, ax = plt.subplots(figsize=(13, 6), dpi=160)
-fig.patch.set_facecolor(SURFACE)
-plot_tree(clf_c, feature_names=FRIENDLY_LABELS, class_names=CLASSES, filled=True, rounded=True,
-           impurity=False, fontsize=11, ax=ax, max_depth=2)
-ax.set_title(f"Tree C — unpruned, top 2 levels shown of {clf_c.get_depth()} actual levels and {clf_c.get_n_leaves()} leaves",
-             fontsize=14, color=INK, pad=14)
-fig.tight_layout()
-fig.savefig(f"{IMG_DIR}/dt-tree-unpruned-top.png", facecolor=SURFACE)
-plt.close(fig)
+draw_custom_tree(clf_c, FRIENDLY_LABELS,
+                  f"Tree C — unpruned, top 2 levels shown of {clf_c.get_depth()} actual levels and {clf_c.get_n_leaves()} leaves",
+                  "dt-tree-unpruned-top.png", max_depth=2, figsize=(11, 6))
 
 # ---------------------------------------------------------------- feature importance (Tree A)
 clf_a = trees["Tree A (gini, depth=3)"]
