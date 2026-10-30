@@ -486,6 +486,12 @@ NAIVE_BAYES_BODY = """
       </dl>
     </div>
 
+    <div class="callout">
+      <p><strong>Objective.</strong> Predict which of three affordability classes, Affordable, Moderate, or
+      Burdened, a metro area currently belongs to, using only its recent home-price growth (1, 3, and 5
+      year) and 5-year price volatility, without telling the model how expensive that metro already is.</p>
+    </div>
+
     <h2>Overview</h2>
     {t_overview1}
 
@@ -591,6 +597,14 @@ DECISION_TREES_BODY = """
       </dl>
     </div>
 
+    <div class="callout">
+      <p><strong>Objective.</strong> Same prediction task as the Naive Bayes tab: classify a metro area into
+      one of three affordability classes, Affordable, Moderate, or Burdened, from its recent price growth and
+      volatility alone. Decision trees are used here specifically because each split can be read off
+      directly, so the trees below show exactly which of the four predictors (and what threshold) is doing
+      the predicting, something Naive Bayes doesn't expose.</p>
+    </div>
+
     <h2>Overview</h2>
     {t_overview1}
 
@@ -674,6 +688,11 @@ DECISION_TREES_BODY = """
         </tbody>
       </table>
     </div>
+
+    <p><em>Reading the trees below: each box is a node. The top line is the yes/no question (a predictor
+    compared to a threshold); &ldquo;class = &hellip;&rdquo; on the last line is which affordability class
+    that node would predict if a metro landed there. Following the arrows down from the root to any box
+    shows the chain of questions that led to that prediction.</em></p>
 
     <figure class="wide">
       <img src="images/dt-tree-gini.png" alt="Tree A: gini criterion, max depth 3">
