@@ -190,8 +190,11 @@
 
     <p><em>Reading the trees below: each box is a node. The top line is the yes/no question (a predictor
     compared to a threshold); &ldquo;class = &hellip;&rdquo; on the last line is which affordability class
-    that node would predict if a metro landed there. Following the arrows down from the root to any box
-    shows the chain of questions that led to that prediction.</em></p>
+    that node would predict if a metro landed there, and &ldquo;samples&rdquo; is how many training metros
+    reached that node. Following the arrows down from the root to any box shows the chain of questions that
+    led to that prediction. The gini or entropy number each split actually used to choose that question is
+    left out of these boxes to keep them readable; the worked example above shows exactly how that number is
+    calculated for the real root split.</em></p>
 
     <figure class="wide">
       <img src="images/dt-tree-gini.png" alt="Tree A: gini criterion, max depth 3">
@@ -204,8 +207,8 @@
     </figure>
 
     <figure class="wide">
-      <img src="images/dt-tree-unpruned-top.png" alt="Tree C: gini criterion, unpruned, top 3 levels shown">
-      <figcaption><b>Figure.</b> Tree C, grown without a depth limit, reaches 22 levels and 243 leaves; only the top 3 levels are shown here since the full tree is far too large to read. Despite fitting the training data far more closely, it scores lower on the test set than the two shallow trees.</figcaption>
+      <img src="images/dt-tree-unpruned-top.png" alt="Tree C: gini criterion, unpruned, top 2 levels shown">
+      <figcaption><b>Figure.</b> Tree C, grown without a depth limit, reaches 22 levels and 243 leaves; only the top 2 levels are shown here since the full tree is far too large to read. Despite fitting the training data far more closely, it scores lower on the test set than the two shallow trees.</figcaption>
     </figure>
 
     <figure>

@@ -44,6 +44,13 @@ GRID = "#e7e3dc"
 PREDICTORS = [
     "zhvi_yoy_pct", "zhvi_3yr_pct", "zhvi_5yr_pct", "zhvi_volatility_5yr",
 ]
+FRIENDLY_NAMES = {
+    "zhvi_yoy_pct": "1yr price chg %",
+    "zhvi_3yr_pct": "3yr price chg %",
+    "zhvi_5yr_pct": "5yr price chg %",
+    "zhvi_volatility_5yr": "5yr price volatility",
+}
+FRIENDLY_LABELS = [FRIENDLY_NAMES[p] for p in PREDICTORS]
 CLASSES = ["Affordable", "Moderate", "Burdened"]
 
 train = pd.read_csv(f"{OUT_DIR}/metro_2025_supervised_train.csv")
@@ -97,37 +104,47 @@ results = pd.DataFrame(rows, columns=["tree", "test_accuracy", "depth", "n_leave
 results.to_csv(f"{OUT_DIR}/dt-results-table.csv", index=False)
 
 # ---------------------------------------------------------------- tree diagrams (A and B, depth-3, fully readable)
+# Readability pass: friendly feature names instead of raw column names, and
+# impurity=False to drop the gini/entropy number from every box. That number
+# is already worked through once, by hand, in the table above (the actual
+# root split's gini and entropy, before and after); repeating it in all 15
+# boxes of every tree added clutter without adding information for a reader
+# who isn't going to re-derive the splits themselves.
+display_title = {
+    "Tree A (gini, depth=3)": "Tree A — split using gini impurity, max depth 3",
+    "Tree B (entropy, depth=3)": "Tree B — split using entropy, max depth 3",
+}
 for name, fname in [("Tree A (gini, depth=3)", "dt-tree-gini.png"), ("Tree B (entropy, depth=3)", "dt-tree-entropy.png")]:
     clf = trees[name]
-    fig, ax = plt.subplots(figsize=(15, 8), dpi=150)
+    fig, ax = plt.subplots(figsize=(16, 7.5), dpi=160)
     fig.patch.set_facecolor(SURFACE)
-    plot_tree(clf, feature_names=PREDICTORS, class_names=CLASSES, filled=True, rounded=True,
-               fontsize=8, ax=ax, proportion=False)
-    ax.set_title(name, fontsize=14, color=INK, pad=10)
+    plot_tree(clf, feature_names=FRIENDLY_LABELS, class_names=CLASSES, filled=True, rounded=True,
+               impurity=False, fontsize=11, ax=ax, proportion=False)
+    ax.set_title(display_title[name], fontsize=15, color=INK, pad=14)
     fig.tight_layout()
     fig.savefig(f"{IMG_DIR}/{fname}", facecolor=SURFACE)
     plt.close(fig)
 
-# unpruned tree is too large to render legibly in full; show just the top 3 levels for comparison
+# unpruned tree is too large to render legibly in full; show just the top 2 levels for comparison
 clf_c = trees["Tree C (gini, unpruned)"]
-fig, ax = plt.subplots(figsize=(15, 8), dpi=150)
+fig, ax = plt.subplots(figsize=(13, 6), dpi=160)
 fig.patch.set_facecolor(SURFACE)
-plot_tree(clf_c, feature_names=PREDICTORS, class_names=CLASSES, filled=True, rounded=True,
-           fontsize=8, ax=ax, max_depth=3)
-ax.set_title(f"Tree C (gini, unpruned) — top 3 levels shown of {clf_c.get_depth()} actual depth, {clf_c.get_n_leaves()} leaves",
-             fontsize=13, color=INK, pad=10)
+plot_tree(clf_c, feature_names=FRIENDLY_LABELS, class_names=CLASSES, filled=True, rounded=True,
+           impurity=False, fontsize=11, ax=ax, max_depth=2)
+ax.set_title(f"Tree C — unpruned, top 2 levels shown of {clf_c.get_depth()} actual levels and {clf_c.get_n_leaves()} leaves",
+             fontsize=14, color=INK, pad=14)
 fig.tight_layout()
 fig.savefig(f"{IMG_DIR}/dt-tree-unpruned-top.png", facecolor=SURFACE)
 plt.close(fig)
 
 # ---------------------------------------------------------------- feature importance (Tree A)
 clf_a = trees["Tree A (gini, depth=3)"]
-imp = pd.Series(clf_a.feature_importances_, index=PREDICTORS).sort_values(ascending=True)
+imp = pd.Series(clf_a.feature_importances_, index=FRIENDLY_LABELS).sort_values(ascending=True)
 fig, ax = plt.subplots(figsize=(7, 4.4), dpi=170)
 fig.patch.set_facecolor(SURFACE)
 ax.set_facecolor(SURFACE)
 ax.barh(imp.index, imp.values, color=BLUE, zorder=2)
-ax.set_xlabel("gini importance", fontsize=11, color=INK)
+ax.set_xlabel("importance (share of total impurity reduction)", fontsize=10.5, color=INK)
 ax.set_title("Which predictors Tree A actually splits on", fontsize=12.5, color=INK, pad=10)
 ax.grid(axis="x", color=GRID, linewidth=0.8, zorder=0)
 for spine in ("top", "right"):
