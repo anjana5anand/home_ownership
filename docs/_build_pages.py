@@ -574,6 +574,11 @@ bnb = BernoulliNB().fit(X_train_bin, y_train)</code></pre>
       </table>
     </div>
 
+    <p><em>Reading these two panels: each true class is a row on the left, outlined in black where
+    that row crosses its own column, the metros the model got right. The bar chart on the right pulls
+    exactly those outlined cells out as one recall percentage per class, with a dashed line marking 33.3%,
+    what random guessing would score across 3 balanced classes.</em></p>
+
     <figure>
       <img src="images/nb-confusion-multinomial.png" alt="Multinomial NB confusion matrix on the test set">
       <figcaption><b>Figure.</b> Multinomial NB confusion matrix, test set (n = 224). Most errors land in the adjacent class (Affordable mistaken for Moderate, Moderate for Burdened) rather than at the opposite extreme, which is what a reasonable model's mistakes should look like on an ordered label.</figcaption>
@@ -789,6 +794,11 @@ gini_gain = gini(parent_counts) - weighted_gini_after                # matches t
       <img src="images/dt-tree-unpruned-top.png" alt="Tree C: gini criterion, unpruned, top 2 levels shown">
       <figcaption><b>Figure.</b> Tree C, grown without a depth limit, reaches 22 levels and 243 leaves; only the top 2 levels are shown here since the full tree is far too large to read. Despite fitting the training data far more closely, it scores lower on the test set than the two shallow trees.</figcaption>
     </figure>
+
+    <p><em>Reading these two panels: each true class is a row on the left, outlined in black where
+    that row crosses its own column, the metros the model got right. The bar chart on the right pulls
+    exactly those outlined cells out as one recall percentage per class, with a dashed line marking 33.3%,
+    what random guessing would score across 3 balanced classes.</em></p>
 
     <figure>
       <img src="images/dt-confusion-tree-a.png" alt="Tree A confusion matrix">

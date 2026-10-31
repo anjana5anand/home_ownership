@@ -190,6 +190,11 @@ bnb = BernoulliNB().fit(X_train_bin, y_train)</code></pre>
       </table>
     </div>
 
+    <p><em>Reading these two panels: each true class is a row on the left, outlined in black where
+    that row crosses its own column, the metros the model got right. The bar chart on the right pulls
+    exactly those outlined cells out as one recall percentage per class, with a dashed line marking 33.3%,
+    what random guessing would score across 3 balanced classes.</em></p>
+
     <figure>
       <img src="images/nb-confusion-multinomial.png" alt="Multinomial NB confusion matrix on the test set">
       <figcaption><b>Figure.</b> Multinomial NB confusion matrix, test set (n = 224). Most errors land in the adjacent class (Affordable mistaken for Moderate, Moderate for Burdened) rather than at the opposite extreme, which is what a reasonable model's mistakes should look like on an ordered label.</figcaption>

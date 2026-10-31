@@ -85,8 +85,9 @@ def plot_cm(cm, acc, title, fname):
     # count (which is pulled around by any class-size imbalance in the
     # 224-metro test set).
     cm_pct = cm / cm.sum(axis=1, keepdims=True) * 100
+    recall = np.diag(cm_pct)  # the diagonal, pulled out as its own chart
 
-    fig, ax = plt.subplots(figsize=(5.4, 4.8), dpi=170)
+    fig, (ax, ax2) = plt.subplots(1, 2, figsize=(9.8, 4.8), dpi=170, gridspec_kw={"width_ratios": [1.3, 1]})
     fig.patch.set_facecolor(SURFACE)
     ax.set_facecolor(SURFACE)
     im = ax.imshow(cm_pct, cmap="Oranges", vmin=0, vmax=100)
@@ -102,12 +103,36 @@ def plot_cm(cm, acc, title, fname):
             color = "white" if pct > 50 else INK
             ax.text(j, i, f"{cm[i, j]}\n{pct:.0f}%", ha="center", va="center", color=color,
                     fontsize=12, fontweight="bold", linespacing=1.6)
-    ax.set_title(f"{title}\naccuracy = {acc:.1%}", fontsize=12.5, color=INK, pad=12)
+            if i == j:
+                # outline the "correct prediction" cells so the eye lands there first
+                ax.add_patch(plt.Rectangle((j - 0.5, i - 0.5), 1, 1, fill=False,
+                                            edgecolor=INK, linewidth=2.6, zorder=5))
+    ax.set_title(f"{title}\naccuracy = {acc:.1%}", fontsize=12, color=INK, pad=12)
     for spine in ax.spines.values():
         spine.set_visible(False)
     cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
     cbar.set_label("% of that row's true class", fontsize=8.5, color=MUTED)
     cbar.ax.tick_params(labelsize=8, colors=MUTED)
+
+    # right panel: the outlined diagonal, pulled out as a simple recall-per-class bar chart
+    ax2.set_facecolor(SURFACE)
+    y_pos = np.arange(len(CLASSES))
+    ax2.barh(y_pos, recall, color=ORANGE, height=0.55, zorder=3)
+    ax2.set_yticks(y_pos)
+    ax2.set_yticklabels(CLASSES, fontsize=9.5, color=INK)
+    ax2.invert_yaxis()
+    ax2.set_xlim(0, 100)
+    ax2.set_xlabel("% of this true class correctly predicted", fontsize=9, color=INK)
+    ax2.set_title("Recall by class\n(the diagonal, pulled out)", fontsize=11, color=INK, pad=10)
+    for y, val in zip(y_pos, recall):
+        ax2.text(val + 2, y, f"{val:.0f}%", va="center", fontsize=10, color=INK, fontweight="bold")
+    ax2.axvline(100 / 3, color=MUTED, linestyle="--", linewidth=1, zorder=2)
+    for spine in ("top", "right"):
+        ax2.spines[spine].set_visible(False)
+    ax2.spines["bottom"].set_color(GRID)
+    ax2.spines["left"].set_color(GRID)
+    ax2.grid(axis="x", color=GRID, linewidth=0.8, zorder=0)
+
     fig.tight_layout()
     fig.savefig(f"{IMG_DIR}/{fname}", facecolor=SURFACE)
     plt.close(fig)

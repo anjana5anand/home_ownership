@@ -241,6 +241,11 @@ gini_gain = gini(parent_counts) - weighted_gini_after                # matches t
       <figcaption><b>Figure.</b> Tree C, grown without a depth limit, reaches 22 levels and 243 leaves; only the top 2 levels are shown here since the full tree is far too large to read. Despite fitting the training data far more closely, it scores lower on the test set than the two shallow trees.</figcaption>
     </figure>
 
+    <p><em>Reading these two panels: each true class is a row on the left, outlined in black where
+    that row crosses its own column, the metros the model got right. The bar chart on the right pulls
+    exactly those outlined cells out as one recall percentage per class, with a dashed line marking 33.3%,
+    what random guessing would score across 3 balanced classes.</em></p>
+
     <figure>
       <img src="images/dt-confusion-tree-a.png" alt="Tree A confusion matrix">
       <figcaption><b>Figure.</b> Tree A confusion matrix. Errors again cluster in adjacent classes rather than jumping from Affordable straight to Burdened.</figcaption>
