@@ -1,0 +1,12 @@
+{
+  "rmse": 15.941,
+  "mae": 10.581,
+  "r2": 0.156,
+  "intercept": 7.9279,
+  "coefficients": {
+    "zhvi_yoy_pct": -0.0531,
+    "zhvi_3yr_pct": 0.3041,
+    "zhvi_5yr_pct": 0.1548,
+    "zhvi_volatility_5yr": 2.658
+  }
+}

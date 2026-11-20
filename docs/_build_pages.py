@@ -13,8 +13,8 @@ PAGES = [
     ("pca.html",             "PCA",             "Reducing eleven affordability features to a handful that matter", None),
     ("naive-bayes.html",     "Naive Bayes",     "Multinomial and Bernoulli NB predicting affordability class", None),
     ("decision-trees.html",  "Decision Trees",  "Gini, entropy, and three trees of varying depth", None),
-    ("regression.html",      "Regression",      "PLACEHOLDER subtitle", None),
-    ("adaboost.html",        "AdaBoost",        "PLACEHOLDER subtitle", None),
+    ("regression.html",      "Regression",      "Linear regression on payment burden, logistic regression on the Burdened class", None),
+    ("adaboost.html",        "AdaBoost",        "Boosted decision stumps, tuned against the Decision Tree from Part 3", None),
     ("gradient-boosting.html","Gradient Boosting", "PLACEHOLDER subtitle", None),
     ("xgboost.html",         "XGBoost",         "PLACEHOLDER subtitle", None),
     ("conclusions.html",     "Conclusions",     "What the evidence says about affordability", "Findings"),
@@ -818,6 +818,296 @@ gini_gain = gini(parent_counts) - weighted_gini_after                # matches t
     {t_concl}
 """
 
+
+REGRESSION_BODY = """
+    <div class="meta">
+      <dl>
+        <dt>Category</dt><dd>Supervised &middot; regression (linear) and classification (logistic)</dd>
+        <dt>Target</dt><dd>Linear: <code>payment_to_income_pct_25_34</code> (continuous) &middot; Logistic: <code>is_burdened</code> (Burdened / Not Burdened, 2 classes)</dd>
+        <dt>Data used</dt><dd><code>metro_2025_regression.csv</code>, 894 metros &times; 4 predictors + both targets (same table used for Naive Bayes and Decision Trees, with two new target columns)</dd>
+      </dl>
+    </div>
+
+    <div class="callout">
+      <p><strong>Objective.</strong> Predict a metro&rsquo;s actual payment-to-income percentage directly,
+      rather than just which tier it falls into, using linear regression; and predict whether a metro
+      belongs to the single most policy-relevant tier, Burdened, using logistic regression, from the same
+      four price-growth and volatility predictors used throughout this project.</p>
+    </div>
+
+    <h2>Overview</h2>
+    {t_overview1}
+
+    <figure>
+      <img src="images/theory-linear-vs-logistic.png" alt="Linear regression predicts a number; logistic regression predicts a probability, then a class">
+      <figcaption><b>Figure.</b> Linear regression fits a line through continuous outcomes; logistic regression fits an S-shaped curve through class membership, reading off a probability at any point along the predictor.</figcaption>
+    </figure>
+    <figure>
+      <img src="images/theory-sigmoid.png" alt="The sigmoid function maps any linear score to a probability between 0 and 1">
+      <figcaption><b>Figure.</b> The sigmoid function, applied to logistic regression&rsquo;s linear score (the intercept plus each predictor times its coefficient), is what turns an unbounded number into a 0-1 probability, which a 0.5 threshold then turns into a predicted class.</figcaption>
+    </figure>
+
+    {t_overview2}
+
+    <h2>Data Prep</h2>
+    {t_dataprep}
+
+    <figure class="sample">
+      <img src="images/data-sample-regression.png" alt="Sample rows of the regression dataset, showing both Module 4 targets">
+      <figcaption><b>Sample.</b> First rows of <code>metro_2025_regression.csv</code>: the same 4 predictors used throughout this project, the continuous payment-to-income target for linear regression, and the new binary <code>is_burdened</code> target for logistic regression.
+      <a href="https://github.com/anjana5anand/home_ownership/blob/main/data_clean/metro_2025_regression.csv" target="_blank" rel="noopener">Full file on GitHub &#8599;</a></figcaption>
+    </figure>
+
+    <figure class="sample">
+      <img src="images/data-split-supervised.png" alt="Training and testing split sizes by affordability class">
+      <figcaption><b>Sample.</b> The same 75/25 stratified train/test split reused from Naive Bayes and Decision Trees, so every supervised method in this project is compared on identical rows.
+      <a href="https://github.com/anjana5anand/home_ownership/blob/main/data_clean/metro_2025_regression_train.csv" target="_blank" rel="noopener">Training set on GitHub &#8599;</a> &middot;
+      <a href="https://github.com/anjana5anand/home_ownership/blob/main/data_clean/metro_2025_regression_test.csv" target="_blank" rel="noopener">Testing set on GitHub &#8599;</a></figcaption>
+    </figure>
+
+    <h2>Code</h2>
+    <p>Python, using scikit-learn&rsquo;s <code>LinearRegression</code> and <code>LogisticRegression</code>
+    directly on the unscaled predictors.</p>
+
+    <div class="codeblock">
+      <div class="codehead">run_regression.py<span>linear regression on the continuous target, logistic regression on the binary target</span>
+        <a class="code-link" href="https://github.com/anjana5anand/home_ownership/blob/main/run_regression.py" target="_blank" rel="noopener">View full file on GitHub &#8599;</a>
+        <button class="code-toggle" type="button" aria-expanded="false">Show excerpt</button>
+      </div>
+      <div class="code-body">
+        <pre><code>lin = LinearRegression().fit(X_train, y_train_lin)
+lin_pred = lin.predict(X_test)
+rmse = np.sqrt(mean_squared_error(y_test_lin, lin_pred))
+r2 = r2_score(y_test_lin, lin_pred)
+
+&#8942;  # logistic regression on the binary is_burdened target
+
+log = LogisticRegression().fit(X_train, y_train_log)
+log_pred = log.predict(X_test)
+odds_ratios = np.exp(log.coef_[0])   # exponentiate each coefficient to read it as an odds multiplier</code></pre>
+        <button class="code-close" type="button" aria-label="Collapse code excerpt">&times;</button>
+      </div>
+    </div>
+
+    <ul class="linklist">
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/prep_regression_data.py" target="_blank" rel="noopener">prep_regression_data.py</a> <span>: adds the is_burdened target onto the existing labeled table and split</span></li>
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/run_regression.py" target="_blank" rel="noopener">run_regression.py</a> <span>: linear and logistic regression, metrics, coefficients, figures</span></li>
+    </ul>
+
+    <h2>Results</h2>
+    {t_results}
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Linear regression</th><th class="num">Value</th></tr></thead>
+        <tbody>
+          <tr><td>Test RMSE</td><td class="num"><strong>15.94</strong> pts</td></tr>
+          <tr><td>Test MAE</td><td class="num">10.58 pts</td></tr>
+          <tr><td>Test R&sup2;</td><td class="num">0.156</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <figure>
+      <img src="images/regression-pred-vs-actual.png" alt="Linear regression predicted vs actual payment-to-income, test set">
+      <figcaption><b>Figure.</b> Predicted vs. actual payment-to-income percentage, test set (n = 224). Points on the dashed line would be perfect predictions; the real spread around that line is what an R&sup2; of 0.156 looks like.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="images/regression-coefficients.png" alt="Linear regression coefficients, four predictors">
+      <figcaption><b>Figure.</b> Linear regression coefficients. 5 year price volatility dominates (+2.658): each extra point of volatility predicts roughly 2.7 more points of payment-to-income, holding the other three predictors fixed. 1 year price change is small and negative (-0.053), adding almost nothing once the longer trends and volatility are already in the model.</figcaption>
+    </figure>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Logistic regression</th><th class="num">Value</th></tr></thead>
+        <tbody>
+          <tr><td>Test accuracy</td><td class="num"><strong>74.6%</strong></td></tr>
+          <tr><td>Bernoulli NB (Part 3), collapsed to binary Burdened/Not-Burdened</td><td class="num">68.8%</td></tr>
+          <tr><td><em>Random guessing (base rate, ~33% Burdened)</em></td><td class="num"><em>~67%</em></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><em>Reading these two panels: each true class is a row on the left, outlined in black where
+    that row crosses its own column, the metros the model got right. The bar chart on the right pulls
+    exactly those outlined cells out as one recall percentage per class, with a dashed line at 50%.</em></p>
+
+    <figure>
+      <img src="images/regression-logistic-confusion.png" alt="Logistic regression confusion matrix, test set">
+      <figcaption><b>Figure.</b> Logistic regression confusion matrix, test set (n = 224), accuracy 74.6%. The model is noticeably better at recognizing Not Burdened metros than Burdened ones, missing 42 of the 74 metros that are actually Burdened.</figcaption>
+    </figure>
+
+    <p>Reading one logistic regression coefficient directly: the 5 year volatility coefficient, 0.345,
+    converts to an odds ratio of e<sup>0.345</sup> = 1.41 by exponentiating it. That means each additional
+    point of 5 year price volatility multiplies a metro&rsquo;s odds of being classified Burdened by about
+    1.41, holding the other three predictors fixed, the same predictor that dominates the linear regression
+    coefficients above.</p>
+
+    <p>Logistic regression (74.6% test accuracy) outperforms Part 3&rsquo;s Bernoulli Naive Bayes once Naive
+    Bayes&rsquo; own 3-class predictions are collapsed down to the same binary Burdened/not-Burdened question
+    (68.8%), a 5.8 percentage point gap on an identical comparison.</p>
+
+    <h2>Conclusions</h2>
+    {t_concl}
+"""
+
+
+ADABOOST_BODY = """
+    <div class="meta">
+      <dl>
+        <dt>Category</dt><dd>Supervised &middot; classification (AdaBoost, boosted decision stumps)</dd>
+        <dt>Target</dt><dd><code>affordability_class</code>: Affordable / Moderate / Burdened, 3 classes (same target as Decision Trees)</dd>
+        <dt>Data used</dt><dd><code>metro_2025_regression.csv</code>, 894 metros &times; 4 predictors + label (same table and split used for Decision Trees)</dd>
+      </dl>
+    </div>
+
+    <div class="callout">
+      <p><strong>Objective.</strong> Classify a metro into one of the same three affordability classes
+      used for Naive Bayes and Decision Trees, but by combining many weak decision stumps, built one after
+      another and reweighted to focus on each other&rsquo;s mistakes, rather than fitting a single tree,
+      so the result can be compared directly against Part 3&rsquo;s Decision Tree on identical data.</p>
+    </div>
+
+    <h2>Overview</h2>
+    {t_overview1}
+
+    <figure>
+      <img src="images/theory-bagging-vs-boosting.png" alt="Bagging trains independent trees in parallel; boosting trains trees sequentially, each reweighting the last one's mistakes">
+      <figcaption><b>Figure.</b> Bagging (left) trains every tree independently on the full data and votes at the end. Boosting (right), what AdaBoost does, trains stumps one after another, each one reweighted to focus on the previous stump&rsquo;s mistakes, then combines them in a weighted vote.</figcaption>
+    </figure>
+    <figure>
+      <img src="images/theory-stump-reweighting.png" alt="Missed points are drawn larger in each successive round, showing AdaBoost's reweighting">
+      <figcaption><b>Figure.</b> A decision stump is a depth-1 tree, one split, two leaves. Across rounds, points a stump keeps missing (drawn larger here) carry more and more weight, so the next stump is pushed to pay attention to exactly those rows.</figcaption>
+    </figure>
+
+    {t_overview2}
+
+    <h3>Worked example: one stump&rsquo;s weighted error and alpha</h3>
+    <p>Using the binary <code>is_burdened</code> target, where the classic two-class AdaBoost formula applies
+    directly: a single depth-1 stump, fit on the 670 training rows with every row starting at equal weight
+    1/670, splits on 5 year price volatility at 6.435. That stump misclassifies 195 of the 670 rows, giving a
+    weighted error of 0.291. Alpha, the stump&rsquo;s vote weight in the final ensemble, is computed as
+    0.5 &middot; ln((1 &minus; 0.291) / 0.291) = 0.445. After this round, the 195 missed rows are reweighted
+    upward and the full set of weights renormalized: their combined share of the total weight rises from 29.1
+    percent to exactly 50 percent, so the next stump fit on these new weights is effectively told to treat
+    getting those 195 rows right as equally important as getting the other 475 right.</p>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Quantity</th><th class="num">Value</th></tr></thead>
+        <tbody>
+          <tr><td>Stump split</td><td class="num">5yr volatility &le; 6.435</td></tr>
+          <tr><td>Weighted error (round 1, equal weights)</td><td class="num">0.291</td></tr>
+          <tr><td>Alpha = 0.5 &middot; ln((1&minus;err)/err)</td><td class="num"><strong>0.445</strong></td></tr>
+          <tr><td>Missed rows&rsquo; weight share, before reweighting</td><td class="num">29.1%</td></tr>
+          <tr><td>Missed rows&rsquo; weight share, after reweighting</td><td class="num">50.0%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="codeblock">
+      <div class="codehead">run_adaboost.py<span>one stump's weighted error, alpha, and the round-2 reweighting, computed by hand</span>
+        <a class="code-link" href="https://github.com/anjana5anand/home_ownership/blob/main/run_adaboost.py" target="_blank" rel="noopener">View full file on GitHub &#8599;</a>
+        <button class="code-toggle" type="button" aria-expanded="false">Show excerpt</button>
+      </div>
+      <div class="code-body">
+        <pre><code>w = np.full(n, 1.0 / n)                       # round 1: equal weights
+stump = DecisionTreeClassifier(max_depth=1, random_state=42)
+stump.fit(X_train, y_train_bin, sample_weight=w)
+miss = (stump.predict(X_train) != y_train_bin).astype(float)
+
+err = np.sum(w * miss) / np.sum(w)            # weighted error = 0.291
+alpha = 0.5 * np.log((1 - err) / err)         # alpha = 0.445
+
+w2 = w * np.exp(alpha * miss * 2 - alpha)     # misses get up-weighted
+w2 = w2 / w2.sum()                            # renormalize</code></pre>
+        <button class="code-close" type="button" aria-label="Collapse code excerpt">&times;</button>
+      </div>
+    </div>
+
+    <h2>Data Prep</h2>
+    {t_dataprep}
+
+    <figure class="sample">
+      <img src="images/data-sample-regression.png" alt="Sample rows of the regression/AdaBoost dataset">
+      <figcaption><b>Sample.</b> First rows of <code>metro_2025_regression.csv</code>. The four predictors are already continuous numeric values, so no one-hot or ordinal encoding step is needed for this project&rsquo;s own data; the main AdaBoost model below uses the 3-class <code>affordability_class</code> column, while the worked example above uses the binary <code>is_burdened</code> column shown here.
+      <a href="https://github.com/anjana5anand/home_ownership/blob/main/data_clean/metro_2025_regression.csv" target="_blank" rel="noopener">Full file on GitHub &#8599;</a></figcaption>
+    </figure>
+
+    <figure class="sample">
+      <img src="images/data-split-supervised.png" alt="Training and testing split sizes by affordability class">
+      <figcaption><b>Sample.</b> The same 75/25 stratified train/test split reused from Naive Bayes and Decision Trees.
+      <a href="https://github.com/anjana5anand/home_ownership/blob/main/data_clean/metro_2025_regression_train.csv" target="_blank" rel="noopener">Training set on GitHub &#8599;</a> &middot;
+      <a href="https://github.com/anjana5anand/home_ownership/blob/main/data_clean/metro_2025_regression_test.csv" target="_blank" rel="noopener">Testing set on GitHub &#8599;</a></figcaption>
+    </figure>
+
+    <h2>Code</h2>
+    <p>Python, using scikit-learn&rsquo;s <code>AdaBoostClassifier</code> with a depth-1
+    <code>DecisionTreeClassifier</code> as the base stump, swept across <code>n_estimators</code> and
+    <code>learning_rate</code>.</p>
+
+    <div class="codeblock">
+      <div class="codehead">run_adaboost.py<span>tuning grid: n_estimators &times; learning_rate</span>
+        <a class="code-link" href="https://github.com/anjana5anand/home_ownership/blob/main/run_adaboost.py" target="_blank" rel="noopener">View full file on GitHub &#8599;</a>
+        <button class="code-toggle" type="button" aria-expanded="false">Show excerpt</button>
+      </div>
+      <div class="code-body">
+        <pre><code>for lr in [0.3, 1.0, 1.5]:
+    for n_est in [5, 10, 25, 50, 75, 100, 150, 200]:
+        clf = AdaBoostClassifier(
+            estimator=DecisionTreeClassifier(max_depth=1, random_state=42),
+            n_estimators=n_est, learning_rate=lr, random_state=42,
+        )
+        clf.fit(X_train, y_train)
+        acc = accuracy_score(y_test, clf.predict(X_test))
+&#8942;  # best: learning_rate=0.3, n_estimators=10, test accuracy=0.616</code></pre>
+        <button class="code-close" type="button" aria-label="Collapse code excerpt">&times;</button>
+      </div>
+    </div>
+
+    <ul class="linklist">
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/prep_regression_data.py" target="_blank" rel="noopener">prep_regression_data.py</a> <span>: builds the is_burdened column used only in the worked example above</span></li>
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/run_adaboost.py" target="_blank" rel="noopener">run_adaboost.py</a> <span>: worked stump example, tuning grid, final model, confusion matrix</span></li>
+    </ul>
+
+    <h2>Results</h2>
+    {t_results}
+
+    <figure>
+      <img src="images/adaboost-tuning-curve.png" alt="Test accuracy vs n_estimators, one line per learning rate">
+      <figcaption><b>Figure.</b> Test accuracy as boosting rounds are added, at three learning rates. The low rate (0.3) climbs and plateaus; the higher rates (1.0, 1.5) peak early and then degrade, the same overfitting pattern seen with the unpruned Decision Tree in Part 3. Best: learning_rate = 0.3, n_estimators = 10.</figcaption>
+    </figure>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Model</th><th class="num">Test accuracy</th></tr></thead>
+        <tbody>
+          <tr><td>AdaBoost (learning_rate=0.3, n_estimators=10)</td><td class="num"><strong>61.6%</strong></td></tr>
+          <tr><td>Decision Tree A, gini, depth 3 (Part 3)</td><td class="num">58.5%</td></tr>
+          <tr><td><em>Random guessing (3 balanced classes)</em></td><td class="num"><em>33.3%</em></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><em>Reading these two panels: each true class is a row on the left, outlined in black where
+    that row crosses its own column, the metros the model got right. The bar chart on the right pulls
+    exactly those outlined cells out as one recall percentage per class, with a dashed line marking 33.3%,
+    what random guessing would score across 3 balanced classes.</em></p>
+
+    <figure>
+      <img src="images/adaboost-confusion.png" alt="AdaBoost confusion matrix, test set">
+      <figcaption><b>Figure.</b> AdaBoost confusion matrix, test set (n = 224), accuracy 61.6%. Moderate is recognized best (64% recall) and Affordable worst (51% recall); as with every other supervised model in this project, most mistakes land in the class next to the true one.</figcaption>
+    </figure>
+
+    <p>Against Part 3&rsquo;s Decision Tree A (58.5% test accuracy, same predictors, split, and target),
+    AdaBoost comes out <strong>3.1 percentage points</strong> ahead at 61.6%, the clearest improvement any
+    supervised method in this project has managed over the Decision Tree baseline.</p>
+
+    <h2>Conclusions</h2>
+    {t_concl}
+"""
+
 MODEL_BODY = """
     <div class="meta">
       <dl>
@@ -1081,6 +1371,22 @@ def build_all():
                 t_dataprep=COPY['DT_DATAPREP'],
                 t_results=COPY['DT_RESULTS'],
                 t_concl=COPY['DT_CONCL'],
+            )
+        elif href == "regression.html":
+            body = REGRESSION_BODY.format(
+                t_overview1=COPY['REGRESSION_OVERVIEW_1'],
+                t_overview2=COPY['REGRESSION_OVERVIEW_2'],
+                t_dataprep=COPY['REGRESSION_DATAPREP'],
+                t_results=COPY['REGRESSION_RESULTS'],
+                t_concl=COPY['REGRESSION_CONCL'],
+            )
+        elif href == "adaboost.html":
+            body = ADABOOST_BODY.format(
+                t_overview1=COPY['ADABOOST_OVERVIEW_1'],
+                t_overview2=COPY['ADABOOST_OVERVIEW_2'],
+                t_dataprep=COPY['ADABOOST_DATAPREP'],
+                t_results=COPY['ADABOOST_RESULTS'],
+                t_concl=COPY['ADABOOST_CONCL'],
             )
         else:
             body = MODEL_BODY.format(

@@ -44,87 +44,219 @@
 
     <main class="content">
       <h1>AdaBoost</h1>
-      <p class="subtitle">PLACEHOLDER subtitle</p>
+      <p class="subtitle">Boosted decision stumps, tuned against the Decision Tree from Part 3</p>
       <hr class="rule-under">
 
     <div class="meta">
       <dl>
-        <dt>Category</dt><dd>PLACEHOLDER: regression / classification / clustering / dimensionality reduction</dd>
-        <dt>Target</dt><dd>PLACEHOLDER: the column being predicted, or &ldquo;unsupervised&rdquo;</dd>
-        <dt>Data used</dt><dd>PLACEHOLDER: which cleaned table, and how many rows</dd>
+        <dt>Category</dt><dd>Supervised &middot; classification (AdaBoost, boosted decision stumps)</dd>
+        <dt>Target</dt><dd><code>affordability_class</code>: Affordable / Moderate / Burdened, 3 classes (same target as Decision Trees)</dd>
+        <dt>Data used</dt><dd><code>metro_2025_regression.csv</code>, 894 metros &times; 4 predictors + label (same table and split used for Decision Trees)</dd>
       </dl>
     </div>
 
-    <h2>Why This Model Was Chosen</h2>
-    <div class="todo">
-      <p>Why this method suits this question, in your own words.</p>
+    <div class="callout">
+      <p><strong>Objective.</strong> Classify a metro into one of the same three affordability classes
+      used for Naive Bayes and Decision Trees, but by combining many weak decision stumps, built one after
+      another and reweighted to focus on each other&rsquo;s mistakes, rather than fitting a single tree,
+      so the result can be compared directly against Part 3&rsquo;s Decision Tree on identical data.</p>
     </div>
-    <ul class="tight">
-      <li>PLACEHOLDER: reason one</li>
-      <li>PLACEHOLDER: reason two</li>
-      <li>PLACEHOLDER: reason three</li>
-    </ul>
 
-    <h2>Core Assumptions</h2>
-    <div class="todo">
-      <p>What this model assumes about the data, and whether the data actually meets those assumptions.</p>
-    </div>
-    <ul class="tight">
-      <li>PLACEHOLDER: assumption one</li>
-      <li>PLACEHOLDER: assumption two</li>
-      <li>PLACEHOLDER: assumption three</li>
-    </ul>
+    <h2>Overview</h2>
+    
+    <p>AdaBoost belongs to a family of methods called ensembles, which combine many weak models into one
+    stronger prediction, but it builds that ensemble in a fundamentally different way than bagging methods
+    like random forests do. Bagging trains many trees independently and in parallel, each on its own random
+    sample of the full training data, and then lets them vote or average at the end; every tree in the
+    ensemble is built the same way, with no knowledge of what the others got right or wrong. Boosting, which
+    is what AdaBoost does, trains its trees one after another instead, and each new tree is built specifically
+    to focus on the rows the previous trees struggled with. AdaBoost's individual trees are usually decision
+    stumps: a decision tree with a single split and exactly two leaves, which is about the weakest possible
+    tree. A stump alone is barely better than guessing, but a sequence of stumps, each one correcting for the
+    last, builds into a strong combined model.</p>
 
-    <h2>Data Preparation</h2>
-    <div class="todo">
-      <p>What this method requires that the others do not, and what was done to meet it.</p>
-    </div>
 
     <figure>
-      <img src="images/PLACEHOLDER-adaboost-before.png" alt="Data before preparation">
-      <figcaption><b>Before.</b> PLACEHOLDER: the data before preparation for this method.</figcaption>
+      <img src="images/theory-bagging-vs-boosting.png" alt="Bagging trains independent trees in parallel; boosting trains trees sequentially, each reweighting the last one's mistakes">
+      <figcaption><b>Figure.</b> Bagging (left) trains every tree independently on the full data and votes at the end. Boosting (right), what AdaBoost does, trains stumps one after another, each one reweighted to focus on the previous stump&rsquo;s mistakes, then combines them in a weighted vote.</figcaption>
     </figure>
     <figure>
-      <img src="images/PLACEHOLDER-adaboost-after.png" alt="Data after preparation">
-      <figcaption><b>After.</b> PLACEHOLDER: the data as fed to the model.</figcaption>
+      <img src="images/theory-stump-reweighting.png" alt="Missed points are drawn larger in each successive round, showing AdaBoost's reweighting">
+      <figcaption><b>Figure.</b> A decision stump is a depth-1 tree, one split, two leaves. Across rounds, points a stump keeps missing (drawn larger here) carry more and more weight, so the next stump is pushed to pay attention to exactly those rows.</figcaption>
     </figure>
 
-    <h2>Parameters Explored</h2>
+    
+    <p>The mechanism that lets AdaBoost's stumps correct each other is a set of per-row weights that get
+    updated after every round. Every row starts with equal weight. After the first stump is fit, the rows it
+    misclassified have their weight increased, so the next stump, when it is fit, is effectively being told to
+    pay more attention to exactly those rows, at the cost of paying somewhat less attention to the ones
+    already classified correctly. Each stump also earns its own alpha weight once it is fit, based on how
+    accurate it was: a stump with low weighted error on the rows it was trained on earns a high alpha, and a
+    stump that performed barely better than chance earns an alpha close to zero. The final prediction is a
+    weighted vote across every stump in the sequence, each one's vote scaled by its own alpha, so stumps that
+    turned out to be more reliable have more influence over the final answer than stumps that barely helped.
+    </p>
+
+
+    <h3>Worked example: one stump&rsquo;s weighted error and alpha</h3>
+    <p>Using the binary <code>is_burdened</code> target, where the classic two-class AdaBoost formula applies
+    directly: a single depth-1 stump, fit on the 670 training rows with every row starting at equal weight
+    1/670, splits on 5 year price volatility at 6.435. That stump misclassifies 195 of the 670 rows, giving a
+    weighted error of 0.291. Alpha, the stump&rsquo;s vote weight in the final ensemble, is computed as
+    0.5 &middot; ln((1 &minus; 0.291) / 0.291) = 0.445. After this round, the 195 missed rows are reweighted
+    upward and the full set of weights renormalized: their combined share of the total weight rises from 29.1
+    percent to exactly 50 percent, so the next stump fit on these new weights is effectively told to treat
+    getting those 195 rows right as equally important as getting the other 475 right.</p>
+
     <div class="scroll">
       <table>
-        <thead><tr><th>Run</th><th>Parameters</th><th>Note</th></tr></thead>
+        <thead><tr><th>Quantity</th><th class="num">Value</th></tr></thead>
         <tbody>
-          <tr><td>1</td><td><code>PLACEHOLDER</code></td><td>PLACEHOLDER</td></tr>
-          <tr><td>2</td><td><code>PLACEHOLDER</code></td><td>PLACEHOLDER</td></tr>
-          <tr><td>3</td><td><code>PLACEHOLDER</code></td><td>PLACEHOLDER</td></tr>
+          <tr><td>Stump split</td><td class="num">5yr volatility &le; 6.435</td></tr>
+          <tr><td>Weighted error (round 1, equal weights)</td><td class="num">0.291</td></tr>
+          <tr><td>Alpha = 0.5 &middot; ln((1&minus;err)/err)</td><td class="num"><strong>0.445</strong></td></tr>
+          <tr><td>Missed rows&rsquo; weight share, before reweighting</td><td class="num">29.1%</td></tr>
+          <tr><td>Missed rows&rsquo; weight share, after reweighting</td><td class="num">50.0%</td></tr>
         </tbody>
       </table>
     </div>
 
-    <h2>Results</h2>
-    <figure>
-      <img src="images/PLACEHOLDER-adaboost-result.png" alt="Model results">
-      <figcaption><b>Figure.</b> PLACEHOLDER: what this figure shows, then what it means.</figcaption>
-    </figure>
-    <div class="scroll">
-      <table>
-        <thead><tr><th>Metric</th><th class="num">Value</th><th>Direction</th><th>What it means here</th></tr></thead>
-        <tbody>
-          <tr><td>PLACEHOLDER</td><td class="num">n/a</td><td>Higher is better</td><td>PLACEHOLDER</td></tr>
-          <tr><td>PLACEHOLDER</td><td class="num">n/a</td><td>Lower is better</td><td>PLACEHOLDER</td></tr>
-        </tbody>
-      </table>
+    <div class="codeblock">
+      <div class="codehead">run_adaboost.py<span>one stump's weighted error, alpha, and the round-2 reweighting, computed by hand</span>
+        <a class="code-link" href="https://github.com/anjana5anand/home_ownership/blob/main/run_adaboost.py" target="_blank" rel="noopener">View full file on GitHub &#8599;</a>
+        <button class="code-toggle" type="button" aria-expanded="false">Show excerpt</button>
+      </div>
+      <div class="code-body">
+        <pre><code>w = np.full(n, 1.0 / n)                       # round 1: equal weights
+stump = DecisionTreeClassifier(max_depth=1, random_state=42)
+stump.fit(X_train, y_train_bin, sample_weight=w)
+miss = (stump.predict(X_train) != y_train_bin).astype(float)
+
+err = np.sum(w * miss) / np.sum(w)            # weighted error = 0.291
+alpha = 0.5 * np.log((1 - err) / err)         # alpha = 0.445
+
+w2 = w * np.exp(alpha * miss * 2 - alpha)     # misses get up-weighted
+w2 = w2 / w2.sum()                            # renormalize</code></pre>
+        <button class="code-close" type="button" aria-label="Collapse code excerpt">&times;</button>
+      </div>
     </div>
+
+    <h2>Data Prep</h2>
+    
+    <p>AdaBoost needs the same disjoint, labeled Training Set and Testing Set as every other supervised method
+    in this project, and reuses the identical 894-metro table and the identical 75/25 stratified 670/224 split
+    used for Naive Bayes, Decision Trees, and the regression tab, so results stay directly comparable. The
+    main AdaBoost model here is fit on the same 3-class <code>affordability_class</code> target used for
+    Decision Trees specifically, rather than the binary <code>is_burdened</code> target used for logistic
+    regression, so it can be compared fairly against the Decision Tree from Module 3 on identical rows and an
+    identical target. One data prep step that does not apply to this particular project is turning categorical
+    columns into numbers. Many AdaBoost datasets include categorical predictors, like a metro's region or a
+    property's zoning type, which need to be one-hot encoded (each category becoming its own 0/1 column) or
+    ordinal encoded before a tree-based model can split on them, since a split compares a feature to a numeric
+    threshold. All four predictors used throughout this project (1, 3, and 5 year price change, and 5 year
+    price volatility) are already continuous numeric values, so no encoding step is needed here; the binary
+    <code>is_burdened</code> target used in the worked example below is itself already numeric for the same
+    reason.</p>
+
+
+    <figure class="sample">
+      <img src="images/data-sample-regression.png" alt="Sample rows of the regression/AdaBoost dataset">
+      <figcaption><b>Sample.</b> First rows of <code>metro_2025_regression.csv</code>. The four predictors are already continuous numeric values, so no one-hot or ordinal encoding step is needed for this project&rsquo;s own data; the main AdaBoost model below uses the 3-class <code>affordability_class</code> column, while the worked example above uses the binary <code>is_burdened</code> column shown here.
+      <a href="https://github.com/anjana5anand/home_ownership/blob/main/data_clean/metro_2025_regression.csv" target="_blank" rel="noopener">Full file on GitHub &#8599;</a></figcaption>
+    </figure>
+
+    <figure class="sample">
+      <img src="images/data-split-supervised.png" alt="Training and testing split sizes by affordability class">
+      <figcaption><b>Sample.</b> The same 75/25 stratified train/test split reused from Naive Bayes and Decision Trees.
+      <a href="https://github.com/anjana5anand/home_ownership/blob/main/data_clean/metro_2025_regression_train.csv" target="_blank" rel="noopener">Training set on GitHub &#8599;</a> &middot;
+      <a href="https://github.com/anjana5anand/home_ownership/blob/main/data_clean/metro_2025_regression_test.csv" target="_blank" rel="noopener">Testing set on GitHub &#8599;</a></figcaption>
+    </figure>
 
     <h2>Code</h2>
+    <p>Python, using scikit-learn&rsquo;s <code>AdaBoostClassifier</code> with a depth-1
+    <code>DecisionTreeClassifier</code> as the base stump, swept across <code>n_estimators</code> and
+    <code>learning_rate</code>.</p>
+
+    <div class="codeblock">
+      <div class="codehead">run_adaboost.py<span>tuning grid: n_estimators &times; learning_rate</span>
+        <a class="code-link" href="https://github.com/anjana5anand/home_ownership/blob/main/run_adaboost.py" target="_blank" rel="noopener">View full file on GitHub &#8599;</a>
+        <button class="code-toggle" type="button" aria-expanded="false">Show excerpt</button>
+      </div>
+      <div class="code-body">
+        <pre><code>for lr in [0.3, 1.0, 1.5]:
+    for n_est in [5, 10, 25, 50, 75, 100, 150, 200]:
+        clf = AdaBoostClassifier(
+            estimator=DecisionTreeClassifier(max_depth=1, random_state=42),
+            n_estimators=n_est, learning_rate=lr, random_state=42,
+        )
+        clf.fit(X_train, y_train)
+        acc = accuracy_score(y_test, clf.predict(X_test))
+&#8942;  # best: learning_rate=0.3, n_estimators=10, test accuracy=0.616</code></pre>
+        <button class="code-close" type="button" aria-label="Collapse code excerpt">&times;</button>
+      </div>
+    </div>
+
     <ul class="linklist">
-      <li><a href="#">PLACEHOLDER</a> <span>: notebook or script for this section</span></li>
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/prep_regression_data.py" target="_blank" rel="noopener">prep_regression_data.py</a> <span>: builds the is_burdened column used only in the worked example above</span></li>
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/run_adaboost.py" target="_blank" rel="noopener">run_adaboost.py</a> <span>: worked stump example, tuning grid, final model, confusion matrix</span></li>
     </ul>
 
-    <h2>Conclusions</h2>
-    <div class="todo">
-      <p>What the results mean for the homeownership question. Not a restatement of the metrics.</p>
+    <h2>Results</h2>
+    
+    <p>Sweeping <code>n_estimators</code> from 5 to 200 rounds at three different learning rates shows a clear
+    pattern: a low learning rate of 0.3 climbs steadily as more rounds are added and plateaus around its best
+    result, while higher learning rates of 1.0 and 1.5 push the model to fit the training rows more
+    aggressively per round, which lets test accuracy peak early and then degrade as more rounds are added, the
+    same overfitting signature already seen with the unpruned Decision Tree in Module 3. The best combination
+    found, learning rate 0.3 with 10 estimators, reaches 61.6 percent test accuracy on the 3-class
+    affordability target, 3.1 percentage points above the 58.5 percent that Module 3's Tree A (gini, max depth
+    3) reached on the exact same predictors, split, and target. The confusion matrix shows the model's
+    strongest class is Moderate (64 percent recall) and its weakest is Affordable (51 percent recall), with
+    most errors again landing in the class adjacent to the true one rather than jumping to the opposite
+    extreme.</p>
+
+
+    <figure>
+      <img src="images/adaboost-tuning-curve.png" alt="Test accuracy vs n_estimators, one line per learning rate">
+      <figcaption><b>Figure.</b> Test accuracy as boosting rounds are added, at three learning rates. The low rate (0.3) climbs and plateaus; the higher rates (1.0, 1.5) peak early and then degrade, the same overfitting pattern seen with the unpruned Decision Tree in Part 3. Best: learning_rate = 0.3, n_estimators = 10.</figcaption>
+    </figure>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Model</th><th class="num">Test accuracy</th></tr></thead>
+        <tbody>
+          <tr><td>AdaBoost (learning_rate=0.3, n_estimators=10)</td><td class="num"><strong>61.6%</strong></td></tr>
+          <tr><td>Decision Tree A, gini, depth 3 (Part 3)</td><td class="num">58.5%</td></tr>
+          <tr><td><em>Random guessing (3 balanced classes)</em></td><td class="num"><em>33.3%</em></td></tr>
+        </tbody>
+      </table>
     </div>
+
+    <p><em>Reading these two panels: each true class is a row on the left, outlined in black where
+    that row crosses its own column, the metros the model got right. The bar chart on the right pulls
+    exactly those outlined cells out as one recall percentage per class, with a dashed line marking 33.3%,
+    what random guessing would score across 3 balanced classes.</em></p>
+
+    <figure>
+      <img src="images/adaboost-confusion.png" alt="AdaBoost confusion matrix, test set">
+      <figcaption><b>Figure.</b> AdaBoost confusion matrix, test set (n = 224), accuracy 61.6%. Moderate is recognized best (64% recall) and Affordable worst (51% recall); as with every other supervised model in this project, most mistakes land in the class next to the true one.</figcaption>
+    </figure>
+
+    <p>Against Part 3&rsquo;s Decision Tree A (58.5% test accuracy, same predictors, split, and target),
+    AdaBoost comes out <strong>3.1 percentage points</strong> ahead at 61.6%, the clearest improvement any
+    supervised method in this project has managed over the Decision Tree baseline.</p>
+
+    <h2>Conclusions</h2>
+    
+    <p>Sequentially reweighting rows that earlier stumps got wrong extracts a modest but real improvement over
+    a single decision tree built on the same four predictors, 3.1 percentage points of test accuracy, without
+    changing what data the model has access to. That gain, and the low-learning-rate-plateaus-while-high-
+    learning-rate-overfits pattern in the tuning curve, both point toward the same conclusion already emerging
+    across every supervised model tried in this project: the four price-growth and volatility predictors
+    genuinely carry some signal about a metro's affordability class, consistently better than chance, but not
+    enough signal for any one of these methods, simple or sophisticated, to classify affordability reliably
+    from recent price behaviour alone.</p>
+
 
     </main>
 

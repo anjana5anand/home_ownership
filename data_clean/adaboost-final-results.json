@@ -1,0 +1,24 @@
+{
+  "n_estimators": 10,
+  "learning_rate": 0.3,
+  "test_accuracy": 0.6161,
+  "decision_tree_a_accuracy": 0.585,
+  "diff_percentage_points": 3.11,
+  "confusion_matrix": [
+    [
+      38,
+      27,
+      10
+    ],
+    [
+      5,
+      48,
+      22
+    ],
+    [
+      6,
+      16,
+      52
+    ]
+  ]
+}

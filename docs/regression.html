@@ -44,87 +44,193 @@
 
     <main class="content">
       <h1>Regression</h1>
-      <p class="subtitle">PLACEHOLDER subtitle</p>
+      <p class="subtitle">Linear regression on payment burden, logistic regression on the Burdened class</p>
       <hr class="rule-under">
 
     <div class="meta">
       <dl>
-        <dt>Category</dt><dd>PLACEHOLDER: regression / classification / clustering / dimensionality reduction</dd>
-        <dt>Target</dt><dd>PLACEHOLDER: the column being predicted, or &ldquo;unsupervised&rdquo;</dd>
-        <dt>Data used</dt><dd>PLACEHOLDER: which cleaned table, and how many rows</dd>
+        <dt>Category</dt><dd>Supervised &middot; regression (linear) and classification (logistic)</dd>
+        <dt>Target</dt><dd>Linear: <code>payment_to_income_pct_25_34</code> (continuous) &middot; Logistic: <code>is_burdened</code> (Burdened / Not Burdened, 2 classes)</dd>
+        <dt>Data used</dt><dd><code>metro_2025_regression.csv</code>, 894 metros &times; 4 predictors + both targets (same table used for Naive Bayes and Decision Trees, with two new target columns)</dd>
       </dl>
     </div>
 
-    <h2>Why This Model Was Chosen</h2>
-    <div class="todo">
-      <p>Why this method suits this question, in your own words.</p>
+    <div class="callout">
+      <p><strong>Objective.</strong> Predict a metro&rsquo;s actual payment-to-income percentage directly,
+      rather than just which tier it falls into, using linear regression; and predict whether a metro
+      belongs to the single most policy-relevant tier, Burdened, using logistic regression, from the same
+      four price-growth and volatility predictors used throughout this project.</p>
     </div>
-    <ul class="tight">
-      <li>PLACEHOLDER: reason one</li>
-      <li>PLACEHOLDER: reason two</li>
-      <li>PLACEHOLDER: reason three</li>
-    </ul>
 
-    <h2>Core Assumptions</h2>
-    <div class="todo">
-      <p>What this model assumes about the data, and whether the data actually meets those assumptions.</p>
-    </div>
-    <ul class="tight">
-      <li>PLACEHOLDER: assumption one</li>
-      <li>PLACEHOLDER: assumption two</li>
-      <li>PLACEHOLDER: assumption three</li>
-    </ul>
+    <h2>Overview</h2>
+    
+    <p>Linear regression and logistic regression share a name and a mechanic (both start from a weighted sum
+    of the predictors) but answer two different kinds of question. Linear regression predicts a number: here,
+    the actual payment-to-income percentage a young worker in a given metro would face, not just which tier
+    of affordability that number falls into. Logistic regression predicts a class, and it does so by first
+    predicting a probability. Rather than fitting a straight line through points that are either 0 or 1, it
+    fits the same kind of weighted sum used in linear regression and then squeezes that sum through a function
+    that only ever outputs a number between 0 and 1, which is read as the probability of belonging to the
+    positive class. A threshold, usually 0.5, turns that probability into the predicted class itself. Both
+    models are used here on the same four predictors already used for Naive Bayes and Decision Trees: 1, 3,
+    and 5 year price growth, and 5 year price volatility.</p>
 
-    <h2>Data Preparation</h2>
-    <div class="todo">
-      <p>What this method requires that the others do not, and what was done to meet it.</p>
-    </div>
 
     <figure>
-      <img src="images/PLACEHOLDER-regression-before.png" alt="Data before preparation">
-      <figcaption><b>Before.</b> PLACEHOLDER: the data before preparation for this method.</figcaption>
+      <img src="images/theory-linear-vs-logistic.png" alt="Linear regression predicts a number; logistic regression predicts a probability, then a class">
+      <figcaption><b>Figure.</b> Linear regression fits a line through continuous outcomes; logistic regression fits an S-shaped curve through class membership, reading off a probability at any point along the predictor.</figcaption>
     </figure>
     <figure>
-      <img src="images/PLACEHOLDER-regression-after.png" alt="Data after preparation">
-      <figcaption><b>After.</b> PLACEHOLDER: the data as fed to the model.</figcaption>
+      <img src="images/theory-sigmoid.png" alt="The sigmoid function maps any linear score to a probability between 0 and 1">
+      <figcaption><b>Figure.</b> The sigmoid function, applied to logistic regression&rsquo;s linear score (the intercept plus each predictor times its coefficient), is what turns an unbounded number into a 0-1 probability, which a 0.5 threshold then turns into a predicted class.</figcaption>
     </figure>
 
-    <h2>Parameters Explored</h2>
-    <div class="scroll">
-      <table>
-        <thead><tr><th>Run</th><th>Parameters</th><th>Note</th></tr></thead>
-        <tbody>
-          <tr><td>1</td><td><code>PLACEHOLDER</code></td><td>PLACEHOLDER</td></tr>
-          <tr><td>2</td><td><code>PLACEHOLDER</code></td><td>PLACEHOLDER</td></tr>
-          <tr><td>3</td><td><code>PLACEHOLDER</code></td><td>PLACEHOLDER</td></tr>
-        </tbody>
-      </table>
-    </div>
+    
+    <p>The function that does the squeezing is the sigmoid function, shown below. It takes any real number,
+    positive or negative, arbitrarily large or small, and maps it smoothly onto the interval between 0 and 1,
+    with 0.5 sitting exactly at an input of zero. The linear part of logistic regression (the intercept plus
+    each predictor times its coefficient) produces that raw, unbounded number, often called the linear score
+    or logit. The sigmoid function then turns that score into a probability, and the 0.5 threshold turns the
+    probability into a predicted class. This is the key difference from linear regression: linear regression's
+    output is the prediction itself, while logistic regression's linear output is only an intermediate step on
+    the way to a probability and, from there, a class.</p>
 
-    <h2>Results</h2>
-    <figure>
-      <img src="images/PLACEHOLDER-regression-result.png" alt="Model results">
-      <figcaption><b>Figure.</b> PLACEHOLDER: what this figure shows, then what it means.</figcaption>
+
+    <h2>Data Prep</h2>
+    
+    <p>Both linear and logistic regression are supervised methods and need the same disjoint Training Set and
+    Testing Set already used for Naive Bayes and Decision Trees: the same 894 metros, split 75/25 into 670
+    training rows and 224 testing rows, stratified so results stay comparable across every supervised method
+    in this project. Two targets are used this time instead of one. Linear regression predicts
+    <code>payment_to_income_pct_25_34</code> directly, the continuous payment-to-income percentage the
+    3-class <code>affordability_class</code> label was itself built from. Logistic regression needs a
+    two-class target, so a new column, <code>is_burdened</code>, is added: 1 when a metro's
+    <code>affordability_class</code> is Burdened, 0 otherwise. Both new targets are layered onto the same
+    table and the same split used throughout this project, so nothing about the 670/224 division changes.</p>
+
+
+    <figure class="sample">
+      <img src="images/data-sample-regression.png" alt="Sample rows of the regression dataset, showing both Module 4 targets">
+      <figcaption><b>Sample.</b> First rows of <code>metro_2025_regression.csv</code>: the same 4 predictors used throughout this project, the continuous payment-to-income target for linear regression, and the new binary <code>is_burdened</code> target for logistic regression.
+      <a href="https://github.com/anjana5anand/home_ownership/blob/main/data_clean/metro_2025_regression.csv" target="_blank" rel="noopener">Full file on GitHub &#8599;</a></figcaption>
     </figure>
-    <div class="scroll">
-      <table>
-        <thead><tr><th>Metric</th><th class="num">Value</th><th>Direction</th><th>What it means here</th></tr></thead>
-        <tbody>
-          <tr><td>PLACEHOLDER</td><td class="num">n/a</td><td>Higher is better</td><td>PLACEHOLDER</td></tr>
-          <tr><td>PLACEHOLDER</td><td class="num">n/a</td><td>Lower is better</td><td>PLACEHOLDER</td></tr>
-        </tbody>
-      </table>
-    </div>
+
+    <figure class="sample">
+      <img src="images/data-split-supervised.png" alt="Training and testing split sizes by affordability class">
+      <figcaption><b>Sample.</b> The same 75/25 stratified train/test split reused from Naive Bayes and Decision Trees, so every supervised method in this project is compared on identical rows.
+      <a href="https://github.com/anjana5anand/home_ownership/blob/main/data_clean/metro_2025_regression_train.csv" target="_blank" rel="noopener">Training set on GitHub &#8599;</a> &middot;
+      <a href="https://github.com/anjana5anand/home_ownership/blob/main/data_clean/metro_2025_regression_test.csv" target="_blank" rel="noopener">Testing set on GitHub &#8599;</a></figcaption>
+    </figure>
 
     <h2>Code</h2>
+    <p>Python, using scikit-learn&rsquo;s <code>LinearRegression</code> and <code>LogisticRegression</code>
+    directly on the unscaled predictors.</p>
+
+    <div class="codeblock">
+      <div class="codehead">run_regression.py<span>linear regression on the continuous target, logistic regression on the binary target</span>
+        <a class="code-link" href="https://github.com/anjana5anand/home_ownership/blob/main/run_regression.py" target="_blank" rel="noopener">View full file on GitHub &#8599;</a>
+        <button class="code-toggle" type="button" aria-expanded="false">Show excerpt</button>
+      </div>
+      <div class="code-body">
+        <pre><code>lin = LinearRegression().fit(X_train, y_train_lin)
+lin_pred = lin.predict(X_test)
+rmse = np.sqrt(mean_squared_error(y_test_lin, lin_pred))
+r2 = r2_score(y_test_lin, lin_pred)
+
+&#8942;  # logistic regression on the binary is_burdened target
+
+log = LogisticRegression().fit(X_train, y_train_log)
+log_pred = log.predict(X_test)
+odds_ratios = np.exp(log.coef_[0])   # exponentiate each coefficient to read it as an odds multiplier</code></pre>
+        <button class="code-close" type="button" aria-label="Collapse code excerpt">&times;</button>
+      </div>
+    </div>
+
     <ul class="linklist">
-      <li><a href="#">PLACEHOLDER</a> <span>: notebook or script for this section</span></li>
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/prep_regression_data.py" target="_blank" rel="noopener">prep_regression_data.py</a> <span>: adds the is_burdened target onto the existing labeled table and split</span></li>
+      <li><a href="https://github.com/anjana5anand/home_ownership/blob/main/run_regression.py" target="_blank" rel="noopener">run_regression.py</a> <span>: linear and logistic regression, metrics, coefficients, figures</span></li>
     </ul>
 
-    <h2>Conclusions</h2>
-    <div class="todo">
-      <p>What the results mean for the homeownership question. Not a restatement of the metrics.</p>
+    <h2>Results</h2>
+    
+    <p>Linear regression reaches a test RMSE of 15.94 and a test MAE of 10.58 (both in percentage points of
+    payment-to-income), with an R squared of 0.156, meaning the four predictors explain only about 16 percent
+    of the variation in actual payment burden across metros on data the model never saw while training. The
+    5 year price volatility coefficient, 2.658, is by far the largest: each additional point of volatility is
+    associated with roughly 2.7 more points of payment-to-income, holding the other three predictors fixed.
+    The 1 year price change coefficient, -0.053, is small and negative, suggesting that, once 3 year and 5
+    year trends and volatility are already accounted for, a metro's most recent single year of price movement
+    adds almost nothing further. Logistic regression reaches 74.6 percent test accuracy at classifying a
+    metro as Burdened or not, clearly ahead of the 68.8 percent that Bernoulli Naive Bayes manages when its
+    own 3-class predictions are collapsed down to the same binary Burdened/not-Burdened comparison. The 5 year
+    volatility coefficient again stands out, 0.345, which converts to an odds ratio of 1.41: each additional
+    point of 5 year volatility multiplies the odds of a metro being classified Burdened by about 1.41, holding
+    the other three predictors fixed.</p>
+
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Linear regression</th><th class="num">Value</th></tr></thead>
+        <tbody>
+          <tr><td>Test RMSE</td><td class="num"><strong>15.94</strong> pts</td></tr>
+          <tr><td>Test MAE</td><td class="num">10.58 pts</td></tr>
+          <tr><td>Test R&sup2;</td><td class="num">0.156</td></tr>
+        </tbody>
+      </table>
     </div>
+
+    <figure>
+      <img src="images/regression-pred-vs-actual.png" alt="Linear regression predicted vs actual payment-to-income, test set">
+      <figcaption><b>Figure.</b> Predicted vs. actual payment-to-income percentage, test set (n = 224). Points on the dashed line would be perfect predictions; the real spread around that line is what an R&sup2; of 0.156 looks like.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="images/regression-coefficients.png" alt="Linear regression coefficients, four predictors">
+      <figcaption><b>Figure.</b> Linear regression coefficients. 5 year price volatility dominates (+2.658): each extra point of volatility predicts roughly 2.7 more points of payment-to-income, holding the other three predictors fixed. 1 year price change is small and negative (-0.053), adding almost nothing once the longer trends and volatility are already in the model.</figcaption>
+    </figure>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Logistic regression</th><th class="num">Value</th></tr></thead>
+        <tbody>
+          <tr><td>Test accuracy</td><td class="num"><strong>74.6%</strong></td></tr>
+          <tr><td>Bernoulli NB (Part 3), collapsed to binary Burdened/Not-Burdened</td><td class="num">68.8%</td></tr>
+          <tr><td><em>Random guessing (base rate, ~33% Burdened)</em></td><td class="num"><em>~67%</em></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><em>Reading these two panels: each true class is a row on the left, outlined in black where
+    that row crosses its own column, the metros the model got right. The bar chart on the right pulls
+    exactly those outlined cells out as one recall percentage per class, with a dashed line at 50%.</em></p>
+
+    <figure>
+      <img src="images/regression-logistic-confusion.png" alt="Logistic regression confusion matrix, test set">
+      <figcaption><b>Figure.</b> Logistic regression confusion matrix, test set (n = 224), accuracy 74.6%. The model is noticeably better at recognizing Not Burdened metros than Burdened ones, missing 42 of the 74 metros that are actually Burdened.</figcaption>
+    </figure>
+
+    <p>Reading one logistic regression coefficient directly: the 5 year volatility coefficient, 0.345,
+    converts to an odds ratio of e<sup>0.345</sup> = 1.41 by exponentiating it. That means each additional
+    point of 5 year price volatility multiplies a metro&rsquo;s odds of being classified Burdened by about
+    1.41, holding the other three predictors fixed, the same predictor that dominates the linear regression
+    coefficients above.</p>
+
+    <p>Logistic regression (74.6% test accuracy) outperforms Part 3&rsquo;s Bernoulli Naive Bayes once Naive
+    Bayes&rsquo; own 3-class predictions are collapsed down to the same binary Burdened/not-Burdened question
+    (68.8%), a 5.8 percentage point gap on an identical comparison.</p>
+
+    <h2>Conclusions</h2>
+    
+    <p>Recasting the affordability question as a number to predict, rather than a class, does not change the
+    underlying story much: the same four price-growth and volatility predictors that struggled to separate
+    three affordability tiers also explain only a modest share of the actual variation in payment burden, and
+    5 year price volatility remains the single most informative signal across both the regression and the
+    earlier classification attempts. Where logistic regression does add something new is as a more targeted
+    tool: collapsing the question down to a single, policy-relevant line (is this metro Burdened or not)
+    rather than three tiers lets the model concentrate on exactly the distinction that matters most for a
+    young buyer deciding where to live, and it does noticeably better at that narrower task than Naive Bayes
+    managed at the broader one.</p>
+
 
     </main>
 

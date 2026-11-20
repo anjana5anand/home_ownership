@@ -1,0 +1,10 @@
+{
+  "split_feature": "zhvi_volatility_5yr",
+  "threshold": 6.435,
+  "weighted_error": 0.291,
+  "alpha": 0.4452,
+  "n_missed": 195,
+  "n_total": 670,
+  "missed_weight_before": 0.291,
+  "missed_weight_after": 0.5
+}

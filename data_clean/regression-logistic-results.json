@@ -1,0 +1,27 @@
+{
+  "accuracy": 0.7455,
+  "intercept": -3.2795,
+  "coefficients": {
+    "zhvi_yoy_pct": -0.0017,
+    "zhvi_3yr_pct": 0.048,
+    "zhvi_5yr_pct": 0.0025,
+    "zhvi_volatility_5yr": 0.3447
+  },
+  "odds_ratios": {
+    "zhvi_yoy_pct": 0.9983,
+    "zhvi_3yr_pct": 1.0491,
+    "zhvi_5yr_pct": 1.0025,
+    "zhvi_volatility_5yr": 1.4115
+  },
+  "confusion_matrix": [
+    [
+      135,
+      15
+    ],
+    [
+      42,
+      32
+    ]
+  ],
+  "nb_bernoulli_binary_accuracy": 0.6875
+}
