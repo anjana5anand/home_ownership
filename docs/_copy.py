@@ -41,18 +41,17 @@ INTRO_TOPIC = """
     having bought a home later, or not at all, compared to prior generations is positioned to carry that
     wealth gap for decades rather than years.</p>
 
-    <p>Answering how much affordability has shifted, and for whom, takes more than a handful of summary
-    statistics, so this project approaches the question with several methods in sequence. Clustering and
-    principal component analysis first group metropolitan areas by shared affordability patterns and reduce
-    eleven correlated features down to the handful that actually separate one metro from another. Naive
-    Bayes and decision trees then test whether a metro's affordability class can be predicted from its recent
-    price behaviour alone, with the trees doubling as a readable map of which predictors matter most.
-    Regression and boosted ensembles extend that supervised work further, predicting the actual payment
-    burden a young worker would face rather than just a coarse class, and testing whether combining many weak
-    models in sequence improves on any single model. Each method answers a different piece of the ten
-    research questions below, and together they are meant to say something more specific than &ldquo;housing
-    has gotten less affordable,&rdquo; namely which places, which years, and which forces explain most of
-    that shift.</p>
+    <p>Addressing the extent to which housing has become less affordable, and for whom, entails more than a
+    few aggregate numbers, so this project uses several methodologies in order to address the problem. First,
+    using clustering and principal component analysis, common groups of metropolitan areas are identified
+    based on their affordability profiles, selecting the few important variables that truly distinguish one
+    city from another among the eleven correlated variables. Then, using Naive Bayes and decision trees, the
+    project tests whether the affordability classification of a given metropolitan area is predictable based
+    solely on the price behavior of the recent past, with decision trees also providing an easy-to-read map of
+    the predictors of importance. Further, regression and ensembles are used to predict the exact cost of
+    living of a young worker in a given city, and to see whether an ensemble of many weak models performs
+    better than any single predictor. Each methodology provides information for a separate research question
+    among the ten listed below.</p>
 """
 
 INTRO_STAKE = """
@@ -561,134 +560,133 @@ DT_CONCL = """
 
 
 REGRESSION_OVERVIEW_1 = """
-    <p>Linear regression and logistic regression share a name and a mechanic (both start from a weighted sum
-    of the predictors) but answer two different kinds of question. Linear regression predicts a number: here,
-    the actual payment-to-income percentage a young worker in a given metro would face, not just which tier
-    of affordability that number falls into. Logistic regression predicts a class, and it does so by first
-    predicting a probability. Rather than fitting a straight line through points that are either 0 or 1, it
-    fits the same kind of weighted sum used in linear regression and then squeezes that sum through a function
-    that only ever outputs a number between 0 and 1, which is read as the probability of belonging to the
-    positive class. A threshold, usually 0.5, turns that probability into the predicted class itself. Both
-    models are used here on the same four predictors already used for Naive Bayes and Decision Trees: 1, 3,
-    and 5 year price growth, and 5 year price volatility.</p>
+    <p>While linear regression and logistic regression both carry the name &ldquo;regression,&rdquo; they
+    serve different purposes. Specifically, while the first one estimates a numerical outcome (in this case,
+    the actual affordability ratio of payment-to-income for young workers in a particular metro), the latter
+    predicts classes by estimating their probabilities. In logistic regression, instead of drawing a line
+    that connects points of either 0 or 1, the same weighted sum approach that is used in linear regression
+    is employed. Then, the weighted sum passes through a special function, which outputs values ranging only
+    between 0 and 1, and those values are interpreted as probabilities of belonging to the positive class
+    (affordable). The threshold, which equals 0.5 in most cases, converts that probability into a class
+    prediction. Linear regression and logistic regression are applied to the same four predictors, namely,
+    1, 3, and 5-year price growth and 5-year price volatility.</p>
 """
 
 REGRESSION_OVERVIEW_2 = """
-    <p>The function that does the squeezing is the sigmoid function, shown below. It takes any real number,
-    positive or negative, arbitrarily large or small, and maps it smoothly onto the interval between 0 and 1,
-    with 0.5 sitting exactly at an input of zero. The linear part of logistic regression (the intercept plus
-    each predictor times its coefficient) produces that raw, unbounded number, often called the linear score
-    or logit. The sigmoid function then turns that score into a probability, and the 0.5 threshold turns the
-    probability into a predicted class. This is the key difference from linear regression: linear regression's
-    output is the prediction itself, while logistic regression's linear output is only an intermediate step on
-    the way to a probability and, from there, a class.</p>
+    <p>The squishing function, the sigmoid function, is given below. The function takes any real number,
+    regardless of being positive or negative, big or small, and translates it to a smooth range of values
+    between 0 and 1, where 0.5 is precisely the point at which an input equals zero. The linear model in the
+    logistic regression (intercept + coefficient &times; predictor) gives an output, known as the linear
+    score or logit, which can take any value from &minus;&infin; to +&infin;. The sigmoid function then
+    transforms this output to a probability, and the cutoff point of 0.5 further converts this probability to
+    a class. That is how logistic regression is different from linear regression: the output of the linear
+    regression is the prediction, while that of the logistic regression is the intermediate step towards
+    prediction.</p>
 """
 
 REGRESSION_DATAPREP = """
-    <p>Both linear and logistic regression are supervised methods and need the same disjoint Training Set and
-    Testing Set already used for Naive Bayes and Decision Trees: the same 894 metros, split 75/25 into 670
-    training rows and 224 testing rows, stratified so results stay comparable across every supervised method
-    in this project. Two targets are used this time instead of one. Linear regression predicts
-    <code>payment_to_income_pct_25_34</code> directly, the continuous payment-to-income percentage the
-    3-class <code>affordability_class</code> label was itself built from. Logistic regression needs a
-    two-class target, so a new column, <code>is_burdened</code>, is added: 1 when a metro's
-    <code>affordability_class</code> is Burdened, 0 otherwise. Both new targets are layered onto the same
-    table and the same split used throughout this project, so nothing about the 670/224 division changes.</p>
+    <p>Linear and logistic regression are both supervised techniques and require the same disjoint Training
+    Set and Testing Set previously used for Naive Bayes and Decision Trees: the same 894 metros, split into
+    670 training cases and 224 testing cases, stratified to make sure that the results remain comparable
+    across all supervised techniques used within this project. In this case, there are two targets instead of
+    one. Linear regression is applied to predict <code>payment_to_income_pct_25_34</code>, which is a
+    continuous variable indicating payment-to-income percentage, out of which the <code>affordability_class</code>
+    3-class target was derived. Logistic regression requires a binary target, and thus the
+    <code>is_burdened</code> column is introduced: 1 when a metro's affordability class is Burdened, 0
+    otherwise.</p>
 """
 
 REGRESSION_RESULTS = """
-    <p>Linear regression reaches a test RMSE of 15.94 and a test MAE of 10.58 (both in percentage points of
-    payment-to-income), with an R squared of 0.156, meaning the four predictors explain only about 16 percent
-    of the variation in actual payment burden across metros on data the model never saw while training. The
-    5 year price volatility coefficient, 2.658, is by far the largest: each additional point of volatility is
-    associated with roughly 2.7 more points of payment-to-income, holding the other three predictors fixed.
-    The 1 year price change coefficient, -0.053, is small and negative, suggesting that, once 3 year and 5
-    year trends and volatility are already accounted for, a metro's most recent single year of price movement
-    adds almost nothing further. Logistic regression reaches 74.6 percent test accuracy at classifying a
-    metro as Burdened or not, clearly ahead of the 68.8 percent that Bernoulli Naive Bayes manages when its
-    own 3-class predictions are collapsed down to the same binary Burdened/not-Burdened comparison. The 5 year
-    volatility coefficient again stands out, 0.345, which converts to an odds ratio of 1.41: each additional
-    point of 5 year volatility multiplies the odds of a metro being classified Burdened by about 1.41, holding
-    the other three predictors fixed.</p>
+    <p>Linear regression achieves a test RMSE of 15.94 and a test MAE of 10.58 (both in percentage points of
+    payment-to-income), with an R squared of 0.156, indicating that the four independent variables can
+    account for just 16 percent of the variation in actual payment burden across metros on unseen data
+    points. The coefficient on 5 year price volatility is the largest among all, at 2.658, showing that one
+    extra point of volatility leads to an increase in payment-to-income of about 2.7 points, everything else
+    being equal. The coefficient on 1 year price change is small in absolute value and negative, at
+    &minus;0.053, which means that after controlling for 3 and 5 year trends and volatility, a metro's most
+    recent one-year price change has practically no effect. Logistic regression achieves a test accuracy of
+    74.6 percent when predicting whether a metro is Burdened or not, which is better than the 68.8 percent
+    achieved by Bernoulli Naive Bayes after collapsing its multi-class predictions into the same binary
+    Burdened/Not-Burdened comparison. The 5 year volatility coefficient again stands out, 0.345, which
+    converts to an odds ratio of 1.41: each additional point of 5 year volatility multiplies the odds of a
+    metro being classified Burdened by about 1.41, holding the other three predictors fixed.</p>
 """
 
 REGRESSION_CONCL = """
-    <p>Recasting the affordability question as a number to predict, rather than a class, does not change the
-    underlying story much: the same four price-growth and volatility predictors that struggled to separate
-    three affordability tiers also explain only a modest share of the actual variation in payment burden, and
-    5 year price volatility remains the single most informative signal across both the regression and the
-    earlier classification attempts. Where logistic regression does add something new is as a more targeted
-    tool: collapsing the question down to a single, policy-relevant line (is this metro Burdened or not)
-    rather than three tiers lets the model concentrate on exactly the distinction that matters most for a
-    young buyer deciding where to live, and it does noticeably better at that narrower task than Naive Bayes
-    managed at the broader one.</p>
+    <p>Reframing the affordability dilemma as a numerical prediction problem rather than a classification
+    problem changes the story in very few ways: the four price-growth and volatility factors that had
+    difficulty classifying the three affordability tiers also explain only a small part of the variation in
+    payment burden, and 5 year price volatility remains the strongest indicator even in the regression
+    analysis. The advantage logistic regression offers is the ability to focus more closely on the particular
+    distinction that matters most when a young person is choosing an affordable place to live: collapsing
+    the question down to two classes instead of the original three helps the model perform this narrower task
+    noticeably better than Naive Bayes managed before.</p>
 """
 
 
 ADABOOST_OVERVIEW_1 = """
-    <p>AdaBoost belongs to a family of methods called ensembles, which combine many weak models into one
-    stronger prediction, but it builds that ensemble in a fundamentally different way than bagging methods
-    like random forests do. Bagging trains many trees independently and in parallel, each on its own random
-    sample of the full training data, and then lets them vote or average at the end; every tree in the
-    ensemble is built the same way, with no knowledge of what the others got right or wrong. Boosting, which
-    is what AdaBoost does, trains its trees one after another instead, and each new tree is built specifically
-    to focus on the rows the previous trees struggled with. AdaBoost's individual trees are usually decision
-    stumps: a decision tree with a single split and exactly two leaves, which is about the weakest possible
-    tree. A stump alone is barely better than guessing, but a sequence of stumps, each one correcting for the
-    last, builds into a strong combined model.</p>
+    <p>AdaBoost is an example of an ensemble approach, which uses multiple weak models to generate a
+    powerful prediction, but AdaBoost builds its ensemble in an entirely different manner compared to bagging
+    approaches such as random forests. In bagging, multiple trees are trained independently and in parallel,
+    where each tree is trained using its own randomly chosen subset of the whole training set, and the trees
+    are then allowed to vote at the end of training; every tree is built the same way, regardless of how the
+    other trees performed. Boosting, which is what AdaBoost uses, involves training trees sequentially, with
+    each tree being trained specifically to address the weaknesses of the previously trained trees. The trees
+    in AdaBoost are typically decision stumps: a decision tree with only one split and exactly two leaves.
+    Such a tree is among the weakest decision trees possible, and a single stump performs only slightly better
+    than random guessing.</p>
 """
 
 ADABOOST_OVERVIEW_2 = """
-    <p>The mechanism that lets AdaBoost's stumps correct each other is a set of per-row weights that get
-    updated after every round. Every row starts with equal weight. After the first stump is fit, the rows it
-    misclassified have their weight increased, so the next stump, when it is fit, is effectively being told to
-    pay more attention to exactly those rows, at the cost of paying somewhat less attention to the ones
-    already classified correctly. Each stump also earns its own alpha weight once it is fit, based on how
-    accurate it was: a stump with low weighted error on the rows it was trained on earns a high alpha, and a
-    stump that performed barely better than chance earns an alpha close to zero. The final prediction is a
-    weighted vote across every stump in the sequence, each one's vote scaled by its own alpha, so stumps that
-    turned out to be more reliable have more influence over the final answer than stumps that barely helped.
-    </p>
+    <p>What enables the stumps in AdaBoost to correct each other is a per-row weight that gets updated after
+    each round. Every row starts off with equal weight. Once the first stump is grown, the rows it
+    misclassifies have their weight increased, so when the second stump is grown it is effectively told to
+    concentrate on those particular rows, at the expense of paying less attention to the rows already
+    classified correctly. Each stump also earns an alpha weight once it is fit, based on its performance:
+    a stump with low weighted error on the rows it was fitted on receives a high alpha, while a stump that
+    performs only slightly better than random guessing earns an alpha close to zero. The final prediction is
+    made through a weighted vote among all stumps in the sequence, each stump's vote scaled by its own alpha,
+    giving more influence to the stumps that turned out to be more trustworthy.</p>
 """
 
 ADABOOST_DATAPREP = """
-    <p>AdaBoost needs the same disjoint, labeled Training Set and Testing Set as every other supervised method
-    in this project, and reuses the identical 894-metro table and the identical 75/25 stratified 670/224 split
-    used for Naive Bayes, Decision Trees, and the regression tab, so results stay directly comparable. The
-    main AdaBoost model here is fit on the same 3-class <code>affordability_class</code> target used for
-    Decision Trees specifically, rather than the binary <code>is_burdened</code> target used for logistic
-    regression, so it can be compared fairly against the Decision Tree from Module 3 on identical rows and an
-    identical target. One data prep step that does not apply to this particular project is turning categorical
-    columns into numbers. Many AdaBoost datasets include categorical predictors, like a metro's region or a
-    property's zoning type, which need to be one-hot encoded (each category becoming its own 0/1 column) or
-    ordinal encoded before a tree-based model can split on them, since a split compares a feature to a numeric
-    threshold. All four predictors used throughout this project (1, 3, and 5 year price change, and 5 year
-    price volatility) are already continuous numeric values, so no encoding step is needed here; the binary
-    <code>is_burdened</code> target used in the worked example below is itself already numeric for the same
-    reason.</p>
+    <p>As with every other supervised method in this project, AdaBoost requires a disjoint Training Set and
+    Testing Set, and uses the exact same 894-row table and the exact same 75/25 stratified 670/224 split used
+    for Naive Bayes, Decision Trees, and the regression tab, so results stay directly comparable. The AdaBoost
+    model here is trained on the exact same 3-class <code>affordability_class</code> target used for Decision
+    Trees, rather than the binary <code>is_burdened</code> target used for logistic regression, so it can be
+    compared directly against the Decision Tree trained in Module 3 on identical rows and an identical target.
+    One data preparation task that is not necessary for this particular project is encoding categorical
+    columns numerically. AdaBoost datasets often have categorical predictors, such as a metro's region or a
+    property's zoning type, that need to be encoded either one-hot (one column per category, taking value 0
+    or 1 depending on whether the category applies to that row) or ordinal (assigning a number to each
+    category) before a tree-based algorithm can split on them, since a split compares a feature against a
+    numeric threshold. All four predictors used throughout this project (1, 3, and 5 year price change, and
+    5 year price volatility) are already continuous numeric values, so no encoding step is needed here; the
+    binary <code>is_burdened</code> target used in the worked example below is itself already numeric for the
+    same reason.</p>
 """
 
 ADABOOST_RESULTS = """
-    <p>Sweeping <code>n_estimators</code> from 5 to 200 rounds at three different learning rates shows a clear
-    pattern: a low learning rate of 0.3 climbs steadily as more rounds are added and plateaus around its best
-    result, while higher learning rates of 1.0 and 1.5 push the model to fit the training rows more
-    aggressively per round, which lets test accuracy peak early and then degrade as more rounds are added, the
-    same overfitting signature already seen with the unpruned Decision Tree in Module 3. The best combination
-    found, learning rate 0.3 with 10 estimators, reaches 61.6 percent test accuracy on the 3-class
-    affordability target, 3.1 percentage points above the 58.5 percent that Module 3's Tree A (gini, max depth
-    3) reached on the exact same predictors, split, and target. The confusion matrix shows the model's
-    strongest class is Moderate (64 percent recall) and its weakest is Affordable (51 percent recall), with
-    most errors again landing in the class adjacent to the true one rather than jumping to the opposite
-    extreme.</p>
+    <p>Varying <code>n_estimators</code> from 5 to 200 across three learning rates reveals a clear pattern: a
+    low learning rate of 0.3 gradually increases as more rounds are added and plateaus at its best result,
+    whereas the higher learning rates of 1.0 and 1.5 push the model to fit each training row more aggressively
+    per round, letting test accuracy peak early and then drop as more rounds are added, much like the
+    overfitting already seen with the unpruned Decision Tree in Module 3. The best configuration is a learning
+    rate of 0.3 with 10 estimators, reaching 61.6 percent test accuracy on the 3-class affordability target,
+    3.1 percentage points above the 58.5 percent reached by Tree A in Module 3 (gini, max depth 3), using the
+    exact same predictors, split, and target. The confusion matrix shows the model's best class is Moderate,
+    with 64 percent recall, and its worst is Affordable, with 51 percent recall, with most mistakes landing in
+    the adjacent class rather than the opposite extreme.</p>
 """
 
 ADABOOST_CONCL = """
-    <p>Sequentially reweighting rows that earlier stumps got wrong extracts a modest but real improvement over
-    a single decision tree built on the same four predictors, 3.1 percentage points of test accuracy, without
-    changing what data the model has access to. That gain, and the low-learning-rate-plateaus-while-high-
-    learning-rate-overfits pattern in the tuning curve, both point toward the same conclusion already emerging
-    across every supervised model tried in this project: the four price-growth and volatility predictors
-    genuinely carry some signal about a metro's affordability class, consistently better than chance, but not
-    enough signal for any one of these methods, simple or sophisticated, to classify affordability reliably
-    from recent price behaviour alone.</p>
+    <p>Sequentially giving extra weight to the rows the previous stump got wrong yields a small but real gain
+    over a standard decision tree trained on the same four variables, a 3.1 percentage point increase in test
+    accuracy without any change to the input features used. This gain, together with the tuning curve's
+    tendency to plateau at a low learning rate while overfitting at high learning rates, points to the same
+    conclusion reached across every supervised model tried so far in this project: there is some real
+    information in these four variables about a metro's affordability class, consistently better than chance,
+    but not enough for any single method here to classify affordability reliably from recent price behavior
+    alone.</p>
 """

@@ -64,16 +64,16 @@
 
     <h2>Overview</h2>
     
-    <p>AdaBoost belongs to a family of methods called ensembles, which combine many weak models into one
-    stronger prediction, but it builds that ensemble in a fundamentally different way than bagging methods
-    like random forests do. Bagging trains many trees independently and in parallel, each on its own random
-    sample of the full training data, and then lets them vote or average at the end; every tree in the
-    ensemble is built the same way, with no knowledge of what the others got right or wrong. Boosting, which
-    is what AdaBoost does, trains its trees one after another instead, and each new tree is built specifically
-    to focus on the rows the previous trees struggled with. AdaBoost's individual trees are usually decision
-    stumps: a decision tree with a single split and exactly two leaves, which is about the weakest possible
-    tree. A stump alone is barely better than guessing, but a sequence of stumps, each one correcting for the
-    last, builds into a strong combined model.</p>
+    <p>AdaBoost is an example of an ensemble approach, which uses multiple weak models to generate a
+    powerful prediction, but AdaBoost builds its ensemble in an entirely different manner compared to bagging
+    approaches such as random forests. In bagging, multiple trees are trained independently and in parallel,
+    where each tree is trained using its own randomly chosen subset of the whole training set, and the trees
+    are then allowed to vote at the end of training; every tree is built the same way, regardless of how the
+    other trees performed. Boosting, which is what AdaBoost uses, involves training trees sequentially, with
+    each tree being trained specifically to address the weaknesses of the previously trained trees. The trees
+    in AdaBoost are typically decision stumps: a decision tree with only one split and exactly two leaves.
+    Such a tree is among the weakest decision trees possible, and a single stump performs only slightly better
+    than random guessing.</p>
 
 
     <figure>
@@ -86,27 +86,32 @@
     </figure>
 
     
-    <p>The mechanism that lets AdaBoost's stumps correct each other is a set of per-row weights that get
-    updated after every round. Every row starts with equal weight. After the first stump is fit, the rows it
-    misclassified have their weight increased, so the next stump, when it is fit, is effectively being told to
-    pay more attention to exactly those rows, at the cost of paying somewhat less attention to the ones
-    already classified correctly. Each stump also earns its own alpha weight once it is fit, based on how
-    accurate it was: a stump with low weighted error on the rows it was trained on earns a high alpha, and a
-    stump that performed barely better than chance earns an alpha close to zero. The final prediction is a
-    weighted vote across every stump in the sequence, each one's vote scaled by its own alpha, so stumps that
-    turned out to be more reliable have more influence over the final answer than stumps that barely helped.
-    </p>
+    <p>What enables the stumps in AdaBoost to correct each other is a per-row weight that gets updated after
+    each round. Every row starts off with equal weight. Once the first stump is grown, the rows it
+    misclassifies have their weight increased, so when the second stump is grown it is effectively told to
+    concentrate on those particular rows, at the expense of paying less attention to the rows already
+    classified correctly. Each stump also earns an alpha weight once it is fit, based on its performance:
+    a stump with low weighted error on the rows it was fitted on receives a high alpha, while a stump that
+    performs only slightly better than random guessing earns an alpha close to zero. The final prediction is
+    made through a weighted vote among all stumps in the sequence, each stump's vote scaled by its own alpha,
+    giving more influence to the stumps that turned out to be more trustworthy.</p>
 
 
     <h3>Worked example: one stump&rsquo;s weighted error and alpha</h3>
-    <p>Using the binary <code>is_burdened</code> target, where the classic two-class AdaBoost formula applies
-    directly: a single depth-1 stump, fit on the 670 training rows with every row starting at equal weight
-    1/670, splits on 5 year price volatility at 6.435. That stump misclassifies 195 of the 670 rows, giving a
-    weighted error of 0.291. Alpha, the stump&rsquo;s vote weight in the final ensemble, is computed as
-    0.5 &middot; ln((1 &minus; 0.291) / 0.291) = 0.445. After this round, the 195 missed rows are reweighted
-    upward and the full set of weights renormalized: their combined share of the total weight rises from 29.1
-    percent to exactly 50 percent, so the next stump fit on these new weights is effectively told to treat
-    getting those 195 rows right as equally important as getting the other 475 right.</p>
+    <p>With the binary <code>is_burdened</code> target, the classic two-class AdaBoost formula applies
+    directly. One depth-1 stump is fit on the 670 training rows, every row starting at an equal weight of
+    1/670.</p>
+
+    <ol class="tight">
+      <li><strong>Split.</strong> The stump splits on 5 year price volatility at 6.435.</li>
+      <li><strong>Weighted error.</strong> It misclassifies 195 of the 670 rows, a weighted error of 0.291.</li>
+      <li><strong>Alpha.</strong> The stump&rsquo;s vote weight in the final ensemble is
+      alpha = 0.5 &middot; ln((1 &minus; 0.291) / 0.291) = 0.445.</li>
+      <li><strong>Reweight.</strong> The 195 missed rows are reweighted upward and the full set of weights
+      renormalized: their combined share of the total weight rises from 29.1% to exactly 50%, so the next
+      stump is effectively told to treat getting those 195 rows right as equally important as getting the
+      other 475 right.</li>
+    </ol>
 
     <div class="scroll">
       <table>
@@ -143,20 +148,21 @@ w2 = w2 / w2.sum()                            # renormalize</code></pre>
 
     <h2>Data Prep</h2>
     
-    <p>AdaBoost needs the same disjoint, labeled Training Set and Testing Set as every other supervised method
-    in this project, and reuses the identical 894-metro table and the identical 75/25 stratified 670/224 split
-    used for Naive Bayes, Decision Trees, and the regression tab, so results stay directly comparable. The
-    main AdaBoost model here is fit on the same 3-class <code>affordability_class</code> target used for
-    Decision Trees specifically, rather than the binary <code>is_burdened</code> target used for logistic
-    regression, so it can be compared fairly against the Decision Tree from Module 3 on identical rows and an
-    identical target. One data prep step that does not apply to this particular project is turning categorical
-    columns into numbers. Many AdaBoost datasets include categorical predictors, like a metro's region or a
-    property's zoning type, which need to be one-hot encoded (each category becoming its own 0/1 column) or
-    ordinal encoded before a tree-based model can split on them, since a split compares a feature to a numeric
-    threshold. All four predictors used throughout this project (1, 3, and 5 year price change, and 5 year
-    price volatility) are already continuous numeric values, so no encoding step is needed here; the binary
-    <code>is_burdened</code> target used in the worked example below is itself already numeric for the same
-    reason.</p>
+    <p>As with every other supervised method in this project, AdaBoost requires a disjoint Training Set and
+    Testing Set, and uses the exact same 894-row table and the exact same 75/25 stratified 670/224 split used
+    for Naive Bayes, Decision Trees, and the regression tab, so results stay directly comparable. The AdaBoost
+    model here is trained on the exact same 3-class <code>affordability_class</code> target used for Decision
+    Trees, rather than the binary <code>is_burdened</code> target used for logistic regression, so it can be
+    compared directly against the Decision Tree trained in Module 3 on identical rows and an identical target.
+    One data preparation task that is not necessary for this particular project is encoding categorical
+    columns numerically. AdaBoost datasets often have categorical predictors, such as a metro's region or a
+    property's zoning type, that need to be encoded either one-hot (one column per category, taking value 0
+    or 1 depending on whether the category applies to that row) or ordinal (assigning a number to each
+    category) before a tree-based algorithm can split on them, since a split compares a feature against a
+    numeric threshold. All four predictors used throughout this project (1, 3, and 5 year price change, and
+    5 year price volatility) are already continuous numeric values, so no encoding step is needed here; the
+    binary <code>is_burdened</code> target used in the worked example below is itself already numeric for the
+    same reason.</p>
 
 
     <figure class="sample">
@@ -203,17 +209,16 @@ w2 = w2 / w2.sum()                            # renormalize</code></pre>
 
     <h2>Results</h2>
     
-    <p>Sweeping <code>n_estimators</code> from 5 to 200 rounds at three different learning rates shows a clear
-    pattern: a low learning rate of 0.3 climbs steadily as more rounds are added and plateaus around its best
-    result, while higher learning rates of 1.0 and 1.5 push the model to fit the training rows more
-    aggressively per round, which lets test accuracy peak early and then degrade as more rounds are added, the
-    same overfitting signature already seen with the unpruned Decision Tree in Module 3. The best combination
-    found, learning rate 0.3 with 10 estimators, reaches 61.6 percent test accuracy on the 3-class
-    affordability target, 3.1 percentage points above the 58.5 percent that Module 3's Tree A (gini, max depth
-    3) reached on the exact same predictors, split, and target. The confusion matrix shows the model's
-    strongest class is Moderate (64 percent recall) and its weakest is Affordable (51 percent recall), with
-    most errors again landing in the class adjacent to the true one rather than jumping to the opposite
-    extreme.</p>
+    <p>Varying <code>n_estimators</code> from 5 to 200 across three learning rates reveals a clear pattern: a
+    low learning rate of 0.3 gradually increases as more rounds are added and plateaus at its best result,
+    whereas the higher learning rates of 1.0 and 1.5 push the model to fit each training row more aggressively
+    per round, letting test accuracy peak early and then drop as more rounds are added, much like the
+    overfitting already seen with the unpruned Decision Tree in Module 3. The best configuration is a learning
+    rate of 0.3 with 10 estimators, reaching 61.6 percent test accuracy on the 3-class affordability target,
+    3.1 percentage points above the 58.5 percent reached by Tree A in Module 3 (gini, max depth 3), using the
+    exact same predictors, split, and target. The confusion matrix shows the model's best class is Moderate,
+    with 64 percent recall, and its worst is Affordable, with 51 percent recall, with most mistakes landing in
+    the adjacent class rather than the opposite extreme.</p>
 
 
     <figure>
@@ -248,14 +253,14 @@ w2 = w2 / w2.sum()                            # renormalize</code></pre>
 
     <h2>Conclusions</h2>
     
-    <p>Sequentially reweighting rows that earlier stumps got wrong extracts a modest but real improvement over
-    a single decision tree built on the same four predictors, 3.1 percentage points of test accuracy, without
-    changing what data the model has access to. That gain, and the low-learning-rate-plateaus-while-high-
-    learning-rate-overfits pattern in the tuning curve, both point toward the same conclusion already emerging
-    across every supervised model tried in this project: the four price-growth and volatility predictors
-    genuinely carry some signal about a metro's affordability class, consistently better than chance, but not
-    enough signal for any one of these methods, simple or sophisticated, to classify affordability reliably
-    from recent price behaviour alone.</p>
+    <p>Sequentially giving extra weight to the rows the previous stump got wrong yields a small but real gain
+    over a standard decision tree trained on the same four variables, a 3.1 percentage point increase in test
+    accuracy without any change to the input features used. This gain, together with the tuning curve's
+    tendency to plateau at a low learning rate while overfitting at high learning rates, points to the same
+    conclusion reached across every supervised model tried so far in this project: there is some real
+    information in these four variables about a metro's affordability class, consistently better than chance,
+    but not enough for any single method here to classify affordability reliably from recent price behavior
+    alone.</p>
 
 
     </main>

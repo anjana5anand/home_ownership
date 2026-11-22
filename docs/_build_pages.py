@@ -984,14 +984,20 @@ ADABOOST_BODY = """
     {t_overview2}
 
     <h3>Worked example: one stump&rsquo;s weighted error and alpha</h3>
-    <p>Using the binary <code>is_burdened</code> target, where the classic two-class AdaBoost formula applies
-    directly: a single depth-1 stump, fit on the 670 training rows with every row starting at equal weight
-    1/670, splits on 5 year price volatility at 6.435. That stump misclassifies 195 of the 670 rows, giving a
-    weighted error of 0.291. Alpha, the stump&rsquo;s vote weight in the final ensemble, is computed as
-    0.5 &middot; ln((1 &minus; 0.291) / 0.291) = 0.445. After this round, the 195 missed rows are reweighted
-    upward and the full set of weights renormalized: their combined share of the total weight rises from 29.1
-    percent to exactly 50 percent, so the next stump fit on these new weights is effectively told to treat
-    getting those 195 rows right as equally important as getting the other 475 right.</p>
+    <p>With the binary <code>is_burdened</code> target, the classic two-class AdaBoost formula applies
+    directly. One depth-1 stump is fit on the 670 training rows, every row starting at an equal weight of
+    1/670.</p>
+
+    <ol class="tight">
+      <li><strong>Split.</strong> The stump splits on 5 year price volatility at 6.435.</li>
+      <li><strong>Weighted error.</strong> It misclassifies 195 of the 670 rows, a weighted error of 0.291.</li>
+      <li><strong>Alpha.</strong> The stump&rsquo;s vote weight in the final ensemble is
+      alpha = 0.5 &middot; ln((1 &minus; 0.291) / 0.291) = 0.445.</li>
+      <li><strong>Reweight.</strong> The 195 missed rows are reweighted upward and the full set of weights
+      renormalized: their combined share of the total weight rises from 29.1% to exactly 50%, so the next
+      stump is effectively told to treat getting those 195 rows right as equally important as getting the
+      other 475 right.</li>
+    </ol>
 
     <div class="scroll">
       <table>
